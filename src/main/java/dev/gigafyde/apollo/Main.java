@@ -21,7 +21,7 @@ public class Main {
         Client client = new Client(LAVALINK.getLavalink());
         new CommandList(client);
         SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(System.getenv("DISCORD_BOT_TOKEN"))
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ROLE_TAGS, CacheFlag.MEMBER_OVERRIDES)
+//                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ROLE_TAGS, CacheFlag.MEMBER_OVERRIDES)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
                 .setShardsTotal(SHARDS_TOTAL)
