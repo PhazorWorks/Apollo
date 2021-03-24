@@ -27,7 +27,7 @@ dependencies {
 
 jib {
     container {
-        mainClass = 'dev.gigafyde.apollo.login.Apollo'
+        mainClass = 'dev.gigafyde.apollo.Main'
     }
 }
 
