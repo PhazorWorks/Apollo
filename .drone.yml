@@ -1,0 +1,52 @@
+kind: pipeline
+type: docker
+name: build
+steps:
+  - name: build-notify
+    image: appleboy/drone-discord
+    settings:
+      message: "ℹ️ Build #{{build.number}} of `{{repo.name}}` started"
+      webhook_id:
+        from_secret: webhook_id
+      webhook_token:
+        from_secret: webhook_token
+
+  - name: main-compile-test
+    image: gradle:jdk11
+    commands:
+      - gradle build
+    when:
+      branch:
+        - main
+
+  - name: build-production-image
+    image: gradle:jdk11
+    environment:
+      DOCKERHUB:
+        from_secret: dockerhub
+    commands:
+      - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
+    when:
+      branch:
+        - master
+
+  - name: dev-compile-test
+    image: gradle:jdk11
+    commands:
+      - gradle build
+    when:
+      branch:
+        - dev
+
+  - name: discord-notify
+    image: appleboy/drone-discord
+    when:
+      status:
+        - success
+        - failure
+    settings:
+      message: "{{#success build.status}} ✅ Build #{{build.number}} of `{{repo.name}}` completed\n {{else}} ❌ Build #{{build.number}} of `{{repo.name}}` failed\n {{/success}}\n"
+      webhook_id:
+        from_secret: webhook_id
+      webhook_token:
+        from_secret: webhook_token

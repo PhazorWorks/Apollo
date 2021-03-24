@@ -1,0 +1,36 @@
+<configuration>
+    <timestamp key="date" datePattern="dd-MM-yyyy"/>
+    <appender name="DEBUG" class="ch.qos.logback.core.FileAppender">
+        <file>logs/debug/${date}.log</file>
+        <encoder>
+            <pattern>[%d{dd-MM-yyyy}][%d{HH:mm:ss}] [%-5level] [%t] [%logger{36}]: %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="WARN" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <file>logs/error/${date}.log</file>
+        <encoder>
+            <pattern>[%d{dd-MM-yyyy}][%d{HH:mm:ss}] [%-5level] [%t] [%logger{36}]: %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight([%d{dd-MM-yyyy}][%d{HH:mm:ss}] [%-5level] [%t] [%logger{36}]:) %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref="DEBUG"/>
+        <appender-ref ref="WARN"/>
+    </root>
+    <root level="INFO">
+        <appender-ref ref="Console" />
+        <appender-ref ref="Sentry" />
+    </root>
+</configuration>
