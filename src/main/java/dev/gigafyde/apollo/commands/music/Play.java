@@ -39,7 +39,6 @@ public class Play extends Command {
     }
 
     public void execute(CommandEvent event) {
-        TextChannel channel = event.getTextChannel();
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
         if (scheduler == null) {
@@ -85,8 +84,9 @@ public class Play extends Command {
                                         .build()).execute();
                         InputStream inputStream = response.body().byteStream();
                         channel.sendFile(inputStream, "thumbnail.png").queue();
-                        event.getTrigger().delete().queue();
+                        event.getTrigger().suppressEmbeds(true).queue();
                     } catch (Exception ignored) {
+                        event.getTrigger().suppressEmbeds(true).queue();
                         event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
                     }
                 }
