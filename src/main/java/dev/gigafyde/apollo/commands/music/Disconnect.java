@@ -16,12 +16,12 @@ public class Disconnect extends Command {
     }
 
     public void execute(CommandEvent event) {
-        if (!event.getGuild().getAudioManager().isConnected()) {
+        if (!event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().isConnected()) {
             event.getChannel().sendMessage("**Not connected**").queue();
             return;
         }
-        event.getGuild().getAudioManager().closeAudioConnection();
         event.getClient().getMusicManager().disconnect(event.getGuild());
+        event.getClient().getLavalink().getLink(event.getGuild()).destroy();
         event.getChannel().sendMessage("**Disconnected!**").queue();
     }
 }
