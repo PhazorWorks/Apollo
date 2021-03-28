@@ -1,6 +1,10 @@
 kind: pipeline
 type: docker
-name: build
+name: arm
+
+platform:
+  arch: arm64
+
 steps:
   - name: build-notify
     image: appleboy/drone-discord
