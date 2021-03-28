@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.google.cloud.tools.jib' version '2.8.0'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
 }
 group 'dev.gigafyde'
 
@@ -25,10 +25,9 @@ dependencies {
     }
 }
 
-jib {
-    container {
-        mainClass = 'dev.gigafyde.apollo.Main'
-    }
+shadowJar {
+    classifier = ""
+    baseName 'Apollo'
 }
 
 compileJava {
