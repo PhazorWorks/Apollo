@@ -1,23 +1,15 @@
 kind: pipeline
 type: docker
-name: arm
-
-platform:
-  arch: arm64
+name: amd64
 
 steps:
-  - name: compile
-    image: 'openjdk:11-jdk-slim-buster'
-    commands:
-      - 'chmod +x ./gradlew'
-      - './gradlew shadowJar --no-daemon'
-
-  - name: docker-build
-    image: plugins/docker
-    settings:
-      repo: gigafyde/apollo
-      username: gigafyde
-      password:
-        from_secret: dockerhub
-      tags: latest
-      force_tag: true
+  - name: build-production-image
+      image: gradle:jdk11
+      environment:
+        DOCKERHUB:
+          from_secret: dockerhub
+      commands:
+        - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
+      when:
+        branch:
+          - main
