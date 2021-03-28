@@ -4,12 +4,12 @@ name: amd64
 
 steps:
   - name: build-production-image
-      image: gradle:jdk11
-      environment:
-        DOCKERHUB:
-          from_secret: dockerhub
-      commands:
-        - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
-      when:
-        branch:
-          - main
+    image: gradle:jdk11
+    environment:
+      DOCKERHUB:
+        from_secret: dockerhub
+    commands:
+      - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
+    when:
+      branch:
+        - main
