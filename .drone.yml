@@ -1,6 +1,10 @@
 kind: pipeline
 type: docker
-name: arm64
+name: build
+
+platform:
+  os: linux
+  arch: arm64
 
 steps:
   - name: build-production-image
