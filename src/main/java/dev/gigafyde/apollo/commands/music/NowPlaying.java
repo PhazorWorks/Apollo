@@ -21,7 +21,7 @@ public class NowPlaying extends Command {
 
     public void execute(CommandEvent event) {
         TextChannel channel = event.getTextChannel();
-        AudioTrack track = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getPlayingTrack();
+        AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
             channel.sendMessage("Nothing currently playing").queue();
             return;

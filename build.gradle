@@ -1,3 +1,5 @@
+import java.time.Clock
+
 plugins {
     id 'java'
     id 'application'
@@ -39,6 +41,7 @@ jib {
 
     container {
         mainClass = 'dev.gigafyde.apollo.Main'
+        creationTime = Clock.systemUTC().instant()
     }
 }
 
