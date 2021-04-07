@@ -28,7 +28,7 @@ public class NowPlaying extends Command {
         }
         try {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", track.getPosition()).put("duration", track.getDuration());
+            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getTrackPosition()).put("duration", track.getDuration());
             OkHttpClient client = new OkHttpClient();
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = client.newCall(
