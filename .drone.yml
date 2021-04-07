@@ -8,12 +8,12 @@ platform:
 
 steps:
   - name: build-production-image
-    image: gradle:jdk11
+    image: arm64v8/openjdk:11
     environment:
       DOCKERHUB:
         from_secret: dockerhub
     commands:
-      - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
+      - gradlew jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
     when:
       branch:
         - main

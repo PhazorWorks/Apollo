@@ -29,8 +29,14 @@ dependencies {
 jib {
     from {
         image = 'arm64v8/openjdk:11-jre'
-
+        platforms {
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
     }
+
     container {
         mainClass = 'dev.gigafyde.apollo.Main'
     }
