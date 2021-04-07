@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build-production-image
-    image: arm64v8/openjdk:11-buster
+    image: gradle:jdk11
     environment:
       DOCKERHUB:
         from_secret: dockerhub
