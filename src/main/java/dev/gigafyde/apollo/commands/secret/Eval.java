@@ -25,7 +25,8 @@ public final class Eval extends Command {
     private static final String imports;
 
     static {
-        imports = "import net.dv8tion.jda.core.*\nimport net.dv8tion.jda.core.entities.*\n";
+        imports = "import net.dv8tion.jda.core.*" +
+                "\nimport net.dv8tion.jda.core.entities.*\n";
         THREAD_GROUP.setMaxPriority(Thread.MIN_PRIORITY);
     }
 
@@ -41,8 +42,11 @@ public final class Eval extends Command {
     protected void execute(CommandEvent event) {
         MessageChannel channel = event.getTextChannel();
         if (event.getArgument().isEmpty()) {
-            event.getTrigger().addReaction(Emoji.ERROR.toString()).queue();
-//            channel.sendMessage(Emoji.ERROR + " **Please enter something to evaluate!**").queue();
+            try {
+                event.getTrigger().addReaction(Emoji.ERROR.toString()).queue();
+            } catch (Exception e) {
+                event.getTrigger().reply(Emoji.ERROR + " **Please enter something to evaluate!**").queue();
+            }
             return;
         }
         String arg = imports + event.getArgument();
@@ -51,8 +55,11 @@ public final class Eval extends Command {
             try {
                 Object result = shell.evaluate(arg);
                 if (result == null) {
-                    event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
-//                    channel.sendMessage(Emoji.SUCCESS + " **Executed successfully**").queue();
+                    try {
+                        event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
+                    } catch (Exception e) {
+                        channel.sendMessage(Emoji.SUCCESS + " **Executed successfully**").queue();
+                    }
                     return;
                 }
                 String resultString = result.toString();
@@ -66,7 +73,6 @@ public final class Eval extends Command {
                 }
             } catch (Throwable t) {
                 channel.sendMessage(Emoji.ERROR + " **Failed to execute ** -- " + Haste.paste(t)).queue();
-//                log.error("Eval Error", t);
             }
         });
     }
