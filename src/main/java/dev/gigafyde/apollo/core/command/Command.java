@@ -20,9 +20,8 @@ public abstract class Command {
 
     protected abstract void execute(CommandEvent event);
 
-    public final void run(CommandEvent event, boolean override) {
+    public final void run(CommandEvent event) {
         try {
-            if (override) execute(event);
             if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             if (guildOnly && !event.isFromGuild()) {
                 event.getTrigger().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
@@ -30,7 +29,7 @@ public abstract class Command {
             }
             execute(event);
         } catch (Exception e) {
-            event.getChannel().sendMessage("**Apologies, something went wrong internally**").queue();
+            event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
             log.warn("Unexpected exception!", e);
         }
     }

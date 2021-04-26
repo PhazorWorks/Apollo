@@ -14,8 +14,7 @@ public class Clear extends Command {
     }
 
     public void execute(CommandEvent event) {
-        MusicManager musicManager = event.getClient().getMusicManager();
-        TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler == null) {
             VoiceChannel vc = event.getMember().getVoiceState().getChannel();
             if (vc == null) {

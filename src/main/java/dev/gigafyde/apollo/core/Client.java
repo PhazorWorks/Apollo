@@ -5,6 +5,7 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandHandler;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
 import lavalink.client.io.jda.JdaLavalink;
@@ -29,7 +30,7 @@ public class Client extends ListenerAdapter {
     }
 
     public boolean isOwner(User user) {
-        return System.getenv("DISCORD_BOT_OWNERID").equals(user.getId());
+        return Main.OWNER_ID.equals(user.getId());
     }
 
     public MusicManager getMusicManager() {
@@ -41,7 +42,7 @@ public class Client extends ListenerAdapter {
     }
 
     public String getPrefix() {
-        return System.getenv("DISCORD_BOT_PREFIX");
+        return Main.BOT_PREFIX;
     }
 
     public CommandRegistry getCommandRegistry() {

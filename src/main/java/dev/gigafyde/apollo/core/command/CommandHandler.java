@@ -6,6 +6,7 @@ package dev.gigafyde.apollo.core.command;
  */
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -23,7 +24,7 @@ public class CommandHandler {
 
     public CommandHandler(Client client) {
         this.client = client;
-        String id = System.getenv("DISCORD_BOT_ID");
+        String id = Main.BOT_ID;
         mentions = new String[]{
                 "<@" + id + ">",
                 "<@!" + id + ">"
@@ -57,7 +58,7 @@ public class CommandHandler {
             POOL.execute(() -> {
                 CommandEvent event = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1]);
                 try {
-                    command.run(event, false);
+                    command.run(event);
                 } catch (Throwable t) {
                     log.error("COMMAND FAILED", t);
                 }

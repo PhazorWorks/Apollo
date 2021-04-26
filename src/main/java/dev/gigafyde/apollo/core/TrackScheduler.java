@@ -42,31 +42,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         return manager;
     }
 
-    public void highBass(float diff) {
-        for (int i = 0; i < BASS_BOOST.length; i++) {
-            equalizer.setGain(i, BASS_BOOST[i] + diff);
-        }
-    }
-
-    public void lowBass(float diff) {
-        for (int i = 0; i < BASS_BOOST.length; i++) {
-            equalizer.setGain(i, -BASS_BOOST[i] + diff);
-        }
-    }
-
-//    public void disableEq() {
-//        player.setFilterFactory(null);
-//    }
-//
-//    public void setupEq() {
-//        manager.getConfiguration().setFilterHotSwapEnabled(true);
-//        player.setFrameBufferDuration(100);
-//    }
-//
-//    public void eqStart() {
-//        player.setFilterFactory(equalizer);
-//        eqActive = true;
-//    }
 
     public void nextSong(AudioTrack previoustrack) {
         AudioTrack nexttrack = queue.poll();
@@ -135,8 +110,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         skip(1);
     }
 
-    public int skip(int amount) {
-        if (amount < 1) return 0;
+    public void skip(int amount) {
+        if (amount < 1) return;
         amount--;
         int skipped = 1;
         if (queue.size() > amount) {
@@ -149,7 +124,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             queue.clear();
         }
         nextSong(null);
-        return skipped;
     }
 
     public void clear() {

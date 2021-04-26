@@ -15,7 +15,7 @@ public class LavalinkManager {
         );
         lavalink.setAutoReconnect(true);
 
-        lavalink.addNode(URI.create("ws://" + System.getenv("LAVALINK_URL")), System.getenv("LAVALINK_PASS"));
+        lavalink.addNode(URI.create("ws://" + Main.LAVALINK_URL), Main.LAVALINK_PASS);
     }
 
     public JdaLavalink getLavalink() {
