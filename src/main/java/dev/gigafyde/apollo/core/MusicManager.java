@@ -43,12 +43,11 @@ public final class MusicManager {
 
     public void moveVoiceChannel(VoiceChannel voiceChannel) {
         Guild guild = voiceChannel.getGuild();
-        JdaLink link = client.getLavalink().getLink(guild);
         AudioManager audioManager = guild.getAudioManager();
         if (!audioManager.isConnected()) {
             addScheduler(voiceChannel, true);
         } else {
-            link.connect(voiceChannel);
+            audioManager.openAudioConnection(voiceChannel);
         }
     }
 
