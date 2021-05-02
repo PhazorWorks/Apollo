@@ -27,7 +27,7 @@ public class Main {
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
         new CommandList(client);
-        SHARD_MANAGER = DefaultShardManagerBuilder.createLight(BOT_TOKEN)
+        SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(BOT_TOKEN)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
                 .setShardsTotal(SHARDS_TOTAL)
