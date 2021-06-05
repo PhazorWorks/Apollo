@@ -24,15 +24,15 @@ public class Seek extends Command {
             int seekNumber = Integer.parseInt(argument);
             AudioTrack playingTrack = player.getPlayingTrack();
             long maxSeekLength = playingTrack.getDuration();
-            long amountToSeek = seekNumber * 1000;
+            long amountToSeek = seekNumber * 1000L;
             if (amountToSeek > maxSeekLength) {
                 event.getTrigger().reply("").queue();
                 return;
             }
             long newTime = player.getPlayingTrack().getPosition() + amountToSeek;
-            player.getPlayingTrack().setPosition(newTime);
+            player.seekTo(newTime);
             if (event.getArgument().startsWith("-")) {
-                long amountrewound = 0L - amountToSeek;
+                long amountrewound = -amountToSeek;
                 if (amountToSeek < 61000)
                     event.getTrigger().reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountrewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountrewound)))).queue();
                 else
