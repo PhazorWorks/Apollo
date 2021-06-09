@@ -14,10 +14,8 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.utils.TextUtils;
 import java.io.InputStream;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import okhttp3.MediaType;
@@ -29,6 +27,8 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 public class Play extends Command {
+    OkHttpClient client = new OkHttpClient();
+
     public Play() {
         this.name = "play";
         this.description = "Allows you to play a song of your choice";
@@ -42,7 +42,7 @@ public class Play extends Command {
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
         if (scheduler == null) {
-            VoiceChannel vc = event.getMember().getVoiceState().getChannel();
+            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
             if (vc == null) {
                 event.getTrigger().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
                 return;
@@ -54,41 +54,78 @@ public class Play extends Command {
                 return;
             }
         }
-        loadHandler(scheduler, event, false, event.getAuthor());
-
-    }
-
-
-    private void loadHandler(TrackScheduler scheduler, CommandEvent event, boolean search, User user) {
-        String[] split = event.getArgument().split("&list=");
-        TextChannel channel = event.getTextChannel();
         if (event.getArgument().isEmpty()) {
             event.getTrigger().reply("Please provide a search query.").mentionRepliedUser(true).queue();
             return;
         }
-        scheduler.getManager().loadItem(search ? "ytsearch:" + split[0] : TextUtils.getStrippedSongUrl(split[0]), new AudioLoadResultHandler() {
+        if (event.getArgument().contains("spotify")) {
+            handleSpotify(event);
+            return;
+        }
+        loadHandler(event, scheduler, event.getArgument(), false);
 
+    }
+
+    private void handleSpotify(CommandEvent event) {
+        MusicManager musicManager = event.getClient().getMusicManager();
+        TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
+        if (event.getArgument().contains("spotify")) {
+            String[] argument = event.getArgument().split("/");
+            String route = argument[3];
+            if (!route.contains("track")) {
+                event.getTrigger().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
+                return;
+            }
+            String object = argument[4];
+            String[] objectId = object.split("\\?si");
+            String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
+            Response response;
+            JSONObject jsonResponse;
+            JSONObject jsonObject;
+            try {
+                response = client.newCall(
+                        new Request.Builder()
+                                .url(WebServerEndpoint + route + "?id=" + objectId[0])
+                                .build()).execute();
+                jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+                jsonObject = jsonResponse.getJSONObject("track");
+            } catch (Exception e) {
+                event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
+                return;
+            }
+            if (route.equals("track")) {
+                String artist = jsonObject.get("artist").toString();
+                String title = jsonObject.get("name").toString();
+                loadHandler(event, scheduler, artist + " " + title, true);
+            }
+        }
+    }
+
+    private void sendImage(CommandEvent event, AudioTrack track) {
+        try {
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", event.getAuthor().getName()).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
+            RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
+            Response response = client.newCall(
+                    new Request.Builder()
+                            .url(System.getenv("IMAGE_API") + "convert")
+                            .post(body)
+                            .build()).execute();
+            InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
+            event.getChannel().sendFile(inputStream, "thumbnail.png").queue();
+            event.getTrigger().suppressEmbeds(true).queue();
+        } catch (Exception ignored) {
+            event.getTrigger().suppressEmbeds(true).queue();
+            event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+        }
+    }
+
+    private void loadHandler(CommandEvent event, TrackScheduler scheduler, String searchQuery, boolean search) {
+        scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-
                 if (scheduler.addSong(track)) {
-                    try {
-                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                        JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", user.getName()).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
-                        OkHttpClient client = new OkHttpClient();
-                        RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
-                        Response response = client.newCall(
-                                new Request.Builder()
-                                        .url(System.getenv("IMAGE_API") + "/convert")
-                                        .post(body)
-                                        .build()).execute();
-                        InputStream inputStream = response.body().byteStream();
-                        channel.sendFile(inputStream, "thumbnail.png").queue();
-                        event.getTrigger().suppressEmbeds(true).queue();
-                    } catch (Exception ignored) {
-                        event.getTrigger().suppressEmbeds(true).queue();
-                        event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
-                    }
+                    sendImage(event, track);
                 }
             }
 
@@ -110,9 +147,8 @@ public class Play extends Command {
             public void noMatches() {
                 if (search) {
                     event.getTrigger().reply("**Failed to find anything with the term: **" + event.getArgument()).mentionRepliedUser(true).queue();
-                    return;
                 }
-                loadHandler(scheduler, event, true, user);
+//                loadHandler(scheduler, event, true, user);
             }
 
             @Override

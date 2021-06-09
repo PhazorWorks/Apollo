@@ -45,6 +45,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
 
     public void nextSong(AudioTrack previoustrack) {
         AudioTrack nexttrack = queue.poll();
+        if (nexttrack == null)
+            return;
         player.playTrack(nexttrack);
     }
 
@@ -120,7 +122,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 skipped++;
             }
         } else {
-            skipped = queue.size();
             queue.clear();
         }
         nextSong(null);
