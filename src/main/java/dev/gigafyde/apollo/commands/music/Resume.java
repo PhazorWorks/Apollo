@@ -20,6 +20,6 @@ public class Resume extends Command {
     public void execute(CommandEvent event) {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         scheduler.getPlayer().setPaused(false);
-        event.getTrigger().reply("**Resumed from: `" + SongUtils.getSongProgress(scheduler.getPlayer().getPlayingTrack()) + "`**").queue();
+        event.getTrigger().reply("**Resumed from: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").queue();
     }
 }

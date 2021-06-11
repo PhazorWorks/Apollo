@@ -20,6 +20,6 @@ public class Pause extends Command {
     public void execute(CommandEvent event) {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         scheduler.getPlayer().setPaused(true);
-        event.getTrigger().reply("**Paused at: `" + SongUtils.getSongProgress(scheduler.getPlayer().getPlayingTrack()) + "`**").queue();
+        event.getTrigger().reply("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").queue();
     }
 }
