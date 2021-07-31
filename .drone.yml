@@ -4,11 +4,11 @@ name: build
 
 platform:
   os: linux
-  arch: arm64
+  arch: amd64
 
 steps:
   - name: build-production-image
-    image: arm64v8/openjdk:11
+    image: openjdk:11.0.12-jdk-slim
     environment:
       DOCKERHUB:
         from_secret: dockerhub
