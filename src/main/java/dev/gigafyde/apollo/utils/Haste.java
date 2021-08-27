@@ -8,11 +8,13 @@ package dev.gigafyde.apollo.utils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.rmi.server.RemoteRef;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +23,7 @@ public final class Haste {
 
     public static String paste(String input) {
         try {
-            MediaType type = MediaType.parse("text/plain; charset=utf-8");
-            RequestBody body = RequestBody.create(input, type);
+            RequestBody body = RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), input);
             Request request = new Request.Builder()
                     .url("https://hastebin.com/documents")
                     .post(body)
@@ -30,7 +31,7 @@ public final class Haste {
             Response response = client.newCall(request).execute();
             @SuppressWarnings("ConstantConditions") JSONObject json = new JSONObject(response.body().string());
             return "https://hastebin.com/" + json.getString("key");
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException | NullPointerException | JSONException e) {
             LoggerFactory.getLogger(Haste.class).error("Failed to generate paste", e);
             return null;
         }
