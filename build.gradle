@@ -5,10 +5,11 @@ plugins {
     id 'application'
     id 'com.google.cloud.tools.jib' version '3.1.4'
 }
-group 'dev.gigafyde'
 
+group 'dev.gigafyde'
 mainClassName = 'dev.gigafyde.apollo.Main'
-sourceCompatibility = 11
+sourceCompatibility = 16
+targetCompatibility = 16
 
 repositories {
     maven { url 'https://jitpack.io' }
@@ -34,7 +35,7 @@ dependencies {
 
 jib {
     from {
-        image = 'openjdk:11.0.10-jre-slim'
+        image = 'adoptopenjdk/openjdk16:jre-16.0.1_9-ubuntu'
     }
 
     container {
