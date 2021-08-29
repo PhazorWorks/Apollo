@@ -39,7 +39,7 @@ public class NowPlaying extends Command {
             InputStream inputStream = response.body().byteStream();
             event.getTrigger().reply(inputStream, "test.png").mentionRepliedUser(false).queue();
         } catch (Exception ignored) {
-
+            event.getTrigger().reply("Something went wrong trying to generate the image.").queue();
         }
     }
 }
