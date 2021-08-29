@@ -14,7 +14,13 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
+import dev.gigafyde.apollo.utils.TextUtils;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Objects;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -62,8 +68,12 @@ public class Play extends Command {
             handleSpotify(event);
             return;
         }
-        loadHandler(event, scheduler, event.getArgument(), false);
-
+        if (SongUtils.isValidURL(event.getArgument())) {
+            String[] split = event.getArgument().split("&list=");
+            loadHandler(event, scheduler, TextUtils.getStrippedSongUrl(split[0]), false);
+        } else {
+            loadHandler(event, scheduler, event.getArgument(), true);
+        }
     }
 
     private void handleSpotify(CommandEvent event) {

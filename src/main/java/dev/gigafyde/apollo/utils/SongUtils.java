@@ -6,9 +6,21 @@ package dev.gigafyde.apollo.utils;
  */
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class SongUtils {
+    public static boolean isValidURL(String url) {
+        try {
+            new URL(url).toURI();
+        } catch (MalformedURLException | URISyntaxException e) {
+            return false;
+        }
+        return true;
+    }
+
     public static String calculateSongLength(AudioTrack track) {
         if (track.getInfo().isStream) return "Livestream";
         long minutes = TimeUnit.MILLISECONDS.toMinutes(track.getDuration());
