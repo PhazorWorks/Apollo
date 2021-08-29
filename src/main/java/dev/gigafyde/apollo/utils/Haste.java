@@ -23,7 +23,7 @@ public final class Haste {
 
     public static String paste(String input) {
         try {
-            RequestBody body = RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), input);
+            RequestBody body = RequestBody.create(input, MediaType.parse("text/plain; charset=utf-8"));
             Request request = new Request.Builder()
                     .url("https://hastebin.com/documents")
                     .post(body)
