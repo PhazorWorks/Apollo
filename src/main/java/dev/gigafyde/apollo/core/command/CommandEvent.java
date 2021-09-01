@@ -39,6 +39,8 @@ public class CommandEvent {
         return trigger;
     }
 
+    public Message getMessage() { return trigger; }
+
     public User getAuthor() {
         return trigger.getAuthor();
     }
