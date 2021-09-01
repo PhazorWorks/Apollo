@@ -21,7 +21,12 @@ public class Skip extends Command {
     public void execute(CommandEvent event) {
         Message message = event.getTrigger();
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-        scheduler.skip();
+        if (event.getArgument().isEmpty()) {
+            scheduler.skip();
+        } else {
+            int amount = Integer.parseInt(event.getArgument());
+            scheduler.skip(amount);
+        }
         if (scheduler.isLooped()) {
             scheduler.setLooped(false);
             event.getTrigger().reply("Loop was turned off due to manual skip").queue();
