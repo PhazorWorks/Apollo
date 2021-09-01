@@ -123,13 +123,13 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     }
 
     public void skip(int amount) {
-        if (amount < 1) return;
-        amount--;
-        int skipped = 1; // Seems to be broken at the moment, need to loop into this later
+        if (amount == 1) {
+            nextSong(null);
+            return;
+        }
         if (queue.size() > amount) {
             for (int i = 0; i < amount; i++) {
-                queue.poll();
-                skipped++;
+                queue.remove();
             }
         } else {
             queue.clear();
