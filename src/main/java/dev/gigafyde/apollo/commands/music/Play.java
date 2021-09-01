@@ -16,11 +16,9 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import dev.gigafyde.apollo.utils.TextUtils;
-
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.Objects;
-
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -90,19 +88,15 @@ public class Play extends Command {
         String object = argument[4];
         String[] objectId = object.split("\\?si");
         String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
-        Response response;
-        JSONObject jsonResponse;
-        JSONObject jsonObject;
         try {
-            response = client.newCall(
+            Response response = client.newCall(
                     new Request.Builder()
                             .url(WebServerEndpoint + "track" + "?id=" + objectId[0])
                             .build()).execute();
-            jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
-            jsonObject = jsonResponse.getJSONObject("track");
+            JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+            JSONObject jsonObject = jsonResponse.getJSONObject("track");
             String artist = jsonObject.get("artist").toString();
             String title = jsonObject.get("name").toString();
-
             loadHandler(event, scheduler, artist + " " + title, true, true);
         } catch (Exception e) {
             event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
@@ -113,19 +107,15 @@ public class Play extends Command {
         String object = argument[4];
         String[] objectId = object.split("\\?si");
         String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
-        Response response;
-        JSONObject jsonResponse;
-        JSONObject jsonObject;
         try {
-            response = client.newCall(
+            Response response = client.newCall(
                     new Request.Builder()
                             .url(WebServerEndpoint + "playlist" + "?id=" + objectId[0])
                             .build()).execute();
-            jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
-            jsonObject = jsonResponse.getJSONObject("playlist");
+            JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+            JSONObject jsonObject = jsonResponse.getJSONObject("playlist");
             JSONArray tracks = jsonObject.getJSONArray("tracks");
-            int i;
-            for (i = 0; i < tracks.length(); i++) {
+            for (int i = 0; i < tracks.length(); i++) {
                 JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
                 String artist = track.get("artist").toString();
                 String title = track.get("name").toString();
