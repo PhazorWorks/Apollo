@@ -16,19 +16,20 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import dev.gigafyde.apollo.utils.TextUtils;
+
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.EnumSet;
 import java.util.Objects;
+
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -47,18 +48,27 @@ public class Play extends Command {
     public void execute(CommandEvent event) {
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
         if (scheduler == null) {
-            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
             if (vc == null) {
                 event.getTrigger().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
                 return;
             }
-            try {
+            EnumSet<Permission> voicePermissions = event.getSelfMember().getPermissions(vc);
+            if (voicePermissions.contains(Permission.VOICE_CONNECT)) {
+                if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
+                    event.getTrigger().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
+                    return;
+                }
                 scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-            } catch (InsufficientPermissionException ignored) {
-                event.getTrigger().reply("**Cannot join VC**").mentionRepliedUser(true).queue();
+            } else {
+                event.getTrigger().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
                 return;
             }
+        }
+        if (vc == null) {
+            event.getTrigger().reply("**Please join a voice channel first!**").queue();
+            return;
         }
         if (event.getArgument().isEmpty()) {
             event.getTrigger().reply("Please provide a search query.").mentionRepliedUser(true).queue();
@@ -70,49 +80,82 @@ public class Play extends Command {
         }
         if (SongUtils.isValidURL(event.getArgument())) {
             String[] split = event.getArgument().split("&list=");
-            loadHandler(event, scheduler, TextUtils.getStrippedSongUrl(split[0]), false);
+            loadHandler(event, scheduler, TextUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
-            loadHandler(event, scheduler, event.getArgument(), true);
+            loadHandler(event, scheduler, event.getArgument(), true, true);
+        }
+    }
+
+    private void handleSpotifyTrack(CommandEvent event, TrackScheduler scheduler, String[] argument) {
+        String object = argument[4];
+        String[] objectId = object.split("\\?si");
+        String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
+        Response response;
+        JSONObject jsonResponse;
+        JSONObject jsonObject;
+        try {
+            response = client.newCall(
+                    new Request.Builder()
+                            .url(WebServerEndpoint + "track" + "?id=" + objectId[0])
+                            .build()).execute();
+            jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+            jsonObject = jsonResponse.getJSONObject("track");
+            String artist = jsonObject.get("artist").toString();
+            String title = jsonObject.get("name").toString();
+
+            loadHandler(event, scheduler, artist + " " + title, true, true);
+        } catch (Exception e) {
+            event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
+        }
+    }
+
+    private void handleSpotifyPlaylist(CommandEvent event, TrackScheduler scheduler, String[] argument) {
+        String object = argument[4];
+        String[] objectId = object.split("\\?si");
+        String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
+        Response response;
+        JSONObject jsonResponse;
+        JSONObject jsonObject;
+        try {
+            response = client.newCall(
+                    new Request.Builder()
+                            .url(WebServerEndpoint + "playlist" + "?id=" + objectId[0])
+                            .build()).execute();
+            jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+            jsonObject = jsonResponse.getJSONObject("playlist");
+            JSONArray tracks = jsonObject.getJSONArray("tracks");
+            int i;
+            for (i = 0; i < tracks.length(); i++) {
+                JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
+                String artist = track.get("artist").toString();
+                String title = track.get("name").toString();
+                loadHandler(event, scheduler, artist + " " + title, true, false);
+            }
+            event.getTrigger().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
+        } catch (Exception e) {
+            event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
         }
     }
 
     private void handleSpotify(CommandEvent event) {
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
-        if (event.getArgument().contains("spotify")) {
-            String[] argument = event.getArgument().split("/");
-            String route = argument[3];
-            if (!route.contains("track")) {
-                event.getTrigger().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
-                return;
-            }
-            String object = argument[4];
-            String[] objectId = object.split("\\?si");
-            String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
-            Response response;
-            JSONObject jsonResponse;
-            JSONObject jsonObject;
-            try {
-                response = client.newCall(
-                        new Request.Builder()
-                                .url(WebServerEndpoint + route + "?id=" + objectId[0])
-                                .build()).execute();
-                jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
-                jsonObject = jsonResponse.getJSONObject("track");
-            } catch (Exception e) {
-                event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
-                return;
-            }
-            if (route.equals("track")) {
-                String artist = jsonObject.get("artist").toString();
-                String title = jsonObject.get("name").toString();
-                loadHandler(event, scheduler, artist + " " + title, true);
-            }
+        String[] argument = event.getArgument().split("/");
+        String route = argument[3];
+        EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
+        if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getTrigger().suppressEmbeds(true).queue();
+        if (route.contains("track")) {
+            handleSpotifyTrack(event, scheduler, argument);
+        } else if (route.contains("playlist")) {
+            handleSpotifyPlaylist(event, scheduler, argument);
+        } else {
+            event.getTrigger().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
         }
     }
 
     private void sendImage(CommandEvent event, AudioTrack track) {
         try {
+            EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", event.getAuthor().getName()).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
@@ -123,18 +166,17 @@ public class Play extends Command {
                             .build()).execute();
             InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
             event.getChannel().sendFile(inputStream, "thumbnail.png").queue();
-            event.getTrigger().suppressEmbeds(true).queue();
+            if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getTrigger().suppressEmbeds(true).queue();
         } catch (Exception ignored) {
-            event.getTrigger().suppressEmbeds(true).queue();
             event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
         }
     }
 
-    private void loadHandler(CommandEvent event, TrackScheduler scheduler, String searchQuery, boolean search) {
+    private void loadHandler(CommandEvent event, TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
         scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (scheduler.addSong(track)) {
+                if (scheduler.addSong(track) && send) {
                     sendImage(event, track);
                 }
             }
