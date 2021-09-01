@@ -5,6 +5,7 @@ package dev.gigafyde.apollo.commands.music;
   https://github.com/GigaFyde
  */
 
+import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
@@ -19,7 +20,12 @@ public class Skip extends Command {
 
     public void execute(CommandEvent event) {
         Message message = event.getTrigger();
-        event.getClient().getMusicManager().getScheduler(event.getGuild()).skip();
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        scheduler.skip();
+        if (scheduler.isLooped()) {
+            scheduler.setLooped(false);
+            event.getTrigger().reply("Loop was turned off due to manual skip").queue();
+        }
         message.addReaction(Emoji.SUCCESS.toString()).queue();
     }
 }

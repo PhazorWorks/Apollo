@@ -23,7 +23,7 @@ public class Remove extends Command {
                 event.getTrigger().reply("").mentionRepliedUser(false).queue();
                 return;
             }
-            event.getTrigger().reply(Emoji.SUCCESS + " **Removed** `" + scheduler.getSongTitlebyPosition(numberToRemove - 1) + "` **from the queue!**").mentionRepliedUser(false).queue();
+            event.getTrigger().reply(Emoji.SUCCESS + " **Removed** `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` **from the queue!**").mentionRepliedUser(false).queue();
             scheduler.removeSong(numberToRemove - 1);
         } catch (NumberFormatException exception) {
             event.getTrigger().reply("Failed to parse number from input").mentionRepliedUser(false).queue();

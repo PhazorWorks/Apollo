@@ -5,7 +5,6 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
-import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -23,18 +22,15 @@ import org.slf4j.LoggerFactory;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger(TrackScheduler.class);
-    private static final float[] BASS_BOOST = {0.2f, 0.15f, 0.1f, 0.05f, 0.0f, -0.05f, -0.1f, -0.1f, -0.1f, -0.1f, -0.1f,
-            -0.1f, -0.1f, -0.1f, -0.1f};
     private final IPlayer player;
     private final AudioPlayerManager manager;
-    private final EqualizerFactory equalizer;
-    public boolean eqActive;
+    private boolean looped;
+    private AudioTrack loopedTrack;
     private Queue<AudioTrack> queue = new LinkedBlockingDeque<>();
 
     TrackScheduler(IPlayer player, AudioPlayerManager manager, Guild guild, boolean start) {
         this.player = player;
         this.manager = manager;
-        this.equalizer = new EqualizerFactory();
         if (start) nextSong(null);
     }
 
@@ -42,12 +38,18 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         return manager;
     }
 
-
-    public void nextSong(AudioTrack previoustrack) {
-        AudioTrack nexttrack = queue.poll();
-        if (nexttrack == null)
+    public void nextSong(AudioTrack previousTrack) {
+        AudioTrack nextTrack = queue.poll();
+        if (looped) {
+            nextTrack = loopedTrack;
+        }
+        if (nextTrack == null)
             return;
-        player.playTrack(nexttrack);
+        player.playTrack(nextTrack);
+    }
+
+    public void setLoopedSong(AudioTrack track) {
+        loopedTrack = track;
     }
 
     public boolean addSong(AudioTrack track) {
@@ -64,6 +66,14 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         tracks.set(0, track);
         queue = new LinkedBlockingDeque<>(tracks);
         return true;
+    }
+
+    public void setLooped(boolean active) {
+        looped = active;
+    }
+
+    public boolean isLooped() {
+        return looped;
     }
 
     public int addSongs(AudioTrack... tracks) {
@@ -84,7 +94,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         queue = new LinkedBlockingDeque<>(tracks);
     }
 
-    public String getSongTitlebyPosition(int position) {
+    public String getSongTitleByPosition(int position) {
         List<AudioTrack> tracks = new ArrayList<>(queue);
         return tracks.get(position).getInfo().title;
     }
@@ -115,7 +125,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     public void skip(int amount) {
         if (amount < 1) return;
         amount--;
-        int skipped = 1;
+        int skipped = 1; // Seems to be broken at the moment, need to loop into this later
         if (queue.size() > amount) {
             for (int i = 0; i < amount; i++) {
                 queue.poll();
@@ -123,6 +133,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             }
         } else {
             queue.clear();
+            player.stopTrack();
         }
         nextSong(null);
     }

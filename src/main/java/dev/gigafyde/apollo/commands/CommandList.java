@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.commands.music.Clear;
 import dev.gigafyde.apollo.commands.music.Connect;
 import dev.gigafyde.apollo.commands.music.Disconnect;
 import dev.gigafyde.apollo.commands.music.Grab;
+import dev.gigafyde.apollo.commands.music.Loop;
 import dev.gigafyde.apollo.commands.music.NowPlaying;
 import dev.gigafyde.apollo.commands.music.Pause;
 import dev.gigafyde.apollo.commands.music.Play;
@@ -35,6 +36,7 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Play());
         registry.addCommand(new Queue());
         registry.addCommand(new Pause());
+        registry.addCommand(new Loop());
         registry.addCommand(new Resume());
         registry.addCommand(new Skip());
         registry.addCommand(new Shuffle());
