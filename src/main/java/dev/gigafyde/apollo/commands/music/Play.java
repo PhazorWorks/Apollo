@@ -143,7 +143,7 @@ public class Play extends Command {
         }
     }
 
-    private void sendImage(CommandEvent event, AudioTrack track) {
+    private void generateAndSendImage(CommandEvent event, AudioTrack track) {
         try {
             EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -155,7 +155,7 @@ public class Play extends Command {
                             .post(body)
                             .build()).execute();
             InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
-            event.getChannel().sendFile(inputStream, "thumbnail.png").queue();
+            event.getTrigger().reply(inputStream, "thumbnail.png").mentionRepliedUser(false).queue();
             if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getTrigger().suppressEmbeds(true).queue();
         } catch (Exception ignored) {
             event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
@@ -167,7 +167,7 @@ public class Play extends Command {
             @Override
             public void trackLoaded(AudioTrack track) {
                 if (scheduler.addSong(track) && send) {
-                    sendImage(event, track);
+                    generateAndSendImage(event, track);
                 }
             }
 
