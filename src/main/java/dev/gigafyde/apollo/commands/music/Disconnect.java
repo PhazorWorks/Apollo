@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Disconnect extends Command {
     public Disconnect() {
@@ -16,6 +17,7 @@ public class Disconnect extends Command {
     }
 
     public void execute(CommandEvent event) {
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (!event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().isConnected()) {
             event.getChannel().sendMessage("**Not connected**").queue();
             return;

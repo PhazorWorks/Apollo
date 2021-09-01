@@ -44,30 +44,10 @@ public class Play extends Command {
     }
 
     public void execute(CommandEvent event) {
-        MusicManager musicManager = event.getClient().getMusicManager();
-        TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
-        if (scheduler == null) {
-            if (vc == null) {
-                event.getTrigger().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
-                return;
-            }
-            EnumSet<Permission> voicePermissions = event.getSelfMember().getPermissions(vc);
-            if (voicePermissions.contains(Permission.VOICE_CONNECT)) {
-                if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-                    event.getTrigger().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
-                    return;
-                }
-                scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-            } else {
-                event.getTrigger().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
-                return;
-            }
-        }
-        if (vc == null) {
-            event.getTrigger().reply("**Please join a voice channel first!**").queue();
-            return;
-        }
+        assert vc != null;
+        TrackScheduler scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         if (event.getArgument().isEmpty()) {
             event.getTrigger().reply("Please provide a search query.").mentionRepliedUser(true).queue();
             return;
@@ -77,7 +57,7 @@ public class Play extends Command {
             return;
         }
         if (SongUtils.isValidURL(event.getArgument())) {
-            String[] split = event.getArgument().split("&list=");
+            String[] split = event.getArgument().split("&list="); // Prevent accidentally queueing an entire playlist
             loadHandler(event, scheduler, TextUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
             loadHandler(event, scheduler, event.getArgument(), true, true);

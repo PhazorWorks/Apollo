@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Loop extends Command {
     public Loop() {
@@ -16,10 +17,11 @@ public class Loop extends Command {
     protected void execute(CommandEvent event) {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-        if (scheduler == null | track == null) {
-            event.getTrigger().reply("Nothing is currently playing! Queue some tracks first").queue();
-            return;
-        }
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
+//        if (scheduler == null | track == null) {
+//            event.getTrigger().reply("Nothing is currently playing! Queue some tracks first").queue();
+//            return;
+//        }
         if (!scheduler.isLooped()) {
             event.getTrigger().reply("Loop is now enabled for the current track").mentionRepliedUser(false).queue();
             scheduler.setLooped(true);

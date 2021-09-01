@@ -2,6 +2,7 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Shuffle extends Command {
     public Shuffle() {
@@ -12,6 +13,7 @@ public class Shuffle extends Command {
     }
 
     public void execute(CommandEvent event) {
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         try {
             event.getClient().getMusicManager().getScheduler(event.getGuild()).shuffleQueue();
             event.getTrigger().reply("Shuffled!").mentionRepliedUser(false).queue();

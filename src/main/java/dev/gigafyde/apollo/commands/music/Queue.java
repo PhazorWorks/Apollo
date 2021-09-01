@@ -5,6 +5,7 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.ArrayList;
 import java.util.List;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -17,6 +18,7 @@ public class Queue extends Command {
     }
 
     public void execute(CommandEvent event) {
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TextChannel channel = event.getTextChannel();
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());

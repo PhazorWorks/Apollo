@@ -4,6 +4,7 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.concurrent.TimeUnit;
 import lavalink.client.player.IPlayer;
 
@@ -14,10 +15,11 @@ public class Seek extends Command {
     }
 
     public void execute(CommandEvent event) {
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
         String argument = event.getArgument();
         if (argument.isEmpty()) {
-            event.getTrigger().reply("Please provide a new positon in minutes.").queue();
+            event.getTrigger().reply("Please provide a new position in minutes.").queue();
             return;
         }
         try {
@@ -32,11 +34,11 @@ public class Seek extends Command {
             long newTime = player.getPlayingTrack().getPosition() + amountToSeek;
             player.seekTo(newTime);
             if (event.getArgument().startsWith("-")) {
-                long amountrewound = -amountToSeek;
+                long amountRewound = -amountToSeek;
                 if (amountToSeek < 61000)
-                    event.getTrigger().reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountrewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountrewound)))).queue();
+                    event.getTrigger().reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
                 else
-                    event.getTrigger().reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountrewound), TimeUnit.MILLISECONDS.toSeconds(amountrewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountrewound)))).queue();
+                    event.getTrigger().reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountRewound), TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
             } else {
                 if (amountToSeek < 61000)
                     event.getTrigger().reply(String.format("** %d seconds skipped**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();

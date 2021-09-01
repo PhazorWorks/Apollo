@@ -9,6 +9,7 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
+import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
 
 public class Skip extends Command {
@@ -21,6 +22,11 @@ public class Skip extends Command {
     public void execute(CommandEvent event) {
         Message message = event.getTrigger();
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
+//        if (scheduler == null) {
+//            event.getTrigger().reply("Nothing is currently playing! Queue some tracks first").queue();
+//            return;
+//        }
         if (event.getArgument().isEmpty()) {
             scheduler.skip();
         } else {
