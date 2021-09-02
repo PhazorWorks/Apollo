@@ -20,7 +20,7 @@ public class Seek extends Command {
         IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
         String argument = event.getArgument();
         if (argument.isEmpty()) {
-            event.getTrigger().reply("Please provide a new position in minutes.").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Please provide a new position in minutes.").mentionRepliedUser(true).queue();
             return;
         }
         try {
@@ -29,7 +29,7 @@ public class Seek extends Command {
             long maxSeekLength = playingTrack.getDuration();
             long amountToSeek = seekNumber * 1000L;
             if (amountToSeek > maxSeekLength) {
-                event.getTrigger().reply("**Input is larger then song duration!**").mentionRepliedUser(true).queue();
+                event.getMessage().reply("**Input is larger then song duration!**").mentionRepliedUser(true).queue();
                 return;
             }
             long newTime = player.getPlayingTrack().getPosition() + amountToSeek;
@@ -37,17 +37,17 @@ public class Seek extends Command {
             if (event.getArgument().startsWith("-")) {
                 long amountRewound = -amountToSeek;
                 if (amountToSeek < 61000)
-                    event.getTrigger().reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
+                    event.getMessage().reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
                 else
-                    event.getTrigger().reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountRewound), TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
+                    event.getMessage().reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountRewound), TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound)))).queue();
             } else {
                 if (amountToSeek < 61000)
-                    event.getTrigger().reply(String.format("** %d seconds skipped**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+                    event.getMessage().reply(String.format("** %d seconds skipped**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
                 else
-                    event.getTrigger().reply(String.format("** %d min, %d seconds skipped**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+                    event.getMessage().reply(String.format("** %d min, %d seconds skipped**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
             }
         } catch (NumberFormatException exception) {
-            event.getTrigger().reply("Failed to parse number from input").queue();
+            event.getMessage().reply("Failed to parse number from input").queue();
         }
     }
 }

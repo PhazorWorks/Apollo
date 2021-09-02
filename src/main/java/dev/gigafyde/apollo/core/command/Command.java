@@ -24,7 +24,7 @@ public abstract class Command {
         try {
             if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             if (guildOnly && !event.isFromGuild()) {
-                event.getTrigger().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
                 return;
             }
             execute(event);

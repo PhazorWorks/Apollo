@@ -18,17 +18,17 @@ public class Remove extends Command {
         try {
             int numberToRemove = Integer.parseInt(event.getArgument());
             if (scheduler.getQueue().size() < numberToRemove) {
-                event.getTrigger().reply("").mentionRepliedUser(false).queue();
+                event.getMessage().reply("").mentionRepliedUser(false).queue();
                 return;
             }
             if (numberToRemove <= 0) {
-                event.getTrigger().reply("").mentionRepliedUser(false).queue();
+                event.getMessage().reply("").mentionRepliedUser(false).queue();
                 return;
             }
-            event.getTrigger().reply(Emoji.SUCCESS + " **Removed** `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` **from the queue!**").mentionRepliedUser(false).queue();
+            event.getMessage().reply(Emoji.SUCCESS + " **Removed** `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` **from the queue!**").mentionRepliedUser(false).queue();
             scheduler.removeSong(numberToRemove - 1);
         } catch (NumberFormatException exception) {
-            event.getTrigger().reply("Failed to parse number from input").mentionRepliedUser(false).queue();
+            event.getMessage().reply("Failed to parse number from input").mentionRepliedUser(false).queue();
         }
     }
 }

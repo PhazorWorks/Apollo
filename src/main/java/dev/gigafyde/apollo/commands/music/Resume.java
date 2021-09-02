@@ -21,6 +21,6 @@ public class Resume extends Command {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         scheduler.getPlayer().setPaused(false);
-        event.getTrigger().reply("**Resumed from: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
+        event.getMessage().reply("**Resumed from: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
     }
 }

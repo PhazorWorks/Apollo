@@ -16,9 +16,9 @@ public class Shuffle extends Command {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         try {
             event.getClient().getMusicManager().getScheduler(event.getGuild()).shuffleQueue();
-            event.getTrigger().reply("Shuffled!").mentionRepliedUser(false).queue();
+            event.getMessage().reply("Shuffled!").mentionRepliedUser(false).queue();
         } catch (Exception e) {
-            event.getTrigger().reply("Failed to shuffle! error encountered was: " + e.getMessage()).mentionRepliedUser(true).queue();
+            event.getMessage().reply("Failed to shuffle! error encountered was: " + e.getMessage()).mentionRepliedUser(true).queue();
         }
     }
 }

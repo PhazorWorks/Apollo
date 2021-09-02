@@ -26,14 +26,14 @@ public class Connect extends Command {
         VoiceChannel vc = Objects.requireNonNull(member.getVoiceState()).getChannel();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (vc == Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel()) {
-            event.getTrigger().reply("**Already connected to **`" + vc.getName() + "`").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Already connected to **`" + vc.getName() + "`").mentionRepliedUser(true).queue();
             return;
         }
         try {
             event.getClient().getMusicManager().moveVoiceChannel(vc);
-            event.getTrigger().reply("**Connected to **`" + vc.getName() + "`").mentionRepliedUser(false).queue();
+            event.getMessage().reply("**Connected to **`" + vc.getName() + "`").mentionRepliedUser(false).queue();
         } catch (InsufficientPermissionException ignored) {
-            event.getTrigger().reply("**Failed to connect to the desired voice channel.**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Failed to connect to the desired voice channel.**").mentionRepliedUser(true).queue();
         }
     }
 }

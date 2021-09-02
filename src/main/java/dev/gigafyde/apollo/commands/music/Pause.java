@@ -21,6 +21,6 @@ public class Pause extends Command {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         scheduler.getPlayer().setPaused(true);
-        event.getTrigger().reply("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
+        event.getMessage().reply("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
     }
 }

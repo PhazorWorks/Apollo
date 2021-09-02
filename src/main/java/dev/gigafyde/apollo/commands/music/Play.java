@@ -46,7 +46,7 @@ public class Play extends Command {
         assert vc != null;
         TrackScheduler scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         if (event.getArgument().isEmpty()) {
-            event.getTrigger().reply("**Please provide a search query.**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Please provide a search query.**").mentionRepliedUser(true).queue();
             return;
         }
         if (event.getArgument().contains("spotify")) {
@@ -76,7 +76,7 @@ public class Play extends Command {
             String title = jsonObject.get("name").toString();
             loadHandler(event, scheduler, artist + " " + title, true, true);
         } catch (Exception e) {
-            event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
         }
     }
 
@@ -98,9 +98,9 @@ public class Play extends Command {
                 String title = track.get("name").toString();
                 loadHandler(event, scheduler, artist + " " + title, true, false);
             }
-            event.getTrigger().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
+            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
         } catch (Exception e) {
-            event.getTrigger().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
         }
     }
 
@@ -110,13 +110,13 @@ public class Play extends Command {
         String[] argument = event.getArgument().split("/");
         String route = argument[3];
         EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
-        if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getTrigger().suppressEmbeds(true).queue();
+        if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getMessage().suppressEmbeds(true).queue();
         if (route.contains("track")) {
             handleSpotifyTrack(event, scheduler, argument);
         } else if (route.contains("playlist")) {
             handleSpotifyPlaylist(event, scheduler, argument);
         } else {
-            event.getTrigger().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
         }
     }
 
@@ -132,10 +132,10 @@ public class Play extends Command {
                             .post(body)
                             .build()).execute();
             InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
-            event.getTrigger().reply(inputStream, "thumbnail.png").mentionRepliedUser(false).queue();
-            if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getTrigger().suppressEmbeds(true).queue();
+            event.getMessage().reply(inputStream, "thumbnail.png").mentionRepliedUser(false).queue();
+            if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getMessage().suppressEmbeds(true).queue();
         } catch (Exception ignored) {
-            event.getTrigger().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+            event.getMessage().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
         }
     }
 
@@ -158,21 +158,21 @@ public class Play extends Command {
                     trackLoaded(playlist.getTracks().get(0));
                 } else {
                     int added = scheduler.addSongs(playlist.getTracks());
-                    event.getTrigger().reply(String.format("**Added %s of %s from the playlist!**", added, playlist.getTracks().size())).mentionRepliedUser(false).queue();
+                    event.getMessage().reply(String.format("**Added %s of %s from the playlist!**", added, playlist.getTracks().size())).mentionRepliedUser(false).queue();
                 }
             }
 
             @Override
             public void noMatches() {
                 if (search) {
-                    event.getTrigger().reply("**Failed to find anything with the term: **" + event.getArgument()).mentionRepliedUser(true).queue();
+                    event.getMessage().reply("**Failed to find anything with the term: **" + event.getArgument()).mentionRepliedUser(true).queue();
                 }
 //                loadHandler(scheduler, event, true, user);
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                event.getTrigger().reply("**Failed to load track!**").mentionRepliedUser(false).queue();
+                event.getMessage().reply("**Failed to load track!**").mentionRepliedUser(false).queue();
                 LoggerFactory.getLogger(Play.class).warn("**Couldn't load track:** " + exception);
             }
         });

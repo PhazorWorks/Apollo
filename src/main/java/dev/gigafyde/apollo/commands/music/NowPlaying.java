@@ -18,7 +18,7 @@ public class NowPlaying extends Command {
     public void execute(CommandEvent event) {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
-            event.getTrigger().reply("**Nothing is currently playing.**").mentionRepliedUser(true);
+            event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
             return;
         }
         try {
@@ -32,9 +32,9 @@ public class NowPlaying extends Command {
                             .post(body)
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
-            event.getTrigger().reply(inputStream, "test.png").mentionRepliedUser(false).queue();
+            event.getMessage().reply(inputStream, "test.png").mentionRepliedUser(false).queue();
         } catch (Exception ignored) {
-            event.getTrigger().reply("Something went wrong trying to generate the image.").queue();
+            event.getMessage().reply("Something went wrong trying to generate the image.").queue();
         }
     }
 }

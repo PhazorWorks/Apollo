@@ -19,15 +19,15 @@ public class Loop extends Command {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
 //        if (scheduler == null | track == null) {
-//            event.getTrigger().reply("Nothing is currently playing! Queue some tracks first").queue();
+//            event.getMessage().reply("Nothing is currently playing! Queue some tracks first").queue();
 //            return;
 //        }
         if (!scheduler.isLooped()) {
-            event.getTrigger().reply("Loop is now enabled for the current track").mentionRepliedUser(false).queue();
+            event.getMessage().reply("Loop is now enabled for the current track").mentionRepliedUser(false).queue();
             scheduler.setLooped(true);
             scheduler.setLoopedSong(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
         } else {
-            event.getTrigger().reply("Loop is now disabled").mentionRepliedUser(false).queue();
+            event.getMessage().reply("Loop is now disabled").mentionRepliedUser(false).queue();
             scheduler.setLooped(false);
         }
     }

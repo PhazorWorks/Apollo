@@ -43,9 +43,9 @@ public final class Eval extends Command {
         MessageChannel channel = event.getTextChannel();
         if (event.getArgument().isEmpty()) {
             try {
-                event.getTrigger().addReaction(Emoji.ERROR.toString()).queue();
+                event.getMessage().addReaction(Emoji.ERROR.toString()).queue();
             } catch (Exception e) {
-                event.getTrigger().reply(Emoji.ERROR + " **Please enter something to evaluate!**").queue();
+                event.getMessage().reply(Emoji.ERROR + " **Please enter something to evaluate!**").queue();
             }
             return;
         }
@@ -56,7 +56,7 @@ public final class Eval extends Command {
                 Object result = shell.evaluate(arg);
                 if (result == null) {
                     try {
-                        event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
+                        event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
                     } catch (Exception e) {
                         channel.sendMessage(Emoji.SUCCESS + " **Executed successfully**").queue();
                     }
@@ -68,7 +68,7 @@ public final class Eval extends Command {
                     if (url == null) url = "Failed to generate error report!";
                     channel.sendMessage(Emoji.SUCCESS + " **Executed successfully:** " + url).queue();
                 } else {
-                    event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
+                    event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
                     channel.sendMessage("```\n" + resultString + "```").queue();
                 }
             } catch (Throwable t) {
@@ -84,8 +84,8 @@ public final class Eval extends Command {
         binding.setVariable("channel", event.getChannel());
         binding.setVariable("author", event.getAuthor());
         binding.setVariable("member", event.getMember());
-        binding.setVariable("message", event.getTrigger());
-        binding.setVariable("msg", event.getTrigger());
+        binding.setVariable("message", event.getMessage());
+        binding.setVariable("msg", event.getMessage());
         binding.setVariable("guild", event.getGuild());
         binding.setVariable("server", event.getGuild());
         binding.setVariable("event", event);

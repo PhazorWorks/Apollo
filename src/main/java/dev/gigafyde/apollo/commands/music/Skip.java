@@ -20,11 +20,11 @@ public class Skip extends Command {
     }
 
     public void execute(CommandEvent event) {
-        Message message = event.getTrigger();
+        Message message = event.getMessage();
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
 //        if (scheduler == null) {
-//            event.getTrigger().reply("Nothing is currently playing! Queue some tracks first").queue();
+//            event.getMessage().reply("Nothing is currently playing! Queue some tracks first").queue();
 //            return;
 //        }
         if (event.getArgument().isEmpty()) {
@@ -35,7 +35,7 @@ public class Skip extends Command {
         }
         if (scheduler.isLooped()) {
             scheduler.setLooped(false);
-            event.getTrigger().reply("Loop was turned off due to manual skip").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Loop was turned off due to manual skip").mentionRepliedUser(true).queue();
         }
         message.addReaction(Emoji.SUCCESS.toString()).queue();
     }

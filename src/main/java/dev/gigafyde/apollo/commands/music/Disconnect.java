@@ -19,11 +19,11 @@ public class Disconnect extends Command {
     public void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (!event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().isConnected()) {
-            event.getTrigger().reply("**Not connected**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Not connected**").mentionRepliedUser(true).queue();
             return;
         }
         event.getClient().getMusicManager().disconnect(event.getGuild());
         event.getClient().getLavalink().getLink(event.getGuild()).destroy();
-        event.getTrigger().reply("**Disconnected!**").mentionRepliedUser(false).queue();
+        event.getMessage().reply("**Disconnected!**").mentionRepliedUser(false).queue();
     }
 }

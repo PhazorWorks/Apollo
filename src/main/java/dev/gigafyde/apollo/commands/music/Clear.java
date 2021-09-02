@@ -19,18 +19,18 @@ public class Clear extends Command {
         if (scheduler == null) {
             VoiceChannel vc = event.getMember().getVoiceState().getChannel();
             if (vc == null) {
-                event.getTrigger().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
+                event.getMessage().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
                 return;
             }
             try {
                 scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
             } catch (InsufficientPermissionException ignored) {
-                event.getTrigger().reply("**Cannot join VC**").mentionRepliedUser(true).queue();
+                event.getMessage().reply("**Cannot join VC**").mentionRepliedUser(true).queue();
                 return;
             }
         }
         scheduler.getQueue().clear();
         scheduler.getQueue();
-        event.getTrigger().reply("**Queue cleared**").mentionRepliedUser(false).queue();
+        event.getMessage().reply("**Queue cleared**").mentionRepliedUser(false).queue();
     }
 }

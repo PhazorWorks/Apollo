@@ -23,14 +23,14 @@ public class Volume extends Command {
         LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         if (event.getArgument().isEmpty()) {
             int volume = (int) (player.getFilters().getVolume() * 100); // Get volume and convert from float to int
-            event.getTrigger().reply(Emoji.VOLUME + " **Current volume is: " + volume + "%**").mentionRepliedUser(true).queue();
+            event.getMessage().reply(Emoji.VOLUME + " **Current volume is: " + volume + "%**").mentionRepliedUser(true).queue();
         } else {
             try {
                 float volume = (float) (Integer.parseInt(event.getArgument()) * 0.01); // Get volume as int and convert to float
                 player.getFilters().setVolume(volume).commit();
-                event.getTrigger().reply(Emoji.VOLUME + "  **Volume set to: " + ((int) (volume * 100)) + "%**").mentionRepliedUser(true).queue();
+                event.getMessage().reply(Emoji.VOLUME + "  **Volume set to: " + ((int) (volume * 100)) + "%**").mentionRepliedUser(true).queue();
             } catch (NumberFormatException ignored) {
-                event.getTrigger().reply(Emoji.ERROR + " **Invalid number**").mentionRepliedUser(true).queue();
+                event.getMessage().reply(Emoji.ERROR + " **Invalid number**").mentionRepliedUser(true).queue();
             }
         }
     }

@@ -32,20 +32,20 @@ public class SongUtils {
         MusicManager musicManager = event.getClient().getMusicManager();
         VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
         if (vc == null) {
-            event.getTrigger().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
             return false;
         }
         EnumSet<Permission> voicePermissions = event.getSelfMember().getPermissions(vc);
         if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-            event.getTrigger().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
             return false;
         }
         if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
-            event.getTrigger().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
             return false;
         }
         if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-            event.getTrigger().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
             return false;
         }
         return true;

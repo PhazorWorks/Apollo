@@ -23,12 +23,12 @@ public class Grab extends Command {
             User author = event.getAuthor();
             try {
                 author.openPrivateChannel().complete().sendMessage("Here is a copy of the currently playing track\n" + uri).complete();
-                event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
+                event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
             } catch (Exception e) {
-                event.getTrigger().reply("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri).mentionRepliedUser(true).queue();
+                event.getMessage().reply("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri).mentionRepliedUser(true).queue();
             }
         } else {
-            event.getTrigger().reply("Nothing is currently playing, so there was nothing to grab.").mentionRepliedUser(true).queue();
+            event.getMessage().reply("Nothing is currently playing, so there was nothing to grab.").mentionRepliedUser(true).queue();
         }
     }
 }
