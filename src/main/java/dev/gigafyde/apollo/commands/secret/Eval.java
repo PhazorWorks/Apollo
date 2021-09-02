@@ -25,8 +25,10 @@ public final class Eval extends Command {
     private static final String imports;
 
     static {
-        imports = "import net.dv8tion.jda.core.*" +
-                "\nimport net.dv8tion.jda.core.entities.*\n";
+        imports = """
+                import net.dv8tion.jda.core.*
+                import net.dv8tion.jda.core.entities.*
+                """;
         THREAD_GROUP.setMaxPriority(Thread.MIN_PRIORITY);
     }
 
