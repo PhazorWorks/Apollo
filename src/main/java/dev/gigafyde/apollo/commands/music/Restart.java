@@ -9,7 +9,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.entities.Message;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Restart extends Command {
     public Restart() {
@@ -20,8 +20,8 @@ public class Restart extends Command {
 
     public void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        Message message = event.getTrigger();
-        event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getPlayingTrack().setPosition(0);
-        message.addReaction(Emoji.SUCCESS.toString()).queue();
+        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+        player.seekTo(0L);
+        event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
     }
 }
