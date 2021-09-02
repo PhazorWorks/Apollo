@@ -8,13 +8,12 @@ platform:
 
 steps:
   - name: build-production-image
-    image: adoptopenjdk/openjdk16:x86_64-tumbleweed-jdk-16.0.2_7-slim
+    image: gradle:jdk16
     environment:
       DOCKERHUB:
         from_secret: dockerhub
     commands:
-      - chmod +x gradlew
-      - ./gradlew jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
+      - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
     when:
       branch:
         - main
@@ -22,10 +21,9 @@ steps:
         - push
 
   - name: compile check
-    image: adoptopenjdk/openjdk16:x86_64-tumbleweed-jdk-16.0.2_7-slim
+    image: gradle:jdk16
     commands:
-      - chmod +x gradlew
-      - ./gradlew build
+      - gradle build
     when:
       branch:
         - main
