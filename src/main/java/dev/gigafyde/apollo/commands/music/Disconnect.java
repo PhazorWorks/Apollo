@@ -12,18 +12,18 @@ import dev.gigafyde.apollo.utils.SongUtils;
 public class Disconnect extends Command {
     public Disconnect() {
         this.name = "disconnect";
-        this.triggers = new String[]{"disconnect", "dc", "fuckoff"};
+        this.triggers = new String[]{"disconnect", "dc", "fuckoff", "bye"};
         this.guildOnly = true;
     }
 
     public void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (!event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().isConnected()) {
-            event.getChannel().sendMessage("**Not connected**").queue();
+            event.getTrigger().reply("**Not connected**").mentionRepliedUser(true).queue();
             return;
         }
         event.getClient().getMusicManager().disconnect(event.getGuild());
         event.getClient().getLavalink().getLink(event.getGuild()).destroy();
-        event.getChannel().sendMessage("**Disconnected!**").queue();
+        event.getTrigger().reply("**Disconnected!**").mentionRepliedUser(false).queue();
     }
 }

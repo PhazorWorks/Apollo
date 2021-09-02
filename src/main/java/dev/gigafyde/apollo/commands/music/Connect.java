@@ -8,11 +8,11 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+
+import java.util.Objects;
 
 public class Connect extends Command {
     public Connect() {
@@ -22,19 +22,18 @@ public class Connect extends Command {
     }
 
     public void execute(CommandEvent event) {
-        TextChannel channel = event.getTextChannel();
         Member member = event.getGuild().retrieveMember(event.getAuthor()).complete();
         VoiceChannel vc = Objects.requireNonNull(member.getVoiceState()).getChannel();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (vc == Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel()) {
-            channel.sendMessage("**Already connected to **`" + vc.getName() + "`").queue();
+            event.getTrigger().reply("**Already connected to **`" + vc.getName() + "`").mentionRepliedUser(true).queue();
             return;
         }
         try {
             event.getClient().getMusicManager().moveVoiceChannel(vc);
-            channel.sendMessage("**Connected to **`" + vc.getName() + "`").queue();
+            event.getTrigger().reply("**Connected to **`" + vc.getName() + "`").mentionRepliedUser(false).queue();
         } catch (InsufficientPermissionException ignored) {
-            channel.sendMessage("**Failed to connect to the desired voice channel.**").queue();
+            event.getTrigger().reply("**Failed to connect to the desired voice channel.**").mentionRepliedUser(true).queue();
         }
     }
 }

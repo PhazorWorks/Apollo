@@ -5,8 +5,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.concurrent.TimeUnit;
 import lavalink.client.player.IPlayer;
+
+import java.util.concurrent.TimeUnit;
 
 public class Seek extends Command {
     public Seek() {
@@ -19,7 +20,7 @@ public class Seek extends Command {
         IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
         String argument = event.getArgument();
         if (argument.isEmpty()) {
-            event.getTrigger().reply("Please provide a new position in minutes.").queue();
+            event.getTrigger().reply("Please provide a new position in minutes.").mentionRepliedUser(true).queue();
             return;
         }
         try {
@@ -28,7 +29,7 @@ public class Seek extends Command {
             long maxSeekLength = playingTrack.getDuration();
             long amountToSeek = seekNumber * 1000L;
             if (amountToSeek > maxSeekLength) {
-                event.getTrigger().reply("").queue();
+                event.getTrigger().reply("**Input is larger then song duration!**").mentionRepliedUser(true).queue();
                 return;
             }
             long newTime = player.getPlayingTrack().getPosition() + amountToSeek;

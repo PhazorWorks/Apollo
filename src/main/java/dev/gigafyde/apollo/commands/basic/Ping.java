@@ -9,7 +9,6 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class Ping extends Command {
     public Ping() {

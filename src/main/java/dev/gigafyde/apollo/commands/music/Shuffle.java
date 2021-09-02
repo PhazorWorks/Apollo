@@ -18,7 +18,7 @@ public class Shuffle extends Command {
             event.getClient().getMusicManager().getScheduler(event.getGuild()).shuffleQueue();
             event.getTrigger().reply("Shuffled!").mentionRepliedUser(false).queue();
         } catch (Exception e) {
-            event.getTrigger().reply("Failed to shuffle! error encountered was: " + e.getMessage()).queue();
+            event.getTrigger().reply("Failed to shuffle! error encountered was: " + e.getMessage()).mentionRepliedUser(true).queue();
         }
     }
 }

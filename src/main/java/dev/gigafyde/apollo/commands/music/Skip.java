@@ -35,7 +35,7 @@ public class Skip extends Command {
         }
         if (scheduler.isLooped()) {
             scheduler.setLooped(false);
-            event.getTrigger().reply("Loop was turned off due to manual skip").queue();
+            event.getTrigger().reply("Loop was turned off due to manual skip").mentionRepliedUser(true).queue();
         }
         message.addReaction(Emoji.SUCCESS.toString()).queue();
     }
