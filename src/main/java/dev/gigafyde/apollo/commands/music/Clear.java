@@ -1,6 +1,5 @@
 package dev.gigafyde.apollo.commands.music;
 
-import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
@@ -31,6 +30,7 @@ public class Clear extends Command {
             }
         }
         scheduler.getQueue().clear();
-        event.getTrigger().reply("**Queue cleared**").queue();
+        scheduler.getQueue();
+        event.getTrigger().reply("**Queue cleared**").mentionRepliedUser(false).queue();
     }
 }

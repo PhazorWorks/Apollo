@@ -5,7 +5,6 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class Grab extends Command {
@@ -18,7 +17,6 @@ public class Grab extends Command {
 
     public void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        TextChannel channel = event.getTextChannel();
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler.getPlayer().getPlayingTrack() != null) {
             String uri = scheduler.getPlayer().getPlayingTrack().getInfo().uri;
@@ -27,7 +25,7 @@ public class Grab extends Command {
                 author.openPrivateChannel().complete().sendMessage("Here is a copy of the currently playing track\n" + uri).complete();
                 event.getTrigger().addReaction(Emoji.SUCCESS.toString()).queue();
             } catch (Exception e) {
-                channel.sendMessage(author.getAsMention() + " Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri).queue();
+                event.getTrigger().reply("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri).mentionRepliedUser(true).queue();
             }
         } else {
             event.getTrigger().reply("Nothing is currently playing, so there was nothing to grab.").mentionRepliedUser(true).queue();

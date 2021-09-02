@@ -16,20 +16,17 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import dev.gigafyde.apollo.utils.TextUtils;
-import java.io.InputStream;
-import java.util.EnumSet;
-import java.util.Objects;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.EnumSet;
+import java.util.Objects;
 
 public class Play extends Command {
     OkHttpClient client = new OkHttpClient();
@@ -49,7 +46,7 @@ public class Play extends Command {
         assert vc != null;
         TrackScheduler scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         if (event.getArgument().isEmpty()) {
-            event.getTrigger().reply("Please provide a search query.").mentionRepliedUser(true).queue();
+            event.getTrigger().reply("**Please provide a search query.**").mentionRepliedUser(true).queue();
             return;
         }
         if (event.getArgument().contains("spotify")) {

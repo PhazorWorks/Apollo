@@ -6,10 +6,10 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Queue extends Command {
     public Queue() {
@@ -19,11 +19,10 @@ public class Queue extends Command {
 
     public void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        TextChannel channel = event.getTextChannel();
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
         if (scheduler.getQueue().isEmpty()) {
-            channel.sendMessage("Queue is currently empty").queue();
+            event.getTrigger().reply("Queue is currently empty").mentionRepliedUser(true).queue();
             return;
         }
         List<AudioTrack> queuedTracks = new ArrayList<>(scheduler.getQueue());
@@ -55,6 +54,6 @@ public class Queue extends Command {
             eb.addField(String.format("`[%d]` %s", i + 1, queuedTracks.get(i).getInfo().title), queuedTracks.get(i).getInfo().uri, false);
         }
         eb.setFooter("Page " + page + " of " + maxPages, null);
-        channel.sendMessage(eb.build()).queue();
+        event.getTrigger().reply(eb.build()).mentionRepliedUser(false).queue();
     }
 }

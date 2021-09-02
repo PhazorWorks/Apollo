@@ -4,26 +4,21 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import java.io.InputStream;
-import net.dv8tion.jda.api.entities.TextChannel;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.json.JSONObject;
+
+import java.io.InputStream;
 
 public class NowPlaying extends Command {
     public NowPlaying() {
         this.name = "nowplaying";
-        this.triggers = new String[]{"np"};
+        this.triggers = new String[]{"np", "current"};
     }
 
     public void execute(CommandEvent event) {
-        TextChannel channel = event.getTextChannel();
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
-            channel.sendMessage("Nothing currently playing").queue();
+            event.getTrigger().reply("**Nothing is currently playing.**").mentionRepliedUser(true);
             return;
         }
         try {
