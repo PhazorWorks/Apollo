@@ -30,7 +30,6 @@ public class Clear extends Command {
             }
         }
         scheduler.getQueue().clear();
-        scheduler.getQueue();
         event.getMessage().reply("**Queue cleared**").mentionRepliedUser(false).queue();
     }
 }
