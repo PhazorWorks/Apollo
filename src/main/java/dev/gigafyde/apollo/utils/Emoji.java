@@ -11,6 +11,7 @@ public enum Emoji {
     SUCCESS("\u2705"),
     ERROR("\u274C"),
     INFO("\u2139"),
+    VOLUME("\uD83D\uDD0A"),
     URL("\uD83D\uDD17");
 
     private final String emote;
