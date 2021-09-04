@@ -4,6 +4,7 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.IPlayer;
 
@@ -49,5 +50,10 @@ public class Seek extends Command {
         } catch (NumberFormatException exception) {
             event.getMessage().reply("Failed to parse number from input").queue();
         }
+    }
+
+    @Override
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

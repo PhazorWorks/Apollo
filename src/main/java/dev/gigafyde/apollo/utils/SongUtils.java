@@ -51,6 +51,10 @@ public class SongUtils {
         return true;
     }
 
+    public static String getStrippedSongUrl(String url) {
+        return url.replace("<", "").replace(">", "");
+    }
+
     public static String calculateSongLength(AudioTrack track) {
         if (track.getInfo().isStream) return "Livestream";
         long minutes = TimeUnit.MILLISECONDS.toMinutes(track.getDuration());

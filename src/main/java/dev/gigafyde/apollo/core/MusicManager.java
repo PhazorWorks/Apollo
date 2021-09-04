@@ -15,11 +15,8 @@ import lavalink.client.player.IPlayer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class MusicManager {
-    private static final Logger log = LoggerFactory.getLogger(MusicManager.class);
     private final Client client;
     private final Map<Long, TrackScheduler> schedulers = new ConcurrentHashMap<>();
     private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
@@ -27,10 +24,6 @@ public final class MusicManager {
     public MusicManager(Client client) {
         this.client = client;
         AudioSourceManagers.registerRemoteSources(playerManager);
-    }
-
-    public AudioPlayerManager getPlayerManager() {
-        return playerManager;
     }
 
     public TrackScheduler getScheduler(Guild guild) {

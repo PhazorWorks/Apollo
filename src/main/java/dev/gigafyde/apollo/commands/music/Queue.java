@@ -5,6 +5,7 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 
@@ -55,5 +56,10 @@ public class Queue extends Command {
         }
         eb.setFooter("Page " + page + " of " + maxPages, null);
         event.getMessage().reply(eb.build()).mentionRepliedUser(false).queue();
+    }
+
+    @Override
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

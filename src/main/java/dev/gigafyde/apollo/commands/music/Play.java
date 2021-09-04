@@ -10,26 +10,29 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import dev.gigafyde.apollo.utils.TextUtils;
+import java.io.InputStream;
+import java.util.EnumSet;
+import java.util.Objects;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.util.EnumSet;
-import java.util.Objects;
-
 public class Play extends Command {
-    OkHttpClient client = new OkHttpClient();
+
 
     public Play() {
         this.name = "play";
@@ -55,10 +58,16 @@ public class Play extends Command {
         }
         if (SongUtils.isValidURL(event.getArgument())) {
             String[] split = event.getArgument().split("&list="); // Prevent accidentally queueing an entire playlist
-            loadHandler(event, scheduler, TextUtils.getStrippedSongUrl(split[0]), false, true);
+            loadHandler(event, scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
             loadHandler(event, scheduler, event.getArgument(), true, true);
         }
+    }
+
+    @Override
+    protected void executeSlash(SlashEvent event) {
+//        event.getChannel().sendMessage("test completed" + event.getAuthor().getAsMention()).queue(); //iteration 1
+        event.getSlashCommandEvent().reply("test completed" + event.getAuthor().getAsMention()).queue(); //iteration 2
     }
 
     private void handleSpotifyTrack(CommandEvent event, TrackScheduler scheduler, String[] argument) {
@@ -66,7 +75,7 @@ public class Play extends Command {
         String[] objectId = object.split("\\?si");
         String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
         try {
-            Response response = client.newCall(
+            Response response = Main.httpClient.newCall(
                     new Request.Builder()
                             .url(WebServerEndpoint + "track" + "?id=" + objectId[0])
                             .build()).execute();
@@ -85,7 +94,7 @@ public class Play extends Command {
         String[] objectId = object.split("\\?si");
         String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
         try {
-            Response response = client.newCall(
+            Response response = Main.httpClient.newCall(
                     new Request.Builder()
                             .url(WebServerEndpoint + "playlist" + "?id=" + objectId[0])
                             .build()).execute();
@@ -126,7 +135,7 @@ public class Play extends Command {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", event.getAuthor().getName()).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
-            Response response = client.newCall(
+            Response response = Main.httpClient.newCall(
                     new Request.Builder()
                             .url(System.getenv("IMAGE_API") + "convert")
                             .post(body)

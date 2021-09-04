@@ -6,7 +6,6 @@ package dev.gigafyde.apollo.core.command;
  */
 
 import dev.gigafyde.apollo.core.Client;
-import dev.gigafyde.apollo.utils.TextUtils;
 import java.util.List;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
@@ -39,7 +38,9 @@ public class CommandEvent {
         return trigger;
     }
 
-    public Message getMessage() { return trigger; }
+    public Message getMessage() {
+        return trigger;
+    }
 
     public User getAuthor() {
         return trigger.getAuthor();
@@ -64,10 +65,6 @@ public class CommandEvent {
     public Member getSelfMember() {
         Guild guild = trigger.getGuild();
         return guild.getSelfMember();
-    }
-
-    public String getAuthorTag() {
-        return TextUtils.getTag(trigger.getAuthor());
     }
 
     public String getArgument() {

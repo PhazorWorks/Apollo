@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.core.command.CommandHandler;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -28,6 +29,9 @@ public class Client extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         handler.handle(event);
     }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event) { handler.handleSlashCommand(event); }
 
     public boolean isOwner(User user) {
         return Main.OWNER_ID.equals(user.getId());

@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Pause extends Command {
@@ -22,5 +23,10 @@ public class Pause extends Command {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         scheduler.getPlayer().setPaused(true);
         event.getMessage().reply("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
+    }
+
+    @Override
+    protected void executeSlash(SlashEvent event) {
+
     }
 }
