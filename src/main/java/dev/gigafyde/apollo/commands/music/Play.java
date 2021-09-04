@@ -64,10 +64,17 @@ public class Play extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
-//        event.getChannel().sendMessage("test completed" + event.getAuthor().getAsMention()).queue(); //iteration 1
-        event.getSlashCommandEvent().reply("test completed" + event.getAuthor().getAsMention()).queue(); //iteration 2
+        VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getAuthor()).getVoiceState()).getChannel();
+        assert vc != null;
+        TrackScheduler scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+        String args = event.getSlashCommandEvent().getOptionsByName("args").toString();
+//        if (SongUtils.isValidURL(args)) {
+//            String[] split = args.split("&list="); // Prevent accidentally queueing an entire playlist
+//            loadHandler(event, scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
+//        } else {
+            loadHandler(event, scheduler, args, true, true);
+//        }
     }
 
     private void handleSpotifyTrack(CommandEvent event, TrackScheduler scheduler, String[] argument) {
@@ -182,6 +189,46 @@ public class Play extends Command {
             @Override
             public void loadFailed(FriendlyException exception) {
                 event.getMessage().reply("**Failed to load track!**").mentionRepliedUser(false).queue();
+                LoggerFactory.getLogger(Play.class).warn("**Couldn't load track:** " + exception);
+            }
+        });
+    }
+
+    private void loadHandler(SlashEvent event, TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
+        scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                if (scheduler.addSong(track) && send) {
+                    event.getSlashCommandEvent().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+//                    generateAndSendImage(event, track);
+                }
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                if (search) {
+                    if (playlist.getTracks().isEmpty()) {
+                        noMatches();
+                        return;
+                    }
+                    trackLoaded(playlist.getTracks().get(0));
+                } else {
+                    int added = scheduler.addSongs(playlist.getTracks());
+                    event.getChannel().sendMessage(String.format("**Added %s of %s from the playlist!**", added, playlist.getTracks().size())).mentionRepliedUser(false).queue();
+                }
+            }
+
+            @Override
+            public void noMatches() {
+                if (search) {
+                    event.getChannel().sendMessage("**Failed to find anything with the term: **").mentionRepliedUser(true).queue();
+                }
+//                loadHandler(scheduler, event, true, user);
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                event.getChannel().sendMessage("**Failed to load track!**").mentionRepliedUser(false).queue();
                 LoggerFactory.getLogger(Play.class).warn("**Couldn't load track:** " + exception);
             }
         });
