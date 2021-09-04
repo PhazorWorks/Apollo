@@ -52,7 +52,6 @@ public class Seek extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

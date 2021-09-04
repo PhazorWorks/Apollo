@@ -41,7 +41,6 @@ public class Skip extends Command {
         message.addReaction(Emoji.SUCCESS.toString()).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

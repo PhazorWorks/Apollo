@@ -73,7 +73,7 @@ public class Play extends Command {
 //            String[] split = args.split("&list="); // Prevent accidentally queueing an entire playlist
 //            loadHandler(event, scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
 //        } else {
-            loadHandler(event, scheduler, args, true, true);
+        loadHandler(event, scheduler, args, true, true);
 //        }
     }
 

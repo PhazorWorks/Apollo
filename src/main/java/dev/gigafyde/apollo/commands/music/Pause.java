@@ -25,7 +25,6 @@ public class Pause extends Command {
         event.getMessage().reply("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

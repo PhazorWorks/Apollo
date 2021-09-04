@@ -33,7 +33,6 @@ public class Remove extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

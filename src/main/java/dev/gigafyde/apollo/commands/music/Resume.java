@@ -25,7 +25,6 @@ public class Resume extends Command {
         event.getMessage().reply("**Resumed from: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack()) + "`**").mentionRepliedUser(false).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

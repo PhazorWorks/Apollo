@@ -33,7 +33,6 @@ public class Loop extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

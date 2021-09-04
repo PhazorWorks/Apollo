@@ -26,7 +26,6 @@ public class Restart extends Command {
         event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

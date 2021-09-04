@@ -38,7 +38,6 @@ public class Connect extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

@@ -34,7 +34,6 @@ public class Clear extends Command {
         event.getMessage().reply("**Queue cleared**").mentionRepliedUser(false).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

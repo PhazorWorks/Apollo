@@ -36,7 +36,6 @@ public class Volume extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

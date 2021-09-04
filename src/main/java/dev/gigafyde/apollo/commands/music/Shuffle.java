@@ -23,7 +23,6 @@ public class Shuffle extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

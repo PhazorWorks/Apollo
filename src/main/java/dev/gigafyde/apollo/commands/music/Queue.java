@@ -58,7 +58,6 @@ public class Queue extends Command {
         event.getMessage().reply(eb.build()).mentionRepliedUser(false).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

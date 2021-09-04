@@ -28,7 +28,6 @@ public class Disconnect extends Command {
         event.getMessage().reply("**Disconnected!**").mentionRepliedUser(false).queue();
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }

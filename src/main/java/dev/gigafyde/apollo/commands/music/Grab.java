@@ -33,7 +33,6 @@ public class Grab extends Command {
         }
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }
