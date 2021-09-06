@@ -72,7 +72,12 @@ public class CommandHandler {
         if (command != null) {
             POOL.execute(() -> {
                 SlashEvent event = new SlashEvent(client, slashCommandEvent);
-                command.executeSlash(event);
+                try {
+                    command.executeSlash(event);
+                } catch (Throwable t) {
+                    log.error("SLASH COMMAND FAILED", t);
+                }
+
             });
         }
     }
