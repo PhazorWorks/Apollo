@@ -6,9 +6,8 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.IPlayer;
-
 import java.util.concurrent.TimeUnit;
+import lavalink.client.player.IPlayer;
 
 public class Seek extends Command {
     public Seek() {

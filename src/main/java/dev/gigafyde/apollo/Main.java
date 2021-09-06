@@ -4,18 +4,13 @@ import dev.gigafyde.apollo.commands.CommandList;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.LavalinkManager;
 import io.sentry.Sentry;
-import java.util.Objects;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import okhttp3.OkHttpClient;
 
-public class Main extends ListenerAdapter {
+public class Main {
     // Load configuration values from system environment variables
     public static String BOT_ID = System.getenv("BOT_ID");
     public static String BOT_PREFIX = System.getenv("BOT_PREFIX");
@@ -29,7 +24,7 @@ public class Main extends ListenerAdapter {
     public static LavalinkManager LAVALINK;
     public static OkHttpClient httpClient = new OkHttpClient();
 
-    public static void main(String[] args)throws LoginException {
+    public static void main(String[] args) throws LoginException {
         Sentry.init(System.getenv("SENTRY_DSN"));
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
@@ -39,7 +34,7 @@ public class Main extends ListenerAdapter {
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
                 .setShardsTotal(SHARDS_TOTAL)
                 .setShards(SHARDS_TOTAL - 1)
-                .addEventListeners(LAVALINK.getLavalink(), client, new Main())
+                .addEventListeners(LAVALINK.getLavalink(), client)
                 .build();
     }
 }
