@@ -35,4 +35,13 @@ public class SlashEvent {
         return event.getUser();
     }
 
+// TODO add these methods after testing
+//    public ReplyAction reply(Message message) {
+//        return event.reply(message);
+//    }
+//    public ReplyAction reply(String message) {
+//        return event.reply(message);
+//    }
+//    Not yet tested code, seems like it should work though.
+
 }
