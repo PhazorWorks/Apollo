@@ -8,15 +8,14 @@ package dev.gigafyde.apollo.utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 public class SongUtils {
     public static boolean isValidURL(String url) {
@@ -49,6 +48,10 @@ public class SongUtils {
             return false;
         }
         return true;
+    }
+
+    public static String getStrippedSongUrl(String url) {
+        return url.replace("<", "").replace(">", "");
     }
 
     public static String calculateSongLength(AudioTrack track) {

@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Loop extends Command {
@@ -30,5 +31,9 @@ public class Loop extends Command {
             event.getMessage().reply("Loop is now disabled").mentionRepliedUser(false).queue();
             scheduler.setLooped(false);
         }
+    }
+
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

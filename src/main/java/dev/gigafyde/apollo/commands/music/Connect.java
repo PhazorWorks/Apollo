@@ -7,12 +7,12 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-
-import java.util.Objects;
 
 public class Connect extends Command {
     public Connect() {
@@ -35,5 +35,9 @@ public class Connect extends Command {
         } catch (InsufficientPermissionException ignored) {
             event.getMessage().reply("**Failed to connect to the desired voice channel.**").mentionRepliedUser(true).queue();
         }
+    }
+
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

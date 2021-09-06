@@ -4,10 +4,14 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import okhttp3.*;
-import org.json.JSONObject;
-
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import java.io.InputStream;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 
 public class NowPlaying extends Command {
     public NowPlaying() {
@@ -36,5 +40,9 @@ public class NowPlaying extends Command {
         } catch (Exception ignored) {
             event.getMessage().reply("Something went wrong trying to generate the image.").queue();
         }
+    }
+
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

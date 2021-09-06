@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.commands.secret;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.Haste;
 import groovy.lang.Binding;
@@ -39,6 +40,11 @@ public final class Eval extends Command {
         this.hidden = true;
         this.ownerOnly = true;
         this.guildOnly = false;
+    }
+
+    @Override
+    protected void executeSlash(SlashEvent event) {
+
     }
 
     protected void execute(CommandEvent event) {

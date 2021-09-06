@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.LavalinkPlayer;
@@ -33,5 +34,9 @@ public class Volume extends Command {
                 event.getMessage().reply(Emoji.ERROR + " **Invalid number**").mentionRepliedUser(true).queue();
             }
         }
+    }
+
+    protected void executeSlash(SlashEvent event) {
+
     }
 }

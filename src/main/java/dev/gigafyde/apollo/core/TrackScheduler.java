@@ -17,11 +17,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.entities.Guild;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
-    private static final Logger log = LoggerFactory.getLogger(TrackScheduler.class);
     private final IPlayer player;
     private final AudioPlayerManager manager;
     private boolean looped;

@@ -8,6 +8,7 @@ import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import okhttp3.OkHttpClient;
 
 public class Main {
     // Load configuration values from system environment variables
@@ -17,10 +18,11 @@ public class Main {
     public static String BOT_TOKEN = System.getenv("BOT_TOKEN");
     public static String LAVALINK_URL = System.getenv("LAVALINK_URL");
     public static String LAVALINK_PASS = System.getenv("LAVALINK_PASS");
+    public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
 
     public static ShardManager SHARD_MANAGER;
     public static LavalinkManager LAVALINK;
-    public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
+    public static OkHttpClient httpClient = new OkHttpClient();
 
     public static void main(String[] args) throws LoginException {
         Sentry.init(System.getenv("SENTRY_DSN"));

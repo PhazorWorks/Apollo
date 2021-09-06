@@ -20,6 +20,8 @@ public abstract class Command {
 
     protected abstract void execute(CommandEvent event);
 
+    protected abstract void executeSlash(SlashEvent event);
+
     public final void run(CommandEvent event) {
         try {
             if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;

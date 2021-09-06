@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class CommandHandler {
     }
 
     public void handle(MessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) return;
+        if (event.getAuthor().isBot()) return; // Ignore all other bot accounts
         String content = event.getMessage().getContentRaw();
         if (content.startsWith(client.getPrefix())) {
             handleCommand(content.substring(client.getPrefix().length()).trim(), event.getMessage());
@@ -62,6 +63,16 @@ public class CommandHandler {
                 } catch (Throwable t) {
                     log.error("COMMAND FAILED", t);
                 }
+            });
+        }
+    }
+
+    public void handleSlashCommand(SlashCommandEvent slashCommandEvent) {
+        Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
+        if (command != null) {
+            POOL.execute(() -> {
+                SlashEvent event = new SlashEvent(client, slashCommandEvent);
+                command.executeSlash(event);
             });
         }
     }

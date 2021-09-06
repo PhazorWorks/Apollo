@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Disconnect extends Command {
@@ -25,5 +26,9 @@ public class Disconnect extends Command {
         event.getClient().getMusicManager().disconnect(event.getGuild());
         event.getClient().getLavalink().getLink(event.getGuild()).destroy();
         event.getMessage().reply("**Disconnected!**").mentionRepliedUser(false).queue();
+    }
+
+    protected void executeSlash(SlashEvent event) {
+
     }
 }
