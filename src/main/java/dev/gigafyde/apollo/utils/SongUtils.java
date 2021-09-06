@@ -6,8 +6,10 @@ package dev.gigafyde.apollo.utils;
  */
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -15,7 +17,13 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 
 public class SongUtils {
     public static boolean isValidURL(String url) {
@@ -68,5 +76,24 @@ public class SongUtils {
         long psec = TimeUnit.MILLISECONDS.toSeconds(pms) % 60;
         String duration = calculateSongLength(track);
         return String.format("%d:%02d/%s", pmin, psec, duration);
+    }
+
+    public static void generateAndSendImage(CommandEvent event, AudioTrack track) {
+        try {
+            EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", event.getAuthor().getName()).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
+            RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
+            Response response = Main.httpClient.newCall(
+                    new Request.Builder()
+                            .url(System.getenv("IMAGE_API") + "convert")
+                            .post(body)
+                            .build()).execute();
+            InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
+            event.getMessage().reply(inputStream, "thumbnail.png").mentionRepliedUser(false).queue();
+            if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getMessage().suppressEmbeds(true).queue();
+        } catch (Exception ignored) {
+            event.getMessage().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+        }
     }
 }

@@ -2,9 +2,11 @@ package dev.gigafyde.apollo.core.command;
 
 import dev.gigafyde.apollo.core.Client;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class SlashEvent {
     private final Client client;
@@ -36,12 +38,12 @@ public class SlashEvent {
     }
 
 // TODO add these methods after testing
-//    public ReplyAction reply(Message message) {
-//        return event.reply(message);
-//    }
-//    public ReplyAction reply(String message) {
-//        return event.reply(message);
-//    }
+    public ReplyAction reply(Message message) {
+        return event.reply(message);
+    }
+    public ReplyAction reply(String message) {
+        return event.reply(message);
+    }
 //    Not yet tested code, seems like it should work though.
 
 }
