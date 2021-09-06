@@ -41,11 +41,5 @@ public class Main extends ListenerAdapter {
                 .setShards(SHARDS_TOTAL - 1)
                 .addEventListeners(LAVALINK.getLavalink(), client, new Main())
                 .build();
-
-    }
-    @Override
-    public void onReady(ReadyEvent event) {
-        event.getJDA().getGuildById(381926472564211723L).upsertCommand(new CommandData("play", "plays a track").addOption(OptionType.STRING, "args", "your search query")).queue();
-
     }
 }
