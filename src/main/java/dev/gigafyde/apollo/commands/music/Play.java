@@ -6,12 +6,14 @@ package dev.gigafyde.apollo.commands.music;
  */
 
 
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
@@ -24,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
-public class Play extends Command implements SongCallBackListener {
+public class Play extends Command implements SongCallBack {
 
     public Play() {
         this.name = "play";
@@ -82,8 +84,7 @@ public class Play extends Command implements SongCallBackListener {
     }
 
     private void handleCallback() {
-        SongHandler songHandler = new SongHandler();
-        songHandler.addListener(this);
+        SongCallBackListener.addListener(this);
     }
 
     public void trackHasLoaded(AudioTrack track) {
@@ -109,6 +110,22 @@ public class Play extends Command implements SongCallBackListener {
             } else {
                 message.reply("Queued " + track.getInfo().title).mentionRepliedUser(true).queue();
             }
+        }
+    }
+
+    public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
+        if (hook != null) {
+            hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+        } else {
+            message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+        }
+    }
+
+    public void noMatches() {
+        if (hook != null) {
+            hook.editOriginal("No matches!").queue();
+        } else {
+            message.reply("No matches!").mentionRepliedUser(true).queue();
         }
     }
 
