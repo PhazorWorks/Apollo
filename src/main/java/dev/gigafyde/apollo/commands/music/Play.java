@@ -92,7 +92,7 @@ public class Play extends Command implements SongCallBack {
             if (Main.USE_IMAGE_GEN) {
                 try {
                     hook.editOriginal("Success!").queue();
-                    hook.retrieveOriginal().complete().reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                    hook.editOriginal("").addFile(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
                 } catch (Exception e) {
                     log.error(e.getMessage());
                     hook.editOriginal("Queued " + track.getInfo().title).queue();

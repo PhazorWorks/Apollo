@@ -28,9 +28,7 @@ public class SongHandler {
                 if (search) {
                     if (playlist.getTracks().isEmpty()) {
                         noMatches();
-                        return;
                     }
-                    trackLoaded(playlist.getTracks().get(0));
                 } else {
                     int added = scheduler.addSongs(playlist.getTracks());
                     int amount = playlist.getTracks().size();
