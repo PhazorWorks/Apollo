@@ -75,9 +75,8 @@ public class SongUtils {
         return String.format("%d:%02d/%s", pmin, psec, duration);
     }
 
-    public static void generateAndSendImage(AudioTrack track, String author) {
+    public static InputStream generateAndSendImage(AudioTrack track, String author) {
         try {
-//            EnumSet<Permission> channelPermissions = event.getSelfMember().getPermissions((GuildChannel) event.getChannel());
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", author).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
@@ -86,11 +85,9 @@ public class SongUtils {
                             .url(System.getenv("IMAGE_API") + "convert")
                             .post(body)
                             .build()).execute();
-            InputStream inputStream = Objects.requireNonNull(response.body()).byteStream();
-//            event.getMessage().reply(inputStream, "thumbnail.png").mentionRepliedUser(false).queue();
-//            if (channelPermissions.contains(Permission.MESSAGE_MANAGE)) event.getMessage().suppressEmbeds(true).queue();
+            return Objects.requireNonNull(response.body()).byteStream();
         } catch (Exception ignored) {
-//            event.getMessage().reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
         }
+        return null;
     }
 }
