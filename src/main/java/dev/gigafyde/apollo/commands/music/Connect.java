@@ -5,6 +5,7 @@ package dev.gigafyde.apollo.commands.music;
   https://github.com/GigaFyde
  */
 
+import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;

@@ -1,9 +1,15 @@
 package dev.gigafyde.apollo.commands;
 
-import dev.gigafyde.apollo.core.Client;
+/*
+ Created by GigaFyde
+ https://github.com/GigaFyde
+ */
+
+
+import net.dv8tion.jda.api.JDA;
 
 public class SlashCommandList {
-    public SlashCommandList(Client client) {
-
+    public SlashCommandList(JDA jda) {
+        //TODO register all slash commands here
     }
 }
