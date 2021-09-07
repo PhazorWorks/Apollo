@@ -27,6 +27,7 @@ public class Main {
     public static String LAVALINK_URL = System.getenv("LAVALINK_URL");
     public static String LAVALINK_PASS = System.getenv("LAVALINK_PASS");
     public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
+    public static Boolean USE_IMAGE_GEN = Boolean.valueOf(System.getenv("USE_IMAGE_GEN"));
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
 
