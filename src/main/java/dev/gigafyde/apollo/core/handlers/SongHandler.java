@@ -1,20 +1,41 @@
 package dev.gigafyde.apollo.core.handlers;
 
+/*
+ Created by GigaFyde
+ https://github.com/GigaFyde
+ */
+
+
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
+import java.util.ArrayList;
+import java.util.List;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import org.slf4j.LoggerFactory;
 
-public class SongHandler {
+public class SongHandler{
+    private static List<SongCallBackListener> listeners = new ArrayList<>();
 
-    public static void loadHandler(TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
+    public void addListener(SongCallBackListener listener) {
+        listeners.add(listener);
+    }
+
+    public static void notifyTrackLoaded(AudioTrack track) {
+        for (SongCallBackListener listener : listeners) {
+            listener.trackHasLoaded(track);
+        }
+    }
+
+    public static void loadHandler(TrackScheduler scheduler, MessageChannel channel, String searchQuery, boolean search, boolean send) {
         scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 if (scheduler.addSong(track) && send) {
-//                            event.getChannel().sendMessage(searchQuery).queue();
+                    notifyTrackLoaded(track);
+                    //                            event.getChannel().sendMessage(searchQuery).queue();
 //                            event.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
 //                    generateAndSendImage(event, track);
                 }
@@ -49,6 +70,7 @@ public class SongHandler {
             }
         });
     }
+
 }
 //    private static void loadHandler(CommandEvent event, TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
 //        scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {

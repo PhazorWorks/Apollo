@@ -1,20 +1,28 @@
 package dev.gigafyde.apollo.core.handlers;
 
+/*
+ Created by GigaFyde
+ https://github.com/GigaFyde
+ */
+
+
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import java.util.Objects;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SpotifyHandler {
-    private static final String WebServerEndpoint = System.getenv("SPOTIFY_WEB_SERVER");
     private static TrackScheduler scheduler;
+    private static MessageChannel channel;
 
-    public static void handleSpotify(TrackScheduler trackScheduler, String url) {
+    public static void handleSpotify(TrackScheduler trackScheduler, MessageChannel messageChannel, String url) {
+        channel = messageChannel;
         scheduler = trackScheduler;
-        if (WebServerEndpoint.isEmpty()) return;
+        if (Main.SPOTIFY_WEB_SERVER.isEmpty()) return;
         String[] objectId = url.split("\\?si");
         if (url.contains("track")) {
             handleSpotifyTrack(objectId[0]);
@@ -29,13 +37,13 @@ public class SpotifyHandler {
         try {
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
-                            .url(WebServerEndpoint + "track" + "?id=" + trackId)
+                            .url(Main.SPOTIFY_WEB_SERVER + "track" + "?id=" + trackId)
                             .build()).execute();
             JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject jsonObject = jsonResponse.getJSONObject("track");
             String artist = jsonObject.get("artist").toString();
             String title = jsonObject.get("name").toString();
-            SongHandler.loadHandler(scheduler, artist + " " + title, true, true);
+            SongHandler.loadHandler(scheduler, channel, artist + " " + title, true, true);
         } catch (Exception e) {
 //            event.getMessage().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
         }
@@ -45,7 +53,7 @@ public class SpotifyHandler {
         try {
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
-                            .url(WebServerEndpoint + "playlist" + "?id=" + playlistId)
+                            .url(Main.SPOTIFY_WEB_SERVER + "playlist" + "?id=" + playlistId)
                             .build()).execute();
             JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject jsonObject = jsonResponse.getJSONObject("playlist");
@@ -54,7 +62,7 @@ public class SpotifyHandler {
                 JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
                 String artist = track.get("artist").toString();
                 String title = track.get("name").toString();
-                SongHandler.loadHandler(scheduler, artist + " " + title, true, false);
+                SongHandler.loadHandler(scheduler, channel, artist + " " + title, true, false);
             }
 //            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
         } catch (Exception e) {

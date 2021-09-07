@@ -1,5 +1,11 @@
 package dev.gigafyde.apollo;
 
+/*
+ Created by GigaFyde
+ https://github.com/GigaFyde
+ */
+
+
 import dev.gigafyde.apollo.commands.CommandList;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.LavalinkManager;
@@ -9,6 +15,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import okhttp3.OkHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
     // Load configuration values from system environment variables
@@ -18,23 +26,28 @@ public class Main {
     public static String BOT_TOKEN = System.getenv("BOT_TOKEN");
     public static String LAVALINK_URL = System.getenv("LAVALINK_URL");
     public static String LAVALINK_PASS = System.getenv("LAVALINK_PASS");
+    public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
+    private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
 
     public static ShardManager SHARD_MANAGER;
     public static LavalinkManager LAVALINK;
     public static OkHttpClient httpClient = new OkHttpClient();
+    private static final Logger log = LoggerFactory.getLogger("Main");
 
     public static void main(String[] args) throws LoginException {
-        Sentry.init(System.getenv("SENTRY_DSN"));
+        if (SPOTIFY_WEB_SERVER.isEmpty()) log.warn("SPOTIFY_WEB_SERVER was not defined, Spotify support will not be available!");
+        if (!SENTRY_DSN.isEmpty()) Sentry.init(SENTRY_DSN);
+
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
         new CommandList(client);
         SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(BOT_TOKEN)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
+                .addEventListeners(client, LAVALINK.getLavalink())
                 .setShardsTotal(SHARDS_TOTAL)
                 .setShards(SHARDS_TOTAL - 1)
-                .addEventListeners(LAVALINK.getLavalink(), client)
                 .build();
     }
 }
