@@ -13,31 +13,30 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import org.slf4j.LoggerFactory;
 
 public class SongHandler{
     private static List<SongCallBackListener> listeners = new ArrayList<>();
-
     public void addListener(SongCallBackListener listener) {
         listeners.add(listener);
     }
-
     public static void notifyTrackLoaded(AudioTrack track) {
         for (SongCallBackListener listener : listeners) {
             listener.trackHasLoaded(track);
         }
     }
+    public static void notifySpotifyUnsupported() {
+        for (SongCallBackListener listener : listeners) {
+            listener.spotifyUnsupported();
+        }
+    }
 
-    public static void loadHandler(TrackScheduler scheduler, MessageChannel channel, String searchQuery, boolean search, boolean send) {
+    public static void loadHandler(TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
         scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 if (scheduler.addSong(track) && send) {
                     notifyTrackLoaded(track);
-                    //                            event.getChannel().sendMessage(searchQuery).queue();
-//                            event.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
-//                    generateAndSendImage(event, track);
                 }
             }
 

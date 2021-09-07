@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.commands.music;
 
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
@@ -15,7 +16,8 @@ import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.Objects;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
@@ -34,13 +36,15 @@ public class Play extends Command implements SongCallBackListener {
     }
 
     private TrackScheduler scheduler;
-    private MessageChannel channel;
-    InteractionHook hook;
+    private User author;
+    private Message message;
+    private InteractionHook hook;
 
     private static final Logger log = LoggerFactory.getLogger("Play");
 
     protected void execute(CommandEvent event) {
-        channel = event.getChannel();
+        author = event.getAuthor();
+        message = event.getMessage();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
         assert vc != null;
@@ -53,38 +57,78 @@ public class Play extends Command implements SongCallBackListener {
     }
 
     protected void executeSlash(SlashEvent event) {
-        channel = event.getChannel();
+        author = event.getAuthor();
         event.getSlashCommandEvent().deferReply(false).queue();
         hook = event.getSlashCommandEvent().getHook();
         VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
         assert vc != null;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-        String args = event.getSlashCommandEvent().getOptionsByName("args").toString();
+        String args = event.getSlashCommandEvent().getOption("args").getAsString();
         processArgument(args);
-    }
-
-    private void handleCallback(){
-        SongHandler songHandler = new SongHandler();
-        songHandler.addListener(this);
     }
 
     private void processArgument(String arguments) {
         handleCallback();
         if (arguments.contains("spotify")) {
-            handleSpotify(scheduler, channel, arguments);
+            handleSpotify(scheduler, arguments);
+            return;
         }
         if (SongUtils.isValidURL(arguments)) {
             String[] split = arguments.split("&list="); // Prevent accidentally queueing an entire playlist
-            SongHandler.loadHandler(scheduler, channel, SongUtils.getStrippedSongUrl(split[0]), false, true);
+            SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
-            SongHandler.loadHandler(scheduler, channel, arguments, true, true);
-
+            SongHandler.loadHandler(scheduler, arguments, true, true);
         }
     }
 
-    @Override
+    private void handleCallback() {
+        SongHandler songHandler = new SongHandler();
+        songHandler.addListener(this);
+    }
+
     public void trackHasLoaded(AudioTrack track) {
-        channel.sendMessage("Queued " + track.getInfo().title).queue();
-        log.warn("Callback called!");
+        if (hook != null) {
+            if (Main.USE_IMAGE_GEN) {
+                try {
+                    hook.editOriginal("").addFile(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    hook.editOriginal("Queued " + track.getInfo().title).queue();
+                }
+            } else {
+                hook.editOriginal("Queued " + track.getInfo().title).queue();
+            }
+        } else {
+            if (Main.USE_IMAGE_GEN) {
+                try {
+                    message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(true).queue();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    message.reply("Queued " + track.getInfo().title).queue();
+                }
+            } else {
+                message.reply("Queued " + track.getInfo().title).mentionRepliedUser(true).queue();
+            }
+        }
+    }
+
+    public void trackLoadingFailed(Exception e) {
+
+    }
+
+    public void spotifyUnsupported() {
+        if (hook != null) {
+            hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
+        } else {
+            message.reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
+        }
+    }
+
+    public void spotifyFailed(Exception e) {
+        if (hook != null) {
+            hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
+        } else {
+            message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).mentionRepliedUser(true).queue();
+        }
     }
 }

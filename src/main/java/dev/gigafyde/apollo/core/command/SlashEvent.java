@@ -59,6 +59,8 @@ public class SlashEvent {
         return event.getUser();
     }
 
+    public User getAuthor() { return event.getUser();}
+
     public Member getMember() {
         return event.getMember();
     }

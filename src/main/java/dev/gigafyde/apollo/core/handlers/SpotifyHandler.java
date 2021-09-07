@@ -6,31 +6,45 @@ package dev.gigafyde.apollo.core.handlers;
  */
 
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SpotifyHandler {
+    private static final Logger log = LoggerFactory.getLogger("SpotifyHandler");
     private static TrackScheduler scheduler;
-    private static MessageChannel channel;
+    private static List<SongCallBackListener> listeners = new ArrayList<>();
+    public void addListener(SongCallBackListener listener) {
+        listeners.add(listener);
+    }
 
-    public static void handleSpotify(TrackScheduler trackScheduler, MessageChannel messageChannel, String url) {
-        channel = messageChannel;
+    public static void notifySpotifyAbort(Exception e) {
+        for (SongCallBackListener listener : listeners) {
+            listener.spotifyFailed(e);
+        }
+    }
+
+    public static void handleSpotify(TrackScheduler trackScheduler, String input) {
+        String[] url = input.split("/");
+        String[] object = url[4].split("\\?si");
         scheduler = trackScheduler;
         if (Main.SPOTIFY_WEB_SERVER.isEmpty()) return;
-        String[] objectId = url.split("\\?si");
-        if (url.contains("track")) {
-            handleSpotifyTrack(objectId[0]);
-        } else if (url.contains("playlist")) {
-            handleSpotifyPlaylist(objectId[0]);
+        if (input.contains("track")) {
+            handleSpotifyTrack(object[0]);
+        } else if (input.contains("playlist")) {
+            handleSpotifyPlaylist(object[0]);
+        } else {
+            SongHandler.notifySpotifyUnsupported();
         }
-        //     else       event.getMessage().reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
-
     }
 
     public static void handleSpotifyTrack(String trackId) {
@@ -43,8 +57,12 @@ public class SpotifyHandler {
             JSONObject jsonObject = jsonResponse.getJSONObject("track");
             String artist = jsonObject.get("artist").toString();
             String title = jsonObject.get("name").toString();
-            SongHandler.loadHandler(scheduler, channel, artist + " " + title, true, true);
+            SongHandler.loadHandler(scheduler, artist + " " + title, true, true);
         } catch (Exception e) {
+            notifySpotifyAbort(e);
+            log.error("Spotify Lookup failed! Aborting");
+
+
 //            event.getMessage().reply("Spotify Lookup failed! Aborting").mentionRepliedUser(true).queue();
         }
     }
@@ -62,7 +80,7 @@ public class SpotifyHandler {
                 JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
                 String artist = track.get("artist").toString();
                 String title = track.get("name").toString();
-                SongHandler.loadHandler(scheduler, channel, artist + " " + title, true, false);
+                SongHandler.loadHandler(scheduler, artist + " " + title, true, false);
             }
 //            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
         } catch (Exception e) {

@@ -10,4 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 public interface SongCallBackListener {
     void trackHasLoaded(AudioTrack track);
+    void trackLoadingFailed(Exception e);
+    void spotifyUnsupported();
+    void spotifyFailed(Exception e);
 }
