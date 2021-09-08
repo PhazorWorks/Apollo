@@ -6,22 +6,7 @@ package dev.gigafyde.apollo.commands;
  */
 
 import dev.gigafyde.apollo.commands.basic.Ping;
-import dev.gigafyde.apollo.commands.music.Clear;
-import dev.gigafyde.apollo.commands.music.Connect;
-import dev.gigafyde.apollo.commands.music.Disconnect;
-import dev.gigafyde.apollo.commands.music.Grab;
-import dev.gigafyde.apollo.commands.music.Loop;
-import dev.gigafyde.apollo.commands.music.NowPlaying;
-import dev.gigafyde.apollo.commands.music.Pause;
-import dev.gigafyde.apollo.commands.music.Play;
-import dev.gigafyde.apollo.commands.music.Queue;
-import dev.gigafyde.apollo.commands.music.Remove;
-import dev.gigafyde.apollo.commands.music.Restart;
-import dev.gigafyde.apollo.commands.music.Resume;
-import dev.gigafyde.apollo.commands.music.Seek;
-import dev.gigafyde.apollo.commands.music.Shuffle;
-import dev.gigafyde.apollo.commands.music.Skip;
-import dev.gigafyde.apollo.commands.music.Volume;
+import dev.gigafyde.apollo.commands.music.*;
 import dev.gigafyde.apollo.commands.secret.Eval;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
@@ -49,6 +34,7 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Seek());
         registry.addCommand(new Remove());
         registry.addCommand(new Clear());
+        registry.addCommand(new Lyrics());
 
         //secret commands
         registry.addCommand(new Eval());
