@@ -34,11 +34,11 @@ public class Main {
     public static ShardManager SHARD_MANAGER;
     public static LavalinkManager LAVALINK;
     public static OkHttpClient httpClient = new OkHttpClient();
-    private static final Logger log = LoggerFactory.getLogger("Main");
+    private static final Logger log = LoggerFactory.getLogger("Apollo");
 
     public static void main(String[] args) throws LoginException {
-        if (SPOTIFY_WEB_SERVER.isEmpty()) log.warn("SPOTIFY_WEB_SERVER was not defined, Spotify support will not be available!");
-        if (!SENTRY_DSN.isEmpty()) Sentry.init(SENTRY_DSN);
+        if (SPOTIFY_WEB_SERVER == null) log.warn("SPOTIFY_WEB_SERVER was not defined, Spotify support will not be available!");
+        if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
 
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
