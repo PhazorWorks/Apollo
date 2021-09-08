@@ -27,6 +27,8 @@ public class Main {
     public static String LAVALINK_URL = System.getenv("LAVALINK_URL");
     public static String LAVALINK_PASS = System.getenv("LAVALINK_PASS");
     public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
+    public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
+    public static String LYRICS_API_KEY = System.getenv("LYRICS_API_KEY");
     public static Boolean USE_IMAGE_GEN = Boolean.valueOf(System.getenv("USE_IMAGE_GEN"));
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
@@ -38,8 +40,8 @@ public class Main {
 
     public static void main(String[] args) throws LoginException {
         if (SPOTIFY_WEB_SERVER == null) log.warn("SPOTIFY_WEB_SERVER was not defined, Spotify support will not be available!");
+        if (LYRICS_WEB_SERVER == null || LYRICS_API_KEY == null) log.warn("LYRICS_WEB_SERVER/LYRICS_API_KEY was not defined, Lyrics will not be available!");
         if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
-
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
         new CommandList(client);
