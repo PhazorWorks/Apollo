@@ -51,8 +51,9 @@ public class Play extends Command implements SongCallBack {
         VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
         assert vc != null;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         if (event.getArgument().isEmpty()) {
-            event.getMessage().reply("**Please provide a search query.**").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Please provide a search query.**").queue();
             return;
         }
         processArgument(event.getArgument());
@@ -65,6 +66,7 @@ public class Play extends Command implements SongCallBack {
         VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
         assert vc != null;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         String args = event.getSlashCommandEvent().getOption("args").getAsString();
         processArgument(args);
     }
@@ -91,7 +93,6 @@ public class Play extends Command implements SongCallBack {
         if (hook != null) {
             if (Main.USE_IMAGE_GEN) {
                 try {
-                    hook.editOriginal("Success!").queue();
                     hook.editOriginal("").addFile(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
                 } catch (Exception e) {
                     log.error(e.getMessage());
@@ -103,13 +104,13 @@ public class Play extends Command implements SongCallBack {
         } else {
             if (Main.USE_IMAGE_GEN) {
                 try {
-                    message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(true).queue();
+                    message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
                 } catch (Exception e) {
                     log.error(e.getMessage());
-                    message.reply("Queued " + track.getInfo().title).queue();
+                    message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
                 }
             } else {
-                message.reply("Queued " + track.getInfo().title).mentionRepliedUser(true).queue();
+                message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
             }
         }
     }
@@ -118,7 +119,7 @@ public class Play extends Command implements SongCallBack {
         if (hook != null) {
             hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         } else {
-            message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+            message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
         }
     }
 
@@ -126,7 +127,7 @@ public class Play extends Command implements SongCallBack {
         if (hook != null) {
             hook.editOriginal("No matches!").queue();
         } else {
-            message.reply("No matches!").mentionRepliedUser(true).queue();
+            message.reply("No matches!").queue();
         }
     }
 
@@ -138,7 +139,7 @@ public class Play extends Command implements SongCallBack {
         if (hook != null) {
             hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
         } else {
-            message.reply("Invalid/Unsupported Spotify URL!").mentionRepliedUser(true).queue();
+            message.reply("Invalid/Unsupported Spotify URL!").queue();
         }
     }
 
@@ -146,7 +147,7 @@ public class Play extends Command implements SongCallBack {
         if (hook != null) {
             hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         } else {
-            message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).mentionRepliedUser(true).queue();
+            message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
         }
     }
 }
