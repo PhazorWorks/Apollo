@@ -13,8 +13,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -22,10 +20,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Lyrics extends Command {
 
-    private static final Logger log = LoggerFactory.getLogger("Lyrics");
     private static Message message;
     private static InteractionHook hook;
 
@@ -72,7 +70,7 @@ public class Lyrics extends Command {
             JSONObject song = new JSONObject(query);
             send(song);
         } else {
-            String query = sendRequest(event.getSlashCommandEvent().getOption("query").getAsString());
+            String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
             if (query == null) return;
             JSONObject song = new JSONObject(query);
             send(song);
@@ -84,7 +82,6 @@ public class Lyrics extends Command {
         String lyrics = song.getString("lyrics");
         Color blue = Color.decode("#4c87c2");
         EmbedBuilder embed = new EmbedBuilder();
-        System.out.println(hook);
         if (hook == null) {
             if (lyrics.length() > 2000) {
                 List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
@@ -130,7 +127,7 @@ public class Lyrics extends Command {
         try {
             Response response = client.newCall(new Request.Builder().url(web + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + key).build()).execute();
             if (response.isSuccessful()) {
-                return response.body().string();
+                return Objects.requireNonNull(response.body()).string();
             } else {
                 sendError(response);
                 return null;
@@ -144,10 +141,9 @@ public class Lyrics extends Command {
     private void sendError(Response response) {
         if (hook == null) {
             message.reply("Lyrics Lookup failed! Aborting!").queue();
-            System.out.println(String.format("Lyrics lookup failed with error code %s", response.code()));
         } else {
             hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
-            System.out.println(String.format("Lyrics lookup failed with error code %s", response.code()));
         }
+        System.out.printf("Lyrics lookup failed with error code %s%n", response.code());
     }
 }

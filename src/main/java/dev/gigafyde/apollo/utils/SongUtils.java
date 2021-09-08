@@ -15,6 +15,8 @@ import java.net.URL;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import dev.gigafyde.apollo.core.command.SlashEvent;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import okhttp3.MediaType;
@@ -54,7 +56,27 @@ public class SongUtils {
         }
         return true;
     }
-
+    public static boolean passedVoiceChannelChecks(SlashEvent event) {
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        if (vc == null) {
+            event.getSlashCommandEvent().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
+            return false;
+        }
+        EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
+        if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
+            event.getSlashCommandEvent().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
+            return false;
+        }
+        if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
+            event.getSlashCommandEvent().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
+            return false;
+        }
+        if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
+            event.getSlashCommandEvent().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
+            return false;
+        }
+        return true;
+    }
     public static String getStrippedSongUrl(String url) {
         return url.replace("<", "").replace(">", "");
     }
