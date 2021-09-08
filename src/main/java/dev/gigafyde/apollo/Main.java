@@ -40,8 +40,7 @@ public class Main {
 
     public static void main(String[] args) throws LoginException {
         if (SPOTIFY_WEB_SERVER == null) log.warn("SPOTIFY_WEB_SERVER was not defined, Spotify support will not be available!");
-        if (LYRICS_WEB_SERVER == null) log.warn("LYRICS_WEB_SERVER was not defined, Lyrics will not be available!");
-        if (LYRICS_API_KEY == null) log.warn("LYRICS_API_KEY was not defined, Lyrics will not be available!");
+        if (LYRICS_WEB_SERVER == null || LYRICS_API_KEY == null) log.warn("LYRICS_WEB_SERVER/LYRICS_API_KEY was not defined, Lyrics will not be available!");
         if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());

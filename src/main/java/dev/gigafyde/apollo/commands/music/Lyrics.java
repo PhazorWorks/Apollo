@@ -1,6 +1,7 @@
 package dev.gigafyde.apollo.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
@@ -9,7 +10,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
@@ -27,8 +27,6 @@ import java.util.Objects;
 public class Lyrics extends Command {
 
     private static final Logger log = LoggerFactory.getLogger(Lyrics.class);
-    public static String web = System.getenv("LYRICS_WEB_SERVER");
-    public static String key = System.getenv("LYRICS_API_KEY");
     private static Message message;
     private static InteractionHook hook;
 
@@ -41,10 +39,6 @@ public class Lyrics extends Command {
 
     public void execute(CommandEvent event) {
         String args = event.getArgument();
-        if (web == null || key == null) {
-            sendNull();
-            return;
-        }
         message = event.getMessage();
         if (args.isEmpty()) {
             if (!SongUtils.passedVoiceChannelChecks(event)) return;
@@ -56,12 +50,12 @@ public class Lyrics extends Command {
             String query = sendRequest(track.getInfo().title);
             if (query == null) return;
             JSONObject song = new JSONObject(query);
-            send(song);
+            sendEmbed(song);
         } else {
             String query = sendRequest(event.getArgument());
             if (query == null) return;
             JSONObject song = new JSONObject(query);
-            send(song);
+            sendEmbed(song);
         }
     }
 
@@ -77,16 +71,16 @@ public class Lyrics extends Command {
             String query = sendRequest(track.getInfo().title);
             if (query == null) return;
             JSONObject song = new JSONObject(query);
-            send(song);
+            sendEmbed(song);
         } else {
             String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
             if (query == null) return;
             JSONObject song = new JSONObject(query);
-            send(song);
+            sendEmbed(song);
         }
     }
 
-    private void send(JSONObject song) {
+    private void sendEmbed(JSONObject song) {
         String title = String.format("%s - %s", song.getString("artist"), song.getString("name"));
         String lyrics = song.getString("lyrics");
         Color blue = Color.decode("#4c87c2");
@@ -131,13 +125,12 @@ public class Lyrics extends Command {
 
     private String sendRequest(String title) {
 
-        OkHttpClient client = new OkHttpClient();
         try {
-            Response response = client.newCall(new Request.Builder().url(web + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + key).build()).execute();
+            Response response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + Main.LYRICS_API_KEY).build()).execute();
             if (response.isSuccessful()) {
                 return Objects.requireNonNull(response.body()).string();
             } else {
-                sendError(response);
+                sendError(String.valueOf(response.code()));
                 return null;
             }
         } catch (IOException e) {
@@ -146,20 +139,13 @@ public class Lyrics extends Command {
         return null;
     }
 
-    private void sendError(Response response) {
+    private void sendError(String error) {
         if (hook == null) {
             message.reply("Lyrics Lookup failed! Aborting!").queue();
         } else {
             hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
         }
-        log.debug("Lyrics lookup failed with error code: " + response.code());
+        log.debug("Lyrics lookup failed with error code: " + error);
     }
 
-    private void sendNull() {
-        if (hook == null) {
-            message.reply("Lyrics Lookup failed! Aborting!").queue();
-        } else {
-            hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
-        }
-    }
 }
