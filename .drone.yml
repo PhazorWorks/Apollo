@@ -26,7 +26,5 @@ steps:
       - gradle build
     when:
       branch:
-        - main
-      event:
-        - pull_request
-
+        exclude:
+          - main
