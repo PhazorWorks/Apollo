@@ -13,6 +13,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -24,6 +26,9 @@ import java.util.Objects;
 
 public class Lyrics extends Command {
 
+    private static final Logger log = LoggerFactory.getLogger(Lyrics.class);
+    public static String web = System.getenv("LYRICS_WEB_SERVER");
+    public static String key = System.getenv("LYRICS_API_KEY");
     private static Message message;
     private static InteractionHook hook;
 
@@ -36,6 +41,10 @@ public class Lyrics extends Command {
 
     public void execute(CommandEvent event) {
         String args = event.getArgument();
+        if (web == null || key == null) {
+            sendNull();
+            return;
+        }
         message = event.getMessage();
         if (args.isEmpty()) {
             if (!SongUtils.passedVoiceChannelChecks(event)) return;
@@ -121,8 +130,7 @@ public class Lyrics extends Command {
     }
 
     private String sendRequest(String title) {
-        String web = System.getenv("LYRICS_WEB_SERVER");
-        String key = System.getenv("LYRICS_API_KEY");
+
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(new Request.Builder().url(web + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + key).build()).execute();
@@ -133,7 +141,7 @@ public class Lyrics extends Command {
                 return null;
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -144,6 +152,14 @@ public class Lyrics extends Command {
         } else {
             hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
         }
-        System.out.printf("Lyrics lookup failed with error code %s%n", response.code());
+        log.debug("Lyrics lookup failed with error code: " + response.code());
+    }
+
+    private void sendNull() {
+        if (hook == null) {
+            message.reply("Lyrics Lookup failed! Aborting!").queue();
+        } else {
+            hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
+        }
     }
 }
