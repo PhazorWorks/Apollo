@@ -72,7 +72,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     private void processArgument(String arguments) {
-        handleCallback();
+        SongCallBackListener.addListener(this); //setup callback
         if (arguments.contains("spotify")) {
             handleSpotify(scheduler, arguments);
             return;
@@ -85,15 +85,13 @@ public class Play extends Command implements SongCallBack {
         }
     }
 
-    private void handleCallback() {
-        SongCallBackListener.addListener(this);
-    }
 
     public void trackHasLoaded(AudioTrack track) {
         if (hook != null) {
             if (Main.USE_IMAGE_GEN) {
                 try {
-                    hook.editOriginal("").addFile(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                    hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                    log.info("Triggered");
                 } catch (Exception e) {
                     log.error(e.getMessage());
                     hook.editOriginal("Queued " + track.getInfo().title).queue();
@@ -101,6 +99,7 @@ public class Play extends Command implements SongCallBack {
             } else {
                 hook.editOriginal("Queued " + track.getInfo().title).queue();
             }
+            SongCallBackListener.removeListener(this);
         } else {
             if (Main.USE_IMAGE_GEN) {
                 try {
@@ -112,6 +111,7 @@ public class Play extends Command implements SongCallBack {
             } else {
                 message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
             }
+            SongCallBackListener.removeListener(this);
         }
     }
 

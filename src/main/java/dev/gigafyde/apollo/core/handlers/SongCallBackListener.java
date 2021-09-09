@@ -18,6 +18,10 @@ public class SongCallBackListener {
         listeners.add(listener);
     }
 
+    public static void removeListener(SongCallBack listener) {
+        listeners.remove(listener);
+    }
+
     public static void notifyTrackLoaded(AudioTrack track) {
         for (SongCallBack listener : listeners) {
             listener.trackHasLoaded(track);
