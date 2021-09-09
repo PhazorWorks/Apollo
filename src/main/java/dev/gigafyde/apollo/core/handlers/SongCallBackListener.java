@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongCallBackListener {
-    private static List<SongCallBack> listeners = new ArrayList<>();
+    private static final List<SongCallBack> listeners = new ArrayList<>();
 
     public static void addListener(SongCallBack listener) {
         listeners.add(listener);
@@ -23,38 +23,28 @@ public class SongCallBackListener {
     }
 
     public static void notifyTrackLoaded(AudioTrack track) {
-        for (SongCallBack listener : listeners) {
-            listener.trackHasLoaded(track);
-        }
+        listeners.get(0).trackHasLoaded(track);
     }
 
     public static void notifyPlaylistLoaded(AudioPlaylist playlist, int added, int amount) {
-        for (SongCallBack listener : listeners) {
-            listener.playlistLoaded(playlist, added, amount);
-        }
+        listeners.get(0).playlistLoaded(playlist, added, amount);
     }
 
     public static void notifyNoMatches() {
-        for (SongCallBack listener : listeners) {
-            listener.noMatches();
-        }
+        listeners.get(0).noMatches();
     }
 
     public static void notifyTrackLoadFailed(Exception e) {
-        for (SongCallBack listener : listeners) {
-            listener.trackLoadingFailed(e);
-        }
+        listeners.get(0).trackLoadingFailed(e);
     }
 
     public static void notifySpotifyUnsupported() {
-        for (SongCallBack listener : listeners) {
-            listener.spotifyUnsupported();
-        }
+        listeners.get(0).spotifyUnsupported();
     }
 
     public static void notifySpotifyAbort(Exception e) {
-        for (SongCallBack listener : listeners) {
-            listener.spotifyFailed(e);
-        }
+
+        listeners.get(0).spotifyFailed(e);
+
     }
 }
