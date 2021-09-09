@@ -67,7 +67,7 @@ public class Play extends Command implements SongCallBack {
         assert vc != null;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-        String args = event.getSlashCommandEvent().getOption("args").getAsString();
+        String args = event.getSlashCommandEvent().getOption("query").getAsString();
         processArgument(args);
     }
 
