@@ -41,10 +41,12 @@ public class Play extends Command implements SongCallBack {
     private User author;
     private Message message;
     private InteractionHook hook;
+    private boolean slash;
 
     private static final Logger log = LoggerFactory.getLogger("Play");
 
     protected void execute(CommandEvent event) {
+        slash = false;
         author = event.getAuthor();
         message = event.getMessage();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
@@ -64,6 +66,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     protected void executeSlash(SlashEvent event) {
+        slash = true;
         author = event.getAuthor();
         event.getSlashCommandEvent().deferReply(false).queue();
         hook = event.getSlashCommandEvent().getHook();
@@ -91,7 +94,7 @@ public class Play extends Command implements SongCallBack {
 
 
     public void trackHasLoaded(AudioTrack track) {
-        if (hook != null) {
+        if (slash) {
             if (Main.USE_IMAGE_GEN) {
                 try {
                     hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
@@ -102,7 +105,6 @@ public class Play extends Command implements SongCallBack {
             } else {
                 hook.editOriginal("Queued " + track.getInfo().title).queue();
             }
-            SongCallBackListener.removeListener(this);
         } else {
             if (Main.USE_IMAGE_GEN) {
                 try {
@@ -114,8 +116,8 @@ public class Play extends Command implements SongCallBack {
             } else {
                 message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
             }
-            SongCallBackListener.removeListener(this);
         }
+        SongCallBackListener.removeListener(this);
     }
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
