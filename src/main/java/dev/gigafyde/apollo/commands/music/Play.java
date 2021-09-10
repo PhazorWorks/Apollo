@@ -53,7 +53,11 @@ public class Play extends Command implements SongCallBack {
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
         if (event.getArgument().isEmpty()) {
-            event.getMessage().reply("**Please provide a search query.**").queue();
+            if (!event.getAttachments().isEmpty()) {
+                processArgument(event.getAttachments().get(0).getUrl());
+            } else {
+                event.getMessage().reply("**Please provide a search query.**").queue();
+            }
             return;
         }
         processArgument(event.getArgument());
@@ -91,7 +95,6 @@ public class Play extends Command implements SongCallBack {
             if (Main.USE_IMAGE_GEN) {
                 try {
                     hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
-                    log.info("Triggered");
                 } catch (Exception e) {
                     log.error(e.getMessage());
                     hook.editOriginal("Queued " + track.getInfo().title).queue();
