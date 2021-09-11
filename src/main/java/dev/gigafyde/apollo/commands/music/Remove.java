@@ -13,7 +13,7 @@ public class Remove extends Command {
         this.triggers = new String[]{"remove", "rm"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         try {

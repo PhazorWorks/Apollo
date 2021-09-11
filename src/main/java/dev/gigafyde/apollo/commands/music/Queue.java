@@ -17,7 +17,7 @@ public class Queue extends Command {
         this.triggers = new String[]{"q", "queue"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());

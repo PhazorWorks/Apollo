@@ -19,7 +19,7 @@ public class Restart extends Command {
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         player.seekTo(0L);

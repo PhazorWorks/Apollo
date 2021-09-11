@@ -22,7 +22,7 @@ public class Connect extends Command {
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         Member member = event.getGuild().retrieveMember(event.getAuthor()).complete();
         VoiceChannel vc = Objects.requireNonNull(member.getVoiceState()).getChannel();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;

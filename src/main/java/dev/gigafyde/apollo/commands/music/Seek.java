@@ -15,7 +15,7 @@ public class Seek extends Command {
         this.triggers = new String[]{"seek"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
         String argument = event.getArgument();

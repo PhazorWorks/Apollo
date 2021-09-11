@@ -38,7 +38,7 @@ public class Lyrics extends Command {
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         slash = false;
         String args = event.getArgument();
         message = event.getMessage();
