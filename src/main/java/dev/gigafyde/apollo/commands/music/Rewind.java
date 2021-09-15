@@ -45,13 +45,13 @@ public class Rewind extends Command {
         hook = event.getSlashCommandEvent().getHook();
         LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         AudioTrack track = player.getPlayingTrack();
-        String args = event.getSlashCommandEvent().getOption("input").getAsString();
+        String args = event.getSlashCommandEvent().getOption("amount").getAsString();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (track == null) {
             hook.editOriginal("**Nothing is currently playing.**").queue();
             return;
         }
-        if (event.getSlashCommandEvent().getOption("input") == null) {
+        if (event.getSlashCommandEvent().getOption("amount") == null) {
             hook.editOriginal("Please provide a new position in seconds.").queue();
             return;
         }
