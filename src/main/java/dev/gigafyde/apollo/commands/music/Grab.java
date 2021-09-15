@@ -12,11 +12,11 @@ public class Grab extends Command {
     public Grab() {
         this.name = "grab";
         this.description = "send the currently playing song to your dm's";
-        this.triggers = new String[]{"grab"};
+        this.triggers = new String[]{"grab", "save"};
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler.getPlayer().getPlayingTrack() != null) {

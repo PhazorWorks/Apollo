@@ -19,7 +19,7 @@ public class NowPlaying extends Command {
         this.triggers = new String[]{"np", "current"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
             event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();

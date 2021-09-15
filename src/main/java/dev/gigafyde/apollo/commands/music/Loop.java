@@ -14,7 +14,6 @@ public class Loop extends Command {
 
     }
 
-    @Override
     protected void execute(CommandEvent event) {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();

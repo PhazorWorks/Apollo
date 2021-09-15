@@ -20,7 +20,7 @@ public class Skip extends Command {
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         Message message = event.getMessage();
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (!SongUtils.passedVoiceChannelChecks(event)) return;

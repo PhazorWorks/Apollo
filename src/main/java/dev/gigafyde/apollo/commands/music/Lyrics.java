@@ -29,6 +29,7 @@ public class Lyrics extends Command {
     private static final Logger log = LoggerFactory.getLogger(Lyrics.class);
     private static Message message;
     private static InteractionHook hook;
+    private static boolean slash;
 
     public Lyrics() {
         this.name = "lyrics";
@@ -37,7 +38,8 @@ public class Lyrics extends Command {
         this.guildOnly = true;
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
+        slash = false;
         String args = event.getArgument();
         message = event.getMessage();
         if (args.isEmpty()) {
@@ -60,6 +62,7 @@ public class Lyrics extends Command {
     }
 
     protected void executeSlash(SlashEvent event) {
+        slash = true;
         event.getSlashCommandEvent().deferReply(false).queue();
         hook = event.getSlashCommandEvent().getHook();
         if (event.getSlashCommandEvent().getOption("query") == null) {
@@ -85,7 +88,7 @@ public class Lyrics extends Command {
         String lyrics = song.getString("lyrics");
         Color blue = Color.decode("#4c87c2");
         EmbedBuilder embed = new EmbedBuilder();
-        if (hook == null) {
+        if (!slash) {
             if (lyrics.length() > 2000) {
                 List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
                 message.getChannel().sendMessage(embeds.get(0)).queue();
