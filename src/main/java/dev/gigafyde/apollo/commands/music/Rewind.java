@@ -7,43 +7,77 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.LavalinkPlayer;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+
+import java.util.concurrent.TimeUnit;
 
 public class Rewind extends Command {
+    private static Message message;
+    private static InteractionHook hook;
+    private static boolean slash;
+
     public Rewind() {
         this.name = "rewind";
         this.triggers = new String[]{"rewind"};
     }
 
     protected void execute(CommandEvent event) {
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
+        slash = false;
+        String args = event.getArgument();
+        message = event.getMessage();
         LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
-        String argument = event.getArgument();
         AudioTrack track = player.getPlayingTrack();
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (track == null) {
-            event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
+            message.reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
             return;
         }
-        if (argument.isEmpty()) {
-            event.getMessage().reply("Please provide a new position in seconds.").mentionRepliedUser(true).queue();
+        if (args.isEmpty()) {
+            message.reply("Please provide a new position in seconds.").mentionRepliedUser(true).queue();
             return;
         }
+        rewindSong(args, player);
+    }
+    protected void executeSlash(SlashEvent event) {
+        slash = true;
+        event.getSlashCommandEvent().deferReply(false).queue();
+        hook = event.getSlashCommandEvent().getHook();
+        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+        AudioTrack track = player.getPlayingTrack();
+        String args = event.getSlashCommandEvent().getOption("input").getAsString();
+        if (!SongUtils.passedVoiceChannelChecks(event)) return;
+        if (track == null) {
+            hook.editOriginal("**Nothing is currently playing.**").queue();
+            return;
+        }
+        if (event.getSlashCommandEvent().getOption("input") == null) {
+            hook.editOriginal("Please provide a new position in seconds.").queue();
+            return;
+        }
+        rewindSong(args, player);
+    }
+    private void rewindSong(String args, LavalinkPlayer player) {
         try {
-            int seekNumber = Integer.parseInt(argument);
-            long maxLength = track.getDuration();
+            int seekNumber = Integer.parseInt(args);
             long amountToSeek = seekNumber * 1000L;
             long currentTime = player.getTrackPosition();
             long newTime = currentTime - amountToSeek;
-            //if (newTime < 0) newTime = 0;
             player.seekTo(newTime);
-            long newCurrentTime = track.getPosition();
-            System.out.printf("seekNumber: %s\nmaxLength: %s\nAmountToSeek: %s\ncurrentTime: %s \nnewTime: %s \nnewCurrentTime: %s", seekNumber, maxLength, amountToSeek, currentTime, newTime, newCurrentTime);
-            event.getMessage().reply("Triggered").mentionRepliedUser(false).queue();
+            if (!slash) {
+                if (amountToSeek <= 59000)
+                    message.reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+                else
+                    message.reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+            } else {
+                if (amountToSeek <= 59000)
+                    hook.editOriginal(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+                else
+                    hook.editOriginal(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
+            }
         } catch (NumberFormatException exception) {
-            event.getMessage().reply("Failed to parse number from input").queue();
+            if (!slash) message.reply("Failed to parse number from input").queue();
+            else hook.editOriginal("Failed to parse number from input").queue();
         }
-    }
-
-    protected void executeSlash(SlashEvent event) {
-
     }
 }
