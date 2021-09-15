@@ -19,11 +19,14 @@ public class SlashRegister extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         JDA jda = event.getJDA();
-        jda.upsertCommand(new CommandData("play", "Add a song to the queue").addOption(OptionType.STRING, "query", "Your search query or URL", true)).queue();
-        jda.upsertCommand(new CommandData("rewind", "Rewinds the specified amount in current song").addOption(OptionType.STRING, "amount", "The amount to rewind", true)).queue();
+        CommandData play =new CommandData("play", "Add a song to the queue").addOption(OptionType.STRING, "query", "Your search query or URL", true);
+        CommandData rewind = new CommandData("rewind", "Rewinds the specified amount in current song").addOption(OptionType.STRING, "amount", "The amount to rewind", true);
+        CommandData lyrics = new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", true);
+        jda.upsertCommand(play).queue();
+        jda.upsertCommand(rewind).queue();
         if (!(Main.LYRICS_WEB_SERVER == null) & !(Main.LYRICS_API_KEY == null)) {
             // Only register it if those values are defined
-            jda.upsertCommand(new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", true)).queue();
+            jda.upsertCommand(lyrics).queue();
         } else {
             try {
                 jda.deleteCommandById("lyrics").queue();
