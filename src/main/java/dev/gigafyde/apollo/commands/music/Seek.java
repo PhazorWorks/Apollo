@@ -8,6 +8,7 @@ import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.concurrent.TimeUnit;
 import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Seek extends Command {
     public Seek() {
@@ -15,9 +16,9 @@ public class Seek extends Command {
         this.triggers = new String[]{"seek"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
+        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         String argument = event.getArgument();
         if (argument.isEmpty()) {
             event.getMessage().reply("Please provide a new position in minutes.").mentionRepliedUser(true).queue();

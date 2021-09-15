@@ -6,8 +6,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.concurrent.TimeUnit;
-import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Rewind extends Command {
     public Rewind() {
@@ -15,11 +14,11 @@ public class Rewind extends Command {
         this.triggers = new String[]{"rewind"};
     }
 
-    public void execute(CommandEvent event) {
+    protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        IPlayer player = event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer();
+        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         String argument = event.getArgument();
-        AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+        AudioTrack track = player.getPlayingTrack();
         if (track == null) {
             event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
             return;
@@ -36,7 +35,7 @@ public class Rewind extends Command {
             long newTime = currentTime - amountToSeek;
             //if (newTime < 0) newTime = 0;
             player.seekTo(newTime);
-            long newCurrentTime = player.getTrackPosition();
+            long newCurrentTime = track.getPosition();
             System.out.printf("seekNumber: %s\nmaxLength: %s\nAmountToSeek: %s\ncurrentTime: %s \nnewTime: %s \nnewCurrentTime: %s", seekNumber, maxLength, amountToSeek, currentTime, newTime, newCurrentTime);
             event.getMessage().reply("Triggered").mentionRepliedUser(false).queue();
         } catch (NumberFormatException exception) {
