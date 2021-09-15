@@ -33,6 +33,7 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Grab());
         registry.addCommand(new NowPlaying());
         registry.addCommand(new Seek());
+        registry.addCommand(new Rewind());
         registry.addCommand(new Remove());
         registry.addCommand(new Clear());
         if (Main.LYRICS_WEB_SERVER != null && Main.LYRICS_API_KEY != null) registry.addCommand(new Lyrics());
