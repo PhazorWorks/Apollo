@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -49,7 +50,7 @@ public final class MusicManager {
         Guild guild = voiceChannel.getGuild();
         JdaLink link = client.getLavalink().getLink(guild);
         link.connect(voiceChannel);
-        IPlayer player = link.getPlayer();
+        LavalinkPlayer player = link.getPlayer();
         player.setVolume(100);
         TrackScheduler scheduler = new TrackScheduler(player, playerManager, guild, start);
         player.addListener(scheduler);

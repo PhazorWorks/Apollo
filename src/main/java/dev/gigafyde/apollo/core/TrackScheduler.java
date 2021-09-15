@@ -15,17 +15,18 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
-    private final IPlayer player;
+    private final LavalinkPlayer player;
     private final AudioPlayerManager manager;
     private boolean looped;
     private AudioTrack loopedTrack;
     private Queue<AudioTrack> queue = new LinkedBlockingDeque<>();
 
-    TrackScheduler(IPlayer player, AudioPlayerManager manager, Guild guild, boolean start) {
+    TrackScheduler(LavalinkPlayer player, AudioPlayerManager manager, Guild guild, boolean start) {
         this.player = player;
         this.manager = manager;
         if (start) nextSong(null);
