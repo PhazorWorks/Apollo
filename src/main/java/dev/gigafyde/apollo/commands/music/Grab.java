@@ -12,7 +12,7 @@ public class Grab extends Command {
     public Grab() {
         this.name = "grab";
         this.description = "send the currently playing song to your dm's";
-        this.triggers = new String[]{"grab"};
+        this.triggers = new String[]{"grab", "save"};
         this.guildOnly = true;
     }
 
