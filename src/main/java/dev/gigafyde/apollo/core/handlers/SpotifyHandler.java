@@ -65,7 +65,7 @@ public class SpotifyHandler {
                 JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
                 String artist = track.get("artist").toString();
                 String title = track.get("name").toString();
-                SongHandler.loadHandler(scheduler, artist + " " + title, true, false);
+                SongHandler.loadPlaylistHandler(tracks, scheduler, artist + " " + title, true, true);
             }
 
 //            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();
