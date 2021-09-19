@@ -54,7 +54,7 @@ public class Queue extends Command {
             eb.addField(String.format("`[%d]` %s", i + 1, queuedTracks.get(i).getInfo().title), queuedTracks.get(i).getInfo().uri, false);
         }
         eb.setFooter("Page " + page + " of " + maxPages, null);
-        event.getMessage().reply(eb.build()).mentionRepliedUser(false).queue();
+        event.getMessage().replyEmbeds(eb.build()).mentionRepliedUser(false).queue();
     }
 
     protected void executeSlash(SlashEvent event) {

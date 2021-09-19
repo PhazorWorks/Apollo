@@ -91,14 +91,27 @@ public class Lyrics extends Command {
         if (!slash) {
             if (lyrics.length() > 2000) {
                 List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
-                message.getChannel().sendMessage(embeds.get(0)).queue();
+                if (lyrics.length() > 6000) {
+                    for (MessageEmbed messageEmbed : embeds) {
+                        message.getChannel().sendMessageEmbeds(messageEmbed).queue();
+                    }
+                } else {
+                    message.getChannel().sendMessageEmbeds(embeds).queue();
+                }
             } else {
-                message.reply(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
+                message.replyEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
             }
         } else {
             if (lyrics.length() > 2000) {
                 List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
-                hook.editOriginalEmbeds(embeds.get(0)).queue();
+                if (lyrics.length() > 6000) {
+                    for (MessageEmbed messageEmbed : embeds) {
+                        hook.getInteraction().getMessageChannel().sendMessageEmbeds(messageEmbed).queue();
+                    }
+                    hook.editOriginal("**Lyrics**: ").queue();
+                } else {
+                    hook.editOriginalEmbeds(embeds).queue();
+                }
             } else {
                 hook.editOriginalEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).queue();
             }
@@ -110,19 +123,15 @@ public class Lyrics extends Command {
         EmbedBuilder embed = new EmbedBuilder();
         List<MessageEmbed> embeds = new ArrayList<>();
         String content = lyrics.trim();
-        while (content.length() > 2000) {
-            int index = content.lastIndexOf("\n\n", 2000);
-            if (index == -1)
-                index = content.lastIndexOf("\n", 2000);
-            if (index == -1)
-                index = content.lastIndexOf(" ", 2000);
-            if (index == -1)
-                index = 2000;
-            embeds.add(embed.setDescription(content.substring(0, index).trim()).setColor(blue).setTitle(title).build());
+        int page = 0;
+        while (content.length() > 2048) {
+            int index = content.lastIndexOf("", 2048);
+            page++;
+            embeds.add(embed.setDescription(content.substring(0, index).trim()).setColor(blue).setTitle(title).setFooter("Page " + page).build());
             content = content.substring(index).trim();
-            embed.setAuthor(null).setTitle(null, null);
         }
-        embeds.add(embed.setDescription(content).setColor(blue).setTitle(title).build());
+        page++;
+        embeds.add(embed.setDescription(content).setColor(blue).setTitle(title).setFooter("Page " + page).build());
         return embeds;
     }
 
@@ -143,7 +152,7 @@ public class Lyrics extends Command {
     }
 
     private void sendError(String error) {
-        if (hook == null) {
+        if (!slash) {
             message.reply("Lyrics Lookup failed! Aborting!").queue();
         } else {
             hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
