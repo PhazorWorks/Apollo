@@ -28,3 +28,21 @@ steps:
       branch:
         exclude:
           - main
+
+  - name: deploy
+    image: quay.io/honestbee/drone-kubernetes
+    environment:
+      KUBERNETES-TOKEN:
+        from_secret: kubernetes-token
+    kubernetes_server: https://192.168.1.200:6443
+    kubernetes_token: $KUBERNETES-TOKEN
+    namespace: default
+    deployment: apollo
+    repo: gigafyde/apollo
+    container: apollo
+    tag: latest
+    when:
+      branch:
+        - production
+      event:
+        - push
