@@ -32,7 +32,7 @@ steps:
           - production
 
   - name: deploy
-    image: quay.io/honestbee/drone-kubernetes
+    image: razorpay/drone-kubernetes
     environment:
       KUBERNETES-TOKEN:
         from_secret: kubernetes-token
