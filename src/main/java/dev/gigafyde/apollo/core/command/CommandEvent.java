@@ -56,6 +56,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         if (messageCommandEvent != null) {
             this.type = CommandType.CONTEXT;
             this.messageContextCommandEvent = messageCommandEvent;
+
         }
         if (this.type == CommandType.REGULAR) {
             this.argument = argument;
@@ -151,6 +152,15 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         }
         return null;
     }
+
+    public ReplyAction reply(Message content) {
+        switch (type) {
+            case SLASH -> {return slashCommandEvent.reply(content);}
+            case CONTEXT -> {return messageContextCommandEvent.reply(content);}
+        }
+        return null;
+    }
+
 
     @NotNull
     @Override
