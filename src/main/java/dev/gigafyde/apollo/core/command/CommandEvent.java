@@ -18,25 +18,22 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction, Interaction {
+public class CommandEvent implements SlashCommandInteraction {
     private Client client;
     private Message trigger = null;
     private String argument = "";
     private CommandType type;
     private SlashCommandEvent slashCommandEvent;
-    private MessageContextCommandEvent messageContextCommandEvent;
+//    private MessageContextCommandEvent messageContextCommandEvent;
 
     public enum CommandType {
         REGULAR,
@@ -45,7 +42,8 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         UNDEFINED
     }
 
-    public CommandEvent(Client client, Message trigger, String argument, SlashCommandEvent slashCommandEvent, MessageContextCommandEvent messageCommandEvent) {
+//    public CommandEvent(Client client, Message trigger, String argument, SlashCommandEvent slashCommandEvent , MessageContextCommandEvent messageCommandEvent) {
+    public CommandEvent(Client client, Message trigger, String argument, SlashCommandEvent slashCommandEvent ) {
         this.client = client;
         if (trigger != null) {
             this.type = CommandType.REGULAR;
@@ -54,10 +52,10 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
             this.type = CommandType.SLASH;
             this.slashCommandEvent = slashCommandEvent;
         }
-        if (messageCommandEvent != null) {
-            this.type = CommandType.CONTEXT;
-            this.messageContextCommandEvent = messageCommandEvent;
-        }
+//        if (messageCommandEvent != null) {
+//            this.type = CommandType.CONTEXT;
+//            this.messageContextCommandEvent = messageCommandEvent;
+//        }
         if (this.type == CommandType.REGULAR) {
             this.argument = argument;
             this.trigger = trigger;
@@ -84,7 +82,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         switch (type) {
             case REGULAR -> { return trigger.getAuthor(); }
             case SLASH -> { return slashCommandEvent.getUser();}
-            case CONTEXT -> { return messageContextCommandEvent.getUser();}
+//            case CONTEXT -> { return messageContextCommandEvent.getUser();}
         }
         return null;
     }
@@ -129,7 +127,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         switch (type) {
             case REGULAR -> { return trigger.getGuild(); }
             case SLASH -> { return slashCommandEvent.getGuild();}
-            case CONTEXT -> { return messageContextCommandEvent.getGuild();}
+//            case CONTEXT -> { return messageContextCommandEvent.getGuild();}
         }
         return null;
     }
@@ -148,7 +146,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         switch (type) {
             case REGULAR -> {return trigger.getTextChannel();}
             case SLASH -> {return slashCommandEvent.getTextChannel();}
-            case CONTEXT -> {return messageContextCommandEvent.getTextChannel();}
+//            case CONTEXT -> {return messageContextCommandEvent.getTextChannel();}
         }
         return null;
     }
@@ -165,7 +163,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         switch (type) {
             case REGULAR -> {return trigger.getChannel();}
             case SLASH -> {return slashCommandEvent.getChannel();}
-            case CONTEXT -> {return messageContextCommandEvent.getChannel();}
+//            case CONTEXT -> {return messageContextCommandEvent.getChannel();}
         }
         return null;
     }
@@ -221,7 +219,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         switch (type) {
             case REGULAR -> {return trigger.getAuthor();}
             case SLASH -> {return slashCommandEvent.getUser();}
-            case CONTEXT -> {return messageContextCommandEvent.getUser();}
+//            case CONTEXT -> {return messageContextCommandEvent.getUser();}
         }
         return null;
     }
@@ -255,12 +253,12 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     }
 
     @NotNull
-    @Override
+//    @Override
     public Message getTargetMessage() {
         return null;
     }
 
-    @Override
+//    @Override
     public long getTargetIdLong() {
         return 0;
     }
