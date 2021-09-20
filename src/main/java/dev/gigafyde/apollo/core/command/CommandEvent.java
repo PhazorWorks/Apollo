@@ -37,7 +37,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     private SlashCommandEvent slashCommandEvent;
     private MessageContextCommandEvent messageContextCommandEvent;
 
-    private enum CommandType {
+    public enum CommandType {
         REGULAR,
         SLASH,
         CONTEXT,

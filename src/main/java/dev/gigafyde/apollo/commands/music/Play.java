@@ -47,36 +47,44 @@ public class Play extends Command implements SongCallBack {
     }
 
     protected void execute(CommandEvent event) {
-        slash = false;
-        author = event.getAuthor();
-        message = event.getMessage();
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
-        assert vc != null;
-        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-        if (event.getArgument().isEmpty()) {
-            if (!event.getAttachments().isEmpty()) {
-                processArgument(event.getAttachments().get(0).getUrl());
-            } else {
-                event.getMessage().reply("**Please provide a search query.**").queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                author = event.getAuthor();
+                message = event.getMessage();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                assert vc != null;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                if (event.getArgument().isEmpty()) {
+                    if (!event.getAttachments().isEmpty()) {
+                        processArgument(event.getAttachments().get(0).getUrl());
+                    } else {
+                        event.getMessage().reply("**Please provide a search query.**").queue();
+                    }
+                    return;
+                }
+                processArgument(event.getArgument());
             }
-            return;
+            case SLASH -> {
+                slash = true;
+                author = event.getAuthor();
+                event.deferReply(false).queue();
+                hook = event.getHook();
+                VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
+                assert vc != null;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                String args = event.getOption("query").getAsString();
+                processArgument(args);
+            }
         }
-        processArgument(event.getArgument());
+
+
     }
 
 //    protected void executeSlash(SlashEvent event) {
-//        slash = true;
-//        author = event.getAuthor();
-//        event.getEvent().deferReply(false).queue();
-//        hook = event.getEvent().getHook();
-//        VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
-//        assert vc != null;
-//        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-//        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-//        String args = event.getEvent().getName().getOption("query").getAsString();
-//        processArgument(args);
+//
 //    }
 //
 //    @Override
