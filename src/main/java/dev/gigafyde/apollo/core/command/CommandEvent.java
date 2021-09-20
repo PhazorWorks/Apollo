@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
@@ -30,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction, Interaction {
+public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
     private Client client;
     private Message trigger = null;
     private String argument = "";
@@ -192,6 +191,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         }
         return null;
     }
+
 
     @Override
     public long getCommandIdLong() {

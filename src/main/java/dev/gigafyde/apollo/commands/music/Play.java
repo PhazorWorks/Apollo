@@ -34,8 +34,8 @@ public class Play extends Command implements SongCallBack {
     private Message message;
     private InteractionHook hook;
     private MessageContextCommandEvent cmd;
-    private boolean slash;
-    private boolean context;
+    private boolean slash = false;
+    private boolean context = false;
 
     public Play() {
         this.name = "play";
@@ -51,8 +51,6 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 author = event.getAuthor();
                 message = event.getMessage();
-                slash = false;
-                context = false;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 assert vc != null;
@@ -70,7 +68,6 @@ public class Play extends Command implements SongCallBack {
             }
             case SLASH -> {
                 slash = true;
-                context = false;
                 author = event.getAuthor();
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
