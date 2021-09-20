@@ -29,11 +29,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-
 public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
-    private final Client client = null;
-    private final Message trigger = null;
-    private CommandType type = null;
+    private Client client = null;
+    private Message trigger = null;
+    private String argument = "";
+    private CommandType type;
     private SlashCommandEvent slashCommandEvent;
     private MessageContextCommandEvent messageContextCommandEvent;
 
@@ -54,18 +54,11 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         if (messageCommandEvent != null) {
             this.type = CommandType.CONTEXT;
         }
-        else {
-            this.type = CommandType.UNDEFINED;
+        if (this.type == CommandType.REGULAR) {
+            this.argument = argument;
+            this.client = client;
+            this.trigger = trigger;
         }
-        if (this.type == CommandType.UNDEFINED) {
-            return;
-        }
-
-
-//        this.argument = argument;
-//        this.client = client;
-//        this.trigger = trigger;
-
     }
 
     public CommandType getCommandType() {
