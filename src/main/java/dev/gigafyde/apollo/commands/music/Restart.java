@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.LavalinkPlayer;
@@ -27,6 +28,11 @@ public class Restart extends Command {
     }
 
     protected void executeSlash(SlashEvent event) {
+
+    }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
 
     }
 }

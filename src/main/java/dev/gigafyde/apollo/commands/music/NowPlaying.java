@@ -6,6 +6,8 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
 import java.io.InputStream;
+
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,6 +45,11 @@ public class NowPlaying extends Command {
     }
 
     protected void executeSlash(SlashEvent event) {
+
+    }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
 
     }
 }

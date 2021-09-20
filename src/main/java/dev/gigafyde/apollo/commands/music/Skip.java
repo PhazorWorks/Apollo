@@ -9,6 +9,7 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
@@ -42,6 +43,11 @@ public class Skip extends Command {
     }
 
     protected void executeSlash(SlashEvent event) {
+
+    }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
 
     }
 }

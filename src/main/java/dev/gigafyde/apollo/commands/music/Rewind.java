@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Message;
@@ -57,6 +58,12 @@ public class Rewind extends Command {
         }
         rewindSong(args, player);
     }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
+
+    }
+
     private void rewindSong(String args, LavalinkPlayer player) {
         try {
             int seekNumber = Integer.parseInt(args);

@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
@@ -76,6 +77,20 @@ public class CommandHandler {
                     command.executeSlash(event);
                 } catch (Throwable t) {
                     log.error("SLASH COMMAND FAILED", t);
+                }
+
+            });
+        }
+    }
+    public void handleMessageContextCommand(MessageContextCommandEvent event) {
+        Command command = client.getCommandRegistry().getCommand(event.getName());
+        if (command != null) {
+            POOL.execute(() -> {
+                messageCommandEvent cmd = new messageCommandEvent(client, event);
+                try {
+                    command.executeContext(cmd);
+                } catch (Throwable t) {
+                    log.error("MESSAGE CONTEXT COMMAND FAILED", t);
                 }
 
             });

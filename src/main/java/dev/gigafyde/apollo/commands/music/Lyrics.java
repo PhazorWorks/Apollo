@@ -5,6 +5,7 @@ import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -81,6 +82,11 @@ public class Lyrics extends Command {
             JSONObject song = new JSONObject(query);
             sendEmbed(song);
         }
+    }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
+
     }
 
     private void sendEmbed(JSONObject song) {

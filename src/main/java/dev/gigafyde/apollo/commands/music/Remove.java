@@ -4,6 +4,7 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 
@@ -34,6 +35,11 @@ public class Remove extends Command {
     }
 
     protected void executeSlash(SlashEvent event) {
+
+    }
+
+    @Override
+    protected void executeContext(messageCommandEvent event) {
 
     }
 }

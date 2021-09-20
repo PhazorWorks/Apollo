@@ -13,37 +13,42 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.core.command.SlashEvent;
+import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
 public class Play extends Command implements SongCallBack {
 
-    public Play() {
-        this.name = "play";
-        this.description = "Allows you to play a song of your choice";
-        this.triggers = new String[]{"play", "p"};
-        this.hidden = false;
-        this.ownerOnly = false;
-        this.guildOnly = true;
-    }
-
+    private static final Logger log = LoggerFactory.getLogger("Play");
     private TrackScheduler scheduler;
     private User author;
     private Message message;
     private InteractionHook hook;
+    private MessageContextCommandEvent cmd;
     private boolean slash;
+    private boolean context;
 
-    private static final Logger log = LoggerFactory.getLogger("Play");
+    public Play() {
+        this.name = "play";
+        this.description = "Allows you to play a song of your choice";
+        this.triggers = new String[]{"play", "p", "Add to Queue"};
+        this.hidden = false;
+        this.ownerOnly = false;
+        this.guildOnly = true;
+    }
 
     protected void execute(CommandEvent event) {
         slash = false;
@@ -78,6 +83,18 @@ public class Play extends Command implements SongCallBack {
         processArgument(args);
     }
 
+    @Override
+    protected void executeContext(messageCommandEvent event) {
+        context = true;
+        cmd = event.getMessageCommandEvent();
+        VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
+        assert vc != null;
+        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+        String args = cmd.getTargetMessage().getContentRaw();
+        processArgument(args);
+    }
+
     private void processArgument(String arguments) {
         SongCallBackListener.addListener(this); //setup callback
         if (arguments.contains("spotify")) {
@@ -105,6 +122,8 @@ public class Play extends Command implements SongCallBack {
             } else {
                 hook.editOriginal("Queued " + track.getInfo().title).queue();
             }
+        } else if (context) {
+            cmd.reply("Added to queue!").setEphemeral(true).queue();
         } else {
             if (Main.USE_IMAGE_GEN) {
                 try {
