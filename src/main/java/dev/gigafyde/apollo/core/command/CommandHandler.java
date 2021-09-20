@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
@@ -57,8 +58,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1], null);
-//                CommandEvent cmd = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1], null, null);
+                CommandEvent cmd = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1], null, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -72,8 +72,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(client, null, null, slashCommandEvent);
-//                CommandEvent cmd = new CommandEvent(client, null, null, slashCommandEvent, null);
+                CommandEvent cmd = new CommandEvent(client, null, null, slashCommandEvent, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -83,18 +82,18 @@ public class CommandHandler {
             });
         }
     }
-//    public void handleMessageContextCommand(MessageContextCommandEvent event) {
-//        Command command = client.getCommandRegistry().getCommand(event.getName());
-//        if (command != null) {
-//            POOL.execute(() -> {
-//                CommandEvent cmd = new CommandEvent(client, null, null, null, event);
-//                try {
-//                    command.run(cmd);
-//                } catch (Throwable t) {
-//                    log.error("MESSAGE CONTEXT COMMAND FAILED", t);
-//                }
-//
-//            });
-//        }
-//    }
+    public void handleMessageContextCommand(MessageContextCommandEvent event) {
+        Command command = client.getCommandRegistry().getCommand(event.getName());
+        if (command != null) {
+            POOL.execute(() -> {
+                CommandEvent cmd = new CommandEvent(client, null, null, null, event);
+                try {
+                    command.run(cmd);
+                } catch (Throwable t) {
+                    log.error("MESSAGE CONTEXT COMMAND FAILED", t);
+                }
+
+            });
+        }
+    }
 }
