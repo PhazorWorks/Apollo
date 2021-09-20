@@ -11,7 +11,7 @@ import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
