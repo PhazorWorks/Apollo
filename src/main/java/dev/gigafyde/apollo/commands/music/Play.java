@@ -69,7 +69,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> {
                 slash = true;
                 author = event.getAuthor();
-                event.deferReply(false).queue();
+                event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;

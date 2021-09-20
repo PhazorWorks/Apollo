@@ -5,7 +5,6 @@ package dev.gigafyde.apollo.core.command;
  https://github.com/GigaFyde
  */
 
-import dev.gigafyde.apollo.utils.Emoji;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +25,11 @@ public abstract class Command {
 
     public final void run(CommandEvent event) {
         try {
-            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
-            if (guildOnly && !event.isFromGuild()) {
-                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-                return;
-            }
+//            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
+//            if (guildOnly && !event.isFromGuild()) {
+//                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+//                return;
+//            }
             execute(event);
         } catch (Exception e) {
             event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
