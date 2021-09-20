@@ -8,7 +8,6 @@ package dev.gigafyde.apollo.core.command;
 import dev.gigafyde.apollo.core.Client;
 import java.util.List;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,8 +17,15 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class CommandEvent {
+public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
     private final String argument;
     private final Client client;
     private final Message trigger;
@@ -71,16 +77,15 @@ public class CommandEvent {
         return argument;
     }
 
-    public String getContentRaw() {
-        return trigger.getContentRaw();
+    @Override
+    public int getTypeRaw() {
+        return 0;
     }
 
-    public String getContentStripped() {
-        return trigger.getContentStripped();
-    }
-
-    public String getContentDisplay() {
-        return trigger.getContentDisplay();
+    @NotNull
+    @Override
+    public String getToken() {
+        return null;
     }
 
     public Guild getGuild() {
@@ -107,8 +112,36 @@ public class CommandEvent {
         return trigger.getTextChannel();
     }
 
+    @NotNull
+    @Override
+    public String getName() {
+        return null;
+    }
+
     public MessageChannel getChannel() {
         return trigger.getChannel();
+    }
+
+    @NotNull
+    @Override
+    public InteractionHook getHook() {
+        return null;
+    }
+
+    @Override
+    public boolean isAcknowledged() {
+        return false;
+    }
+
+    @NotNull
+    @Override
+    public ReplyAction deferReply() {
+        return null;
+    }
+
+    @Override
+    public long getCommandIdLong() {
+        return 0;
     }
 
     public String getChannelId() {
@@ -125,6 +158,12 @@ public class CommandEvent {
 
     public ChannelType getChannelType() {
         return trigger.getChannelType();
+    }
+
+    @NotNull
+    @Override
+    public User getUser() {
+        return null;
     }
 
     public String getMessageId() {
@@ -155,16 +194,37 @@ public class CommandEvent {
         return trigger.isFromType(ChannelType.TEXT);
     }
 
-    public boolean isFromDMs() {
-        return trigger.isFromType(ChannelType.PRIVATE);
+    @NotNull
+    @Override
+    public Message getTargetMessage() {
+        return null;
     }
 
-    public Category getCategory() {
-        return trigger.getCategory();
+    @Override
+    public long getTargetIdLong() {
+        return 0;
     }
 
-    public String getJumpUrl() {
-        return trigger.getJumpUrl();
+    @Nullable
+    @Override
+    public String getSubcommandName() {
+        return null;
     }
 
+    @Nullable
+    @Override
+    public String getSubcommandGroup() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public List<OptionMapping> getOptions() {
+        return null;
+    }
+
+    @Override
+    public long getIdLong() {
+        return 0;
+    }
 }

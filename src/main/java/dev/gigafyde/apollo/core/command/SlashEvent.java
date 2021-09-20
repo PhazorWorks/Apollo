@@ -15,19 +15,22 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class SlashEvent {
     private final Client client;
-    private final SlashCommandEvent event;
+    private final GenericCommandEvent event;
+    private final SlashCommandEvent slashCommandEvent;
 
-    public SlashEvent(Client client, SlashCommandEvent slashCommandEvent) {
+    public SlashEvent(Client client, GenericCommandEvent event) {
         this.client = client;
-        this.event = slashCommandEvent;
+        this.event = event;
+//        this.event = slashCommandEvent;
     }
 
-    public SlashCommandEvent getSlashCommandEvent() {
+    public GenericCommandEvent getEvent() {
         return event;
     }
 

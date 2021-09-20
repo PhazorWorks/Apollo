@@ -73,13 +73,13 @@ public class Play extends Command implements SongCallBack {
     protected void executeSlash(SlashEvent event) {
         slash = true;
         author = event.getAuthor();
-        event.getSlashCommandEvent().deferReply(false).queue();
-        hook = event.getSlashCommandEvent().getHook();
+        event.getEvent().deferReply(false).queue();
+        hook = event.getEvent().getHook();
         VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
         assert vc != null;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-        String args = event.getSlashCommandEvent().getOption("query").getAsString();
+        String args = event.getEvent().getName().getOption("query").getAsString();
         processArgument(args);
     }
 

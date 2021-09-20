@@ -86,7 +86,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(event.getName());
         if (command != null) {
             POOL.execute(() -> {
-                messageCommandEvent cmd = new messageCommandEvent(client, event);
+                messageCommandEvent cmd = new CommandEvent(client, event);
                 try {
                     command.executeContext(cmd);
                 } catch (Throwable t) {
