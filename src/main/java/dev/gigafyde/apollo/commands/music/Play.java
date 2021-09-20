@@ -51,6 +51,8 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 author = event.getAuthor();
                 message = event.getMessage();
+                slash = false;
+                context = false;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 assert vc != null;
@@ -68,6 +70,7 @@ public class Play extends Command implements SongCallBack {
             }
             case SLASH -> {
                 slash = true;
+                context = false;
                 author = event.getAuthor();
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
@@ -144,7 +147,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
-        if (hook != null) {
+        if (slash) {
             hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         } else {
             message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
@@ -152,7 +155,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void noMatches() {
-        if (hook != null) {
+        if (slash) {
             hook.editOriginal("No matches!").queue();
         } else {
             message.reply("No matches!").queue();
@@ -164,7 +167,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void spotifyUnsupported() {
-        if (hook != null) {
+        if (slash) {
             hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
         } else {
             message.reply("Invalid/Unsupported Spotify URL!").queue();
@@ -172,7 +175,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void spotifyFailed(Exception e) {
-        if (hook != null) {
+        if (slash) {
             hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         } else {
             message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
