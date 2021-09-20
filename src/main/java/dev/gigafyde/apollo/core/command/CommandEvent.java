@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.core.command;
 
 import dev.gigafyde.apollo.core.Client;
 import java.util.List;
+import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,6 +18,8 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
@@ -25,15 +28,48 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
-    private final String argument;
-    private final Client client;
-    private final Message trigger;
 
-    public CommandEvent(Client client, Message trigger, String argument) {
-        this.argument = argument;
-        this.client = client;
-        this.trigger = trigger;
+
+public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
+    private final Client client = null;
+    private final Message trigger = null;
+    private CommandType type = null;
+    private SlashCommandEvent slashCommandEvent;
+    private MessageContextCommandEvent messageContextCommandEvent;
+
+    private enum CommandType {
+        REGULAR,
+        SLASH,
+        CONTEXT,
+        UNDEFINED
+    }
+
+    public CommandEvent(Client client, Message trigger, String argument, SlashCommandEvent slashCommandEvent, MessageContextCommandEvent messageCommandEvent) {
+        if (trigger != null) {
+            this.type = CommandType.REGULAR;
+        }
+        if (slashCommandEvent != null) {
+            this.type = CommandType.SLASH;
+        }
+        if (messageCommandEvent != null) {
+            this.type = CommandType.CONTEXT;
+        }
+        else {
+            this.type = CommandType.UNDEFINED;
+        }
+        if (this.type == CommandType.UNDEFINED) {
+            return;
+        }
+
+
+//        this.argument = argument;
+//        this.client = client;
+//        this.trigger = trigger;
+
+    }
+
+    public CommandType getCommandType() {
+        return type;
     }
 
     public Client getClient() {
@@ -74,6 +110,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     }
 
     public String getArgument() {
+        String argument = "";
         return argument;
     }
 
@@ -217,11 +254,17 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         return null;
     }
 
-    @NotNull
     @Override
     public List<OptionMapping> getOptions() {
-        return null;
+        slashCommandEvent.getOption("");
+
+        return slashCommandEvent.getOptions();
     }
+
+    public OptionMapping getOption(@Nonnull String name) {
+        return slashCommandEvent.getOption(name);
+    }
+
 
     @Override
     public long getIdLong() {

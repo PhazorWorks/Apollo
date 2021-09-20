@@ -24,10 +24,11 @@ public class SlashEvent {
     private final GenericCommandEvent event;
     private final SlashCommandEvent slashCommandEvent;
 
-    public SlashEvent(Client client, GenericCommandEvent event) {
+    public SlashEvent(Client client, GenericCommandEvent event, SlashCommandEvent slashCommandEvent) {
         this.client = client;
         this.event = event;
 //        this.event = slashCommandEvent;
+        this.slashCommandEvent = slashCommandEvent;
     }
 
     public GenericCommandEvent getEvent() {

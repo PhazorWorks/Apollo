@@ -48,7 +48,6 @@ public class NowPlaying extends Command {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }

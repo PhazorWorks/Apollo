@@ -46,7 +46,6 @@ public class Skip extends Command {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }

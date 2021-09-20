@@ -62,7 +62,6 @@ public class Seek extends Command {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }

@@ -6,7 +6,6 @@ package dev.gigafyde.apollo.core.command;
  */
 
 import dev.gigafyde.apollo.utils.Emoji;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +20,9 @@ public abstract class Command {
 
     protected abstract void execute(CommandEvent event);
 
-    protected abstract void executeSlash(SlashEvent event);
-
-    protected abstract void executeContext(messageCommandEvent event);
+//    protected abstract void executeSlash(SlashEvent event);
+//
+//    protected abstract void executeContext(messageCommandEvent event);
 
     public final void run(CommandEvent event) {
         try {

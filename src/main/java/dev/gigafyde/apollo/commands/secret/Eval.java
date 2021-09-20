@@ -43,12 +43,10 @@ public final class Eval extends Command {
         this.guildOnly = false;
     }
 
-    @Override
     protected void executeSlash(SlashEvent event) {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }

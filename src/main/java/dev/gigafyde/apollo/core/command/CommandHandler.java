@@ -58,9 +58,9 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent event = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1]);
+                CommandEvent cmd = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1], null, null);
                 try {
-                    command.run(event);
+                    command.run(cmd);
                 } catch (Throwable t) {
                     log.error("COMMAND FAILED", t);
                 }
@@ -72,9 +72,9 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
         if (command != null) {
             POOL.execute(() -> {
-                SlashEvent event = new SlashEvent(client, slashCommandEvent);
+                CommandEvent cmd = new CommandEvent(client, null, null, slashCommandEvent, null);
                 try {
-                    command.executeSlash(event);
+                    command.run(cmd);
                 } catch (Throwable t) {
                     log.error("SLASH COMMAND FAILED", t);
                 }
@@ -86,9 +86,9 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(event.getName());
         if (command != null) {
             POOL.execute(() -> {
-                messageCommandEvent cmd = new CommandEvent(client, event);
+                CommandEvent cmd = new CommandEvent(client, null, null, null, event);
                 try {
-                    command.executeContext(cmd);
+                    command.run(cmd);
                 } catch (Throwable t) {
                     log.error("MESSAGE CONTEXT COMMAND FAILED", t);
                 }

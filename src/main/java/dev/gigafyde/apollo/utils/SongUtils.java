@@ -59,20 +59,20 @@ public class SongUtils {
     public static boolean passedVoiceChannelChecks(SlashEvent event) {
         VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
         if (vc == null) {
-            event.getSlashCommandEvent().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
+            event.getEvent().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
             return false;
         }
         EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
         if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-            event.getSlashCommandEvent().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
+            event.getEvent().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
             return false;
         }
         if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
-            event.getSlashCommandEvent().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
+            event.getEvent().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
             return false;
         }
         if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-            event.getSlashCommandEvent().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
+            event.getEvent().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
             return false;
         }
         return true;

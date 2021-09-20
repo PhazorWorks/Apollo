@@ -4,9 +4,14 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
-import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.awt.Color;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -16,14 +21,6 @@ import okhttp3.Response;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.*;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Lyrics extends Command {
 
@@ -62,32 +59,32 @@ public class Lyrics extends Command {
         }
     }
 
-    protected void executeSlash(SlashEvent event) {
-        slash = true;
-        event.getSlashCommandEvent().deferReply(false).queue();
-        hook = event.getSlashCommandEvent().getHook();
-        if (event.getSlashCommandEvent().getOption("query") == null) {
-            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-            if (track == null) {
-                hook.editOriginal("**Nothing is currently playing.**").queue();
-                return;
-            }
-            String query = sendRequest(track.getInfo().title);
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
-        } else {
-            String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
-        }
-    }
-
-    @Override
-    protected void executeContext(messageCommandEvent event) {
-
-    }
+//    protected void executeSlash(SlashEvent event) {
+//        slash = true;
+//        event.getEvent().deferReply(false).queue();
+//        hook = event.getEvent().getHook();
+//        if (event.getEvent().getOption("query") == null) {
+//            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+//            if (track == null) {
+//                hook.editOriginal("**Nothing is currently playing.**").queue();
+//                return;
+//            }
+//            String query = sendRequest(track.getInfo().title);
+//            if (query == null) return;
+//            JSONObject song = new JSONObject(query);
+//            sendEmbed(song);
+//        } else {
+//            String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
+//            if (query == null) return;
+//            JSONObject song = new JSONObject(query);
+//            sendEmbed(song);
+//        }
+//    }
+//
+//    @Override
+//    protected void executeContext(messageCommandEvent event) {
+//
+//    }
 
     private void sendEmbed(JSONObject song) {
         String title = String.format("%s - %s", song.getString("artist"), song.getString("name"));

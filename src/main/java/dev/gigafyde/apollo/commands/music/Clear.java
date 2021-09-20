@@ -39,7 +39,6 @@ public class Clear extends Command {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }

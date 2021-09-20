@@ -31,7 +31,6 @@ public class Restart extends Command {
 
     }
 
-    @Override
     protected void executeContext(messageCommandEvent event) {
 
     }
