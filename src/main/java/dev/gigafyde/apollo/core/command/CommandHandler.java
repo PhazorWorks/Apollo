@@ -58,7 +58,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(client, trigger, parts.length == 1 ? "" : parts[1], null, null);
+                CommandEvent cmd = new CommandEvent(command, client, trigger, parts.length == 1 ? "" : parts[1], null, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -72,7 +72,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(client, null, null, slashCommandEvent, null);
+                CommandEvent cmd = new CommandEvent(command, client, null, null, slashCommandEvent, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -86,7 +86,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(event.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(client, null, null, null, event);
+                CommandEvent cmd = new CommandEvent(command, client, null, null, null, event);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
