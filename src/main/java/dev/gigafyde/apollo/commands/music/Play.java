@@ -125,7 +125,8 @@ public class Play extends Command implements SongCallBack {
                 hook.editOriginal("Queued " + track.getInfo().title).queue();
             }
         } else if (context) {
-            event.reply("Added to queue!").setEphemeral(true).queue();
+            event.deferReply().setEphemeral(true).queue();
+            event.getHook().editOriginal(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
             // Untested!
         } else {
             if (Main.USE_IMAGE_GEN) {
