@@ -53,6 +53,13 @@ public class CommandHandler {
         handleCommand(cmdAndArgs, trigger);
     }
 
+    public enum CommandOriginType {
+        REGULAR,
+        SLASH,
+        CONTEXT,
+        UNDEFINED
+    }
+
     private void handleCommand(String cmdAndArgs, Message trigger) {
         String[] parts = cmdAndArgs.split("\\s+", 2);
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
@@ -82,11 +89,12 @@ public class CommandHandler {
             });
         }
     }
+
     public void handleMessageContextCommand(MessageContextCommandEvent event) {
         Command command = client.getCommandRegistry().getCommand(event.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, null, null, null, event);
+                CommandEvent cmd = new CommandEvent(command, client, CommandEvent.CommandType.CONTEXT, null, null, event);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {

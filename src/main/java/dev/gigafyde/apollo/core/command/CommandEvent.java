@@ -34,36 +34,29 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     private Client client;
     private Message trigger = null;
     private String argument = "";
-    private CommandType type;
+    private CommandHandler.CommandOriginType type;
     private SlashCommandEvent slashCommandEvent;
     private MessageContextCommandEvent messageContextCommandEvent;
 
-    public enum CommandType {
-        REGULAR,
-        SLASH,
-        CONTEXT,
-        UNDEFINED
-    }
-
-    public CommandEvent(Command command, Client client, Message trigger, String argument, SlashCommandEvent slashCommandEvent, MessageContextCommandEvent messageCommandEvent) {
+    public CommandEvent(Command command, Client client, CommandHandler.CommandOriginType type, Message trigger, String argument, SlashCommandEvent slashCommandEvent, MessageContextCommandEvent messageCommandEvent) {
+        this.type = type;
         this.command = command;
         this.client = client;
-        if (trigger != null) {
-            this.type = CommandType.REGULAR;
-            this.argument = argument;
-            this.trigger = trigger;
-        }
-        if (slashCommandEvent != null) {
-            this.type = CommandType.SLASH;
-            this.slashCommandEvent = slashCommandEvent;
-        }
-        if (messageCommandEvent != null) {
-            this.type = CommandType.CONTEXT;
-            this.messageContextCommandEvent = messageCommandEvent;
+        switch (type) {
+            case REGULAR -> {
+                this.argument = argument;
+                this.trigger = trigger;
+            }
+            case SLASH -> {
+                this.slashCommandEvent = slashCommandEvent;
+            }
+            case CONTEXT -> {
+                this.messageContextCommandEvent = messageCommandEvent;
+            }
         }
     }
 
-    public CommandType getCommandType() {
+    public CommandHandler.CommandOriginType getCommandType() {
         return type;
     }
 
@@ -71,9 +64,8 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
         return client;
     }
 
-
     public Message getMessage() {
-        if (type == CommandType.REGULAR) return trigger;
+        if (type == CommandHandler.CommandOriginType.REGULAR) return trigger;
         return null;
     }
 
@@ -138,7 +130,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     }
 
     public String getArgument() {
-        if (type == CommandType.REGULAR) {
+        if (type == CommandHandler.CommandOriginType.REGULAR) {
             return argument;
         }
         return "";
@@ -320,7 +312,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     @NotNull
     @Override
     public Message getTargetMessage() {
-        if (type == CommandType.CONTEXT) {
+        if (type == CommandHandler.CommandOriginType.CONTEXT) {
             return messageContextCommandEvent.getTargetMessage();
         }
         return null;
@@ -328,7 +320,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
 
     @Override
     public long getTargetIdLong() {
-        if (type == CommandType.CONTEXT) {
+        if (type == CommandHandler.CommandOriginType.CONTEXT) {
             return messageContextCommandEvent.getTargetIdLong();
         }
         return 0;
@@ -337,7 +329,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     @Nullable
     @Override
     public String getSubcommandName() {
-        if (type == CommandType.SLASH) {
+        if (type == CommandHandler.CommandOriginType.SLASH) {
             return slashCommandEvent.getSubcommandName();
         }
         return null;
@@ -346,7 +338,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     @Nullable
     @Override
     public String getSubcommandGroup() {
-        if (type == CommandType.SLASH) {
+        if (type == CommandHandler.CommandOriginType.SLASH) {
             return slashCommandEvent.getSubcommandGroup();
         }
         return null;
