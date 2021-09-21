@@ -16,15 +16,13 @@ import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
-
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
 public class Play extends Command implements SongCallBack {
@@ -113,31 +111,35 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void trackHasLoaded(AudioTrack track) {
-        if (slash) {
-            if (Main.USE_IMAGE_GEN) {
-                try {
-                    hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                    hook.editOriginal("Queued " + track.getInfo().title).queue();
-                }
-            } else {
-                hook.editOriginal("Queued " + track.getInfo().title).queue();
-            }
-        } else if (context) {
-            event.deferReply().setEphemeral(true).queue();
-            event.getHook().editOriginal(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
-            // Untested!
-        } else {
-            if (Main.USE_IMAGE_GEN) {
-                try {
-                    message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
-                } catch (Exception e) {
-                    log.error(e.getMessage());
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                if (Main.USE_IMAGE_GEN) {
+                    try {
+                        message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
+                    } catch (Exception e) {
+                        log.error(e.getMessage());
+                        message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+                    }
+                } else {
                     message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
                 }
-            } else {
-                message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
+            }
+            case SLASH -> {
+                if (Main.USE_IMAGE_GEN) {
+                    try {
+                        hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                    } catch (Exception e) {
+                        log.error(e.getMessage());
+                        hook.editOriginal("Queued " + track.getInfo().title).queue();
+                    }
+                } else {
+                    hook.editOriginal("Queued " + track.getInfo().title).queue();
+                }
+            }
+            case CONTEXT -> {
+                event.deferReply().setEphemeral(true).queue();
+                event.getHook().editOriginal(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
+                // Untested!
             }
         }
         SongCallBackListener.removeListener(this);
