@@ -16,13 +16,15 @@ import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
 public class Play extends Command implements SongCallBack {
@@ -70,7 +72,7 @@ public class Play extends Command implements SongCallBack {
             }
             case SLASH -> {
                 slash = true;
-                context =false;
+                context = false;
                 author = event.getAuthor();
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
@@ -85,6 +87,7 @@ public class Play extends Command implements SongCallBack {
             case CONTEXT -> {
                 slash = false;
                 context = true;
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());

@@ -81,6 +81,27 @@ public class SongUtils {
                 }
                 return true;
             }
+            case CONTEXT -> {
+                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                if (vc == null) {
+                    event.reply("**Please join a voice channel first!**").setEphemeral(true).queue();
+                    return false;
+                }
+                EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
+                if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
+                    event.reply("**I am unable to see this voice channel!**").setEphemeral(true).queue();
+                    return false;
+                }
+                if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
+                    event.reply("**I am unable to connect to this voice channel**").setEphemeral(true).queue();
+                    return false;
+                }
+                if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
+                    event.reply("**I am unable to speak in this voice channel!**").setEphemeral(true).queue();
+                    return false;
+                }
+                return true;
+            }
         }
         return true;
     }
