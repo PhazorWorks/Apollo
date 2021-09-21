@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,8 @@ public class SlashRegister extends ListenerAdapter {
 //        jda.upsertCommand(play).queue();
 //        jda.upsertCommand(ping).queue();
 //        jda.upsertCommand(rewind).queue();
+        CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
+//        jda.getGuildById(381926472564211723L).upsertCommand(addToQueue).queue();
         if (!(Main.LYRICS_WEB_SERVER == null) & !(Main.LYRICS_API_KEY == null)) {
             // Only register it if those values are defined
             jda.upsertCommand(lyrics).queue();
