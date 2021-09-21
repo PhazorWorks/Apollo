@@ -71,6 +71,7 @@ public class Play extends Command implements SongCallBack {
                 author = event.getAuthor();
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
