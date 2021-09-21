@@ -302,11 +302,25 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
     }
 
     public List<Message.Attachment> getAttachments() {
-        return trigger.getAttachments();
+        if (type == CommandHandler.CommandOriginType.REGULAR) {
+            return trigger.getAttachments();
+        }
+        return null;
     }
 
     public boolean isFromGuild() {
-        return trigger.isFromType(ChannelType.TEXT);
+        switch (type) {
+            case REGULAR -> {
+                return trigger.isFromGuild();
+            }
+            case SLASH -> {
+                return slashCommandEvent.isFromGuild();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.isFromGuild();
+            }
+        }
+        return false;
     }
 
     @NotNull

@@ -20,7 +20,6 @@ import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +32,9 @@ public class Play extends Command implements SongCallBack {
     private User author;
     private Message message;
     private InteractionHook hook;
-    private MessageContextCommandEvent cmd;
     private boolean slash = false;
     private boolean context = false;
+    private CommandEvent event;
 
     public Play() {
         this.name = "play";
@@ -47,6 +46,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     protected void execute(CommandEvent event) {
+        this.event = event;
         switch (event.getCommandType()) {
             case REGULAR -> {
                 author = event.getAuthor();
@@ -78,26 +78,17 @@ public class Play extends Command implements SongCallBack {
                 String args = event.getOption("query").getAsString();
                 processArgument(args);
             }
+            case CONTEXT -> {
+                context = true;
+                VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
+                assert vc != null;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                String args = event.getTargetMessage().getContentRaw();
+                processArgument(args);
+            }
         }
-
-
     }
-
-//    protected void executeSlash(SlashEvent event) {
-//
-//    }
-//
-//    @Override
-//    protected void executeContext(messageCommandEvent event) {
-//        context = true;
-//        cmd = event.getMessageCommandEvent();
-//        VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
-//        assert vc != null;
-//        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-//        if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-//        String args = cmd.getTargetMessage().getContentRaw();
-//        processArgument(args);
-//    }
 
     private void processArgument(String arguments) {
         SongCallBackListener.addListener(this); //setup callback
@@ -113,7 +104,6 @@ public class Play extends Command implements SongCallBack {
         }
     }
 
-
     public void trackHasLoaded(AudioTrack track) {
         if (slash) {
             if (Main.USE_IMAGE_GEN) {
@@ -127,7 +117,8 @@ public class Play extends Command implements SongCallBack {
                 hook.editOriginal("Queued " + track.getInfo().title).queue();
             }
         } else if (context) {
-            cmd.reply("Added to queue!").setEphemeral(true).queue();
+            event.reply("Added to queue!").setEphemeral(true).queue();
+            // Untested!
         } else {
             if (Main.USE_IMAGE_GEN) {
                 try {
