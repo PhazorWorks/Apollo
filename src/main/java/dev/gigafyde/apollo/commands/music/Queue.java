@@ -23,7 +23,7 @@ public class Queue extends Command {
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
         if (scheduler.getQueue().isEmpty()) {
-            event.getMessage().reply("Queue is currently empty").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Queue is currently empty**").mentionRepliedUser(true).queue();
             return;
         }
         List<AudioTrack> queuedTracks = new ArrayList<>(scheduler.getQueue());
