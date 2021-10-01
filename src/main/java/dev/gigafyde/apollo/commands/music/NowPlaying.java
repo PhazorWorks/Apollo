@@ -75,6 +75,6 @@ public class NowPlaying extends Command {
 
     protected void send(InputStream inputStream, String name) {
         if (slash) hook.editOriginal(inputStream, name).queue();
-        else message.reply(inputStream, name).queue();
+        else message.reply(inputStream, name).mentionRepliedUser(false).queue();
     }
 }

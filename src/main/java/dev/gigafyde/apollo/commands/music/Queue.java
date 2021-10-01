@@ -57,12 +57,4 @@ public class Queue extends Command {
         eb.setFooter("Page " + page + " of " + maxPages, null);
         event.getMessage().replyEmbeds(eb.build()).mentionRepliedUser(false).queue();
     }
-
-    protected void executeSlash(SlashEvent event) {
-
-    }
-
-    protected void executeContext(messageCommandEvent event) {
-
-    }
 }

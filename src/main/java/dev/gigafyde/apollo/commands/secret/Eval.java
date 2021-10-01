@@ -8,17 +8,16 @@ package dev.gigafyde.apollo.commands.secret;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
-import dev.gigafyde.apollo.core.command.messageCommandEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.Haste;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public final class Eval extends Command {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("Eval Pool");
@@ -41,14 +40,6 @@ public final class Eval extends Command {
         this.hidden = true;
         this.ownerOnly = true;
         this.guildOnly = false;
-    }
-
-    protected void executeSlash(SlashEvent event) {
-
-    }
-
-    protected void executeContext(messageCommandEvent event) {
-
     }
 
     protected void execute(CommandEvent event) {

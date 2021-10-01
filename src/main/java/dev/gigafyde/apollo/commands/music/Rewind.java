@@ -5,10 +5,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.concurrent.TimeUnit;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+
+import java.util.concurrent.TimeUnit;
 
 public class Rewind extends Command {
     private static Message message;
@@ -37,28 +38,6 @@ public class Rewind extends Command {
         }
         rewindSong(args, player);
     }
-//    protected void executeSlash(SlashEvent event) {
-//        slash = true;
-//        event.getEvent().deferReply(false).queue();
-//        hook = event.getEvent().getHook();
-//        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
-//        AudioTrack track = player.getPlayingTrack();
-//        String args = event.getEvent().getOption("amount").getAsString();
-//        if (!SongUtils.passedVoiceChannelChecks(event)) return;
-//        if (track == null) {
-//            hook.editOriginal("**Nothing is currently playing.**").queue();
-//            return;
-//        }
-//        if (event.getEvent().getOption("amount") == null) {
-//            hook.editOriginal("Please provide a new position in seconds.").queue();
-//            return;
-//        }
-//        rewindSong(args, player);
-//    }
-//
-//    protected void executeContext(messageCommandEvent event) {
-//
-//    }
 
     private void rewindSong(String args, LavalinkPlayer player) {
         try {

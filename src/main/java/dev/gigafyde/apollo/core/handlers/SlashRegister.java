@@ -24,7 +24,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData ping = new CommandData("ping", "pong");
         CommandData play = new CommandData("play", "Add a song to the queue").addOption(OptionType.STRING, "query", "Your search query or URL", true);
         CommandData rewind = new CommandData("rewind", "Rewinds the specified amount in current song").addOption(OptionType.STRING, "amount", "The amount to rewind", true);
-        CommandData lyrics = new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", true);
+        CommandData lyrics = new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", false);
         CommandData clear = new CommandData("clear", "Clears the queue");
         CommandData loop = new CommandData("loop", "Loop track or queue");
         CommandData nowPlaying = new CommandData("now-playing", "Shows current playing song");

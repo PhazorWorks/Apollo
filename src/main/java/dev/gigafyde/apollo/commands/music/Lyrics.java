@@ -59,33 +59,6 @@ public class Lyrics extends Command {
         }
     }
 
-//    protected void executeSlash(SlashEvent event) {
-//        slash = true;
-//        event.getEvent().deferReply(false).queue();
-//        hook = event.getEvent().getHook();
-//        if (event.getEvent().getOption("query") == null) {
-//            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-//            if (track == null) {
-//                hook.editOriginal("**Nothing is currently playing.**").queue();
-//                return;
-//            }
-//            String query = sendRequest(track.getInfo().title);
-//            if (query == null) return;
-//            JSONObject song = new JSONObject(query);
-//            sendEmbed(song);
-//        } else {
-//            String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
-//            if (query == null) return;
-//            JSONObject song = new JSONObject(query);
-//            sendEmbed(song);
-//        }
-//    }
-//
-//    @Override
-//    protected void executeContext(messageCommandEvent event) {
-//
-//    }
-
     private void sendEmbed(JSONObject song) {
         String title = String.format("%s - %s", song.getString("artist"), song.getString("name"));
         String lyrics = song.getString("lyrics");

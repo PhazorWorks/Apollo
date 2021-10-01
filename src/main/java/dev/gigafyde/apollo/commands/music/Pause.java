@@ -66,6 +66,6 @@ public class Pause extends Command {
 
     protected void send(String content) {
         if (slash) hook.editOriginal(content).queue();
-        else message.reply(content).queue();
+        else message.reply(content).mentionRepliedUser(false).queue();
     }
 }
