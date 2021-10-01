@@ -19,17 +19,17 @@ public abstract class Command {
 
     protected abstract void execute(CommandEvent event);
 
-//    protected abstract void executeSlash(SlashEvent event);
-//
-//    protected abstract void executeContext(messageCommandEvent event);
-
     public final void run(CommandEvent event) {
         try {
-//            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
-//            if (guildOnly && !event.isFromGuild()) {
-//                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-//                return;
-//            }
+            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return; //TODO needs to be tested
+
+            /*TODO this needs to be rewritten to the new methods
+            if (guildOnly && !event.isFromGuild()) {
+                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                return;
+            }
+            */
+
             execute(event);
         } catch (Exception e) {
             switch (event.getCommandType()) {
