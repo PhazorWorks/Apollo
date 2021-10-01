@@ -132,6 +132,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         } else {
             queue.clear();
             player.stopTrack();
+            return;
         }
         if (queue.isEmpty()) {
             player.stopTrack();
