@@ -12,8 +12,6 @@ public class Loop extends Command {
 
     private Message message;
     private InteractionHook hook;
-    private boolean slash = false;
-    private boolean context = false;
     private CommandEvent event;
 
     public Loop() {
@@ -24,7 +22,6 @@ public class Loop extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        slash = false;
         switch (event.getCommandType()) {
             case REGULAR -> {
                 message = event.getMessage();
@@ -32,15 +29,10 @@ public class Loop extends Command {
                 loop();
             }
             case SLASH -> {
-                slash = true;
                 hook = event.getHook();
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 loop();
-            }
-            case CONTEXT -> {
-                context = true;
-                slash = false;
             }
         }
     }

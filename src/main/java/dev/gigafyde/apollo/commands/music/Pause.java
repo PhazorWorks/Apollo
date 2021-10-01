@@ -17,8 +17,6 @@ public class Pause extends Command {
 
     private Message message;
     private InteractionHook hook;
-    private boolean slash = false;
-    private boolean context = false;
     private CommandEvent event;
 
     public Pause() {
@@ -28,21 +26,16 @@ public class Pause extends Command {
     }
 
     protected void execute(CommandEvent event) {
-    this.event = event;
+        this.event = event;
         switch (event.getCommandType()) {
             case REGULAR -> {
-                slash = false;
                 message = event.getMessage();
                 pause();
             }
             case SLASH -> {
-                slash = true;
                 hook = event.getHook();
                 event.deferReply().queue();
                 pause();
-            }
-            case CONTEXT -> {
-                slash = false;
             }
         }
     }
@@ -56,16 +49,20 @@ public class Pause extends Command {
             return;
         }
         scheduler.getPlayer().setPaused(true);
-        send("**Paused at: `"  + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer())  + "`**");
+        send("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()) + "`**");
     }
 
     protected void sendError(String error) {
-        if (slash) hook.editOriginal(error).queue();
-        else message.reply(error).mentionRepliedUser(true).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
+        }
     }
 
     protected void send(String content) {
-        if (slash) hook.editOriginal(content).queue();
-        else message.reply(content).mentionRepliedUser(false).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).queue();
+            case SLASH -> hook.editOriginal(content).queue();
+        }
     }
 }

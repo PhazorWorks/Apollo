@@ -15,8 +15,6 @@ public class NowPlaying extends Command {
 
     private Message message;
     private InteractionHook hook;
-    private boolean slash = false;
-    private boolean context = false;
     private CommandEvent event;
 
     public NowPlaying() {
@@ -29,18 +27,13 @@ public class NowPlaying extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                slash = false;
                 message = event.getMessage();
                 nowPlaying();
             }
             case SLASH -> {
                 event.deferReply().queue();
-                slash = true;
                 hook = event.getHook();
                 nowPlaying();
-            }
-            case CONTEXT -> {
-                slash = false;
             }
         }
     }
@@ -69,12 +62,16 @@ public class NowPlaying extends Command {
     }
 
     protected void sendError(String error) {
-        if (slash) hook.editOriginal(error).queue();
-        else message.reply(error).mentionRepliedUser(true).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
+        }
     }
 
     protected void send(InputStream inputStream, String name) {
-        if (slash) hook.editOriginal(inputStream, name).queue();
-        else message.reply(inputStream, name).mentionRepliedUser(false).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(inputStream, name).mentionRepliedUser(false).queue();
+            case SLASH -> hook.editOriginal(inputStream, name).queue();
+        }
     }
 }

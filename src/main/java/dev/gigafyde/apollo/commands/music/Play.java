@@ -16,13 +16,15 @@ import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
 public class Play extends Command implements SongCallBack {
@@ -32,8 +34,6 @@ public class Play extends Command implements SongCallBack {
     private User author;
     private Message message;
     private InteractionHook hook;
-    private boolean slash = false;
-    private boolean context = false;
     private CommandEvent event;
 
     public Play() {
@@ -51,8 +51,6 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 author = event.getAuthor();
                 message = event.getMessage();
-                slash = false;
-                context = false;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 assert vc != null;
@@ -62,15 +60,13 @@ public class Play extends Command implements SongCallBack {
                     if (!event.getAttachments().isEmpty()) {
                         processArgument(event.getAttachments().get(0).getUrl());
                     } else {
-                        event.getMessage().reply("**Please provide a search query.**").queue();
+                        message.reply("**Please provide a search query.**").queue();
                     }
                     return;
                 }
                 processArgument(event.getArgument());
             }
             case SLASH -> {
-                slash = true;
-                context = false;
                 author = event.getAuthor();
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
@@ -83,8 +79,6 @@ public class Play extends Command implements SongCallBack {
                 processArgument(args);
             }
             case CONTEXT -> {
-                slash = false;
-                context = true;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
@@ -137,27 +131,23 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             case CONTEXT -> {
-                event.deferReply().setEphemeral(true).queue();
-                event.getHook().editOriginal(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
-                // Untested!
+                event.reply("Added song to queue").setEphemeral(true).queue();
             }
         }
         SongCallBackListener.removeListener(this);
     }
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
-        if (slash) {
-            hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
-        } else {
-            message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+            case SLASH -> hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         }
     }
 
     public void noMatches() {
-        if (slash) {
-            hook.editOriginal("No matches!").queue();
-        } else {
-            message.reply("No matches!").queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply("No matches!").queue();
+            case SLASH -> hook.editOriginal("No matches!").queue();
         }
     }
 
@@ -166,18 +156,16 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void spotifyUnsupported() {
-        if (slash) {
-            hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
-        } else {
-            message.reply("Invalid/Unsupported Spotify URL!").queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply("Invalid/Unsupported Spotify URL!").queue();
+            case SLASH -> hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
         }
     }
 
     public void spotifyFailed(Exception e) {
-        if (slash) {
-            hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
-        } else {
-            message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
+            case SLASH -> hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         }
     }
 }

@@ -13,13 +13,11 @@ public class Clear extends Command {
     private TrackScheduler scheduler;
     private Message message;
     private InteractionHook hook;
-    private boolean slash = false;
-    private boolean context = false;
     private CommandEvent event;
 
     public Clear() {
         this.name = "clear";
-        this.triggers = new String[]{"clear", "cls"};
+        this.triggers = new String[]{"clear", "cls", "clr"};
     }
 
     protected void execute(CommandEvent event) {
@@ -28,29 +26,24 @@ public class Clear extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 message = event.getMessage();
-                slash = false;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) {
                     scheduler = makeScheduler();
                 }
                 clear(scheduler);
-                send();
+                send("**Queue cleared**");
             }
             case SLASH -> {
-                slash = true;
                 hook = event.getHook();
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) {
                     scheduler = makeScheduler();
                 }
                 clear(scheduler);
-                send();
-            }
-            case CONTEXT -> {
-                slash = false;
+                send("**Queue cleared**");
             }
         }
     }
@@ -64,17 +57,19 @@ public class Clear extends Command {
         try {
             scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
         } catch (InsufficientPermissionException ignored) {
-            if (slash) hook.editOriginal("**Cannot join VC**").queue();
-            else message.reply("**Cannot join VC**").mentionRepliedUser(true).queue();
-            return scheduler;
+            switch (event.getCommandType()) {
+                case SLASH -> hook.editOriginal("**Cannot join VC**").queue();
+                case REGULAR -> message.reply("**Cannot join VC**").mentionRepliedUser(true).queue();
+            }
         }
         return null;
     }
 
-    protected void send() {
-        String content = "**Queue cleared**";
-        if (slash) hook.editOriginal(content).queue();
-        else message.reply(content).queue();
+    protected void send(String content) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).queue();
+            case SLASH -> hook.editOriginal(content).queue();
+        }
     }
 
 }
