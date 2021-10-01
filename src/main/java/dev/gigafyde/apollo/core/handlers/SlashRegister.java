@@ -26,6 +26,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData rewind = new CommandData("rewind", "Rewinds the specified amount in current song").addOption(OptionType.STRING, "amount", "The amount to rewind", true);
         CommandData lyrics = new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", true);
         CommandData clear = new CommandData("clear", "Clears the queue");
+        CommandData loop = new CommandData("loop", "Loop track or queue");
         // Message context commands
         CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
         // Register slash commands
@@ -33,7 +34,9 @@ public class SlashRegister extends ListenerAdapter {
 //        jda.upsertCommand(play).queue();
 //        jda.upsertCommand(ping).queue();
 //        jda.upsertCommand(rewind).queue();
+//        jda.upsertCommand(loop).queue();
         // Register message context commands
+//           jda.upsertCommand(addToQueue).queue();
         if (!(Main.LYRICS_WEB_SERVER == null) & !(Main.LYRICS_API_KEY == null)) {
             // Only register if those values are defined
             jda.upsertCommand(lyrics).queue();
