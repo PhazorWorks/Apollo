@@ -4,27 +4,51 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
-import java.io.InputStream;
-
-import dev.gigafyde.apollo.core.command.messageCommandEvent;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import okhttp3.*;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+
 public class NowPlaying extends Command {
+
+    private Message message;
+    private InteractionHook hook;
+    private boolean slash = false;
+    private boolean context = false;
+    private CommandEvent event;
+
     public NowPlaying() {
         this.name = "nowplaying";
-        this.triggers = new String[]{"np", "current"};
+        this.triggers = new String[]{"np", "current", "now-playing"};
     }
 
     protected void execute(CommandEvent event) {
+        this.event = event;
+
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                slash = false;
+                message = event.getMessage();
+                nowPlaying();
+            }
+            case SLASH -> {
+                event.deferReply().queue();
+                slash = true;
+                hook = event.getHook();
+                nowPlaying();
+            }
+            case CONTEXT -> {
+                slash = false;
+            }
+        }
+    }
+
+    protected void nowPlaying() {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
-            event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
+            sendError("**Nothing is currently playing.**");
             return;
         }
         try {
@@ -38,17 +62,19 @@ public class NowPlaying extends Command {
                             .post(body)
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
-            event.getMessage().reply(inputStream, "test.png").mentionRepliedUser(false).queue();
+            send(inputStream, "song.png");
         } catch (Exception ignored) {
-            event.getMessage().reply("Something went wrong trying to generate the image.").queue();
+            sendError("Something went wrong trying to generate the image.");
         }
     }
 
-    protected void executeSlash(SlashEvent event) {
-
+    protected void sendError(String error) {
+        if (slash) hook.editOriginal(error).queue();
+        else message.reply(error).mentionRepliedUser(true).queue();
     }
 
-    protected void executeContext(messageCommandEvent event) {
-
+    protected void send(InputStream inputStream, String name) {
+        if (slash) hook.editOriginal(inputStream, name).queue();
+        else message.reply(inputStream, name).queue();
     }
 }

@@ -32,7 +32,14 @@ public abstract class Command {
 //            }
             execute(event);
         } catch (Exception e) {
-            event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+            switch (event.getCommandType()) {
+                case REGULAR -> {
+                    event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                }
+                case SLASH -> {
+                    event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                }
+            }
             log.warn("Unexpected exception!", e);
         }
     }

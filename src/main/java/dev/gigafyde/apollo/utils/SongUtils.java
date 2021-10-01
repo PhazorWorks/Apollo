@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -117,12 +118,12 @@ public class SongUtils {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    public static String getSongProgress(AudioTrack track) {
-        long dms = track.getDuration();
-        long pms = track.getPosition();
+    public static String getSongProgress(LavalinkPlayer player) {
+        long dms = player.getPlayingTrack().getDuration();
+        long pms = player.getTrackPosition();
         long pmin = TimeUnit.MILLISECONDS.toMinutes(pms);
         long psec = TimeUnit.MILLISECONDS.toSeconds(pms) % 60;
-        String duration = calculateSongLength(track);
+        String duration = calculateSongLength(player.getPlayingTrack());
         return String.format("%d:%02d/%s", pmin, psec, duration);
     }
 
