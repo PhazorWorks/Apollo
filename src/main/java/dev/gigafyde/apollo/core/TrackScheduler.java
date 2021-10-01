@@ -121,18 +121,21 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     }
 
     public void skip(int amount) {
+        if (amount == 1) {
+            nextSong(null);
+            return;
+        }
         if (queue.size() > amount) {
-            for (int i = 1; i < amount; i++) {
+            for (int i = 0; i < amount; i++) {
                 queue.remove();
             }
         } else {
             queue.clear();
             player.stopTrack();
         }
-        if (amount == 1 & queue.isEmpty()) {
+        if (queue.isEmpty()) {
             player.stopTrack();
-        } else
-            nextSong(null);
+        }
     }
 
     public void clear() {
