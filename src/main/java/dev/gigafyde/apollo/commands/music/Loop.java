@@ -67,12 +67,16 @@ public class Loop extends Command {
     }
 
     protected void sendError(String error) {
-        if (slash) hook.editOriginal(error).queue();
-        else message.reply(error).mentionRepliedUser(true).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
+        }
     }
 
     protected void send(String content) {
-        if (slash) hook.editOriginal(content).queue();
-        else message.reply(content).mentionRepliedUser(true).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(content).queue();
+        }
     }
 }
