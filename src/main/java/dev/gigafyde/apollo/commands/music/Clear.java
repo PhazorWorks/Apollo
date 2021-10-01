@@ -28,6 +28,7 @@ public class Clear extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 message = event.getMessage();
+                slash = false;
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) {
@@ -49,7 +50,7 @@ public class Clear extends Command {
                 send();
             }
             case CONTEXT -> {
-                context = true;
+                slash = false;
             }
         }
     }
@@ -61,7 +62,7 @@ public class Clear extends Command {
 
     protected TrackScheduler makeScheduler() {
         try {
-            scheduler = event.getClient().getMusicManager().addScheduler(event.getVoiceChannel(), false);
+            scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
         } catch (InsufficientPermissionException ignored) {
             if (slash) hook.editOriginal("**Cannot join VC**").queue();
             else message.reply("**Cannot join VC**").mentionRepliedUser(true).queue();
