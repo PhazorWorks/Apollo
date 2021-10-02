@@ -4,6 +4,7 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import okhttp3.*;
@@ -56,15 +57,23 @@ public class NowPlaying extends Command {
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
             send(inputStream, "song.png");
-        } catch (Exception ignored) {
-            sendError("Something went wrong trying to generate the image.");
+        } catch (Exception e) {
+            sendError("Something went wrong trying to generate the image. " + e);
+            send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()));
         }
     }
 
     protected void sendError(String error) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case REGULAR -> message.reply(error).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(error).queue();
+        }
+    }
+
+    protected void send(String content) {
+        switch (event.getCommandType()){
+            case REGULAR -> message.reply(content).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(content).queue();
         }
     }
 
