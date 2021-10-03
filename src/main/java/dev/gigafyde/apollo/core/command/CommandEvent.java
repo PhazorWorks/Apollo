@@ -7,164 +7,380 @@ package dev.gigafyde.apollo.core.command;
 
 import dev.gigafyde.apollo.core.Client;
 import java.util.List;
+import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class CommandEvent {
-    private final String argument;
-    private final Client client;
-    private final Message trigger;
 
-    public CommandEvent(Client client, Message trigger, String argument) {
-        this.argument = argument;
+@SuppressWarnings("ConstantConditions")
+public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
+    private Command command;
+    private Client client;
+    private Message trigger = null;
+    private String argument = "";
+    private CommandHandler.CommandOriginType type;
+    private SlashCommandEvent slashCommandEvent;
+    private MessageContextCommandEvent messageContextCommandEvent;
+
+    public CommandEvent(Command command, Client client, CommandHandler.CommandOriginType type, Message trigger, String argument, SlashCommandEvent slashCommandEvent, MessageContextCommandEvent messageCommandEvent) {
+        this.type = type;
+        this.command = command;
         this.client = client;
-        this.trigger = trigger;
+        switch (type) {
+            case REGULAR -> {
+                this.argument = argument;
+                this.trigger = trigger;
+            }
+            case SLASH -> {
+                this.slashCommandEvent = slashCommandEvent;
+            }
+            case CONTEXT -> {
+                this.messageContextCommandEvent = messageCommandEvent;
+            }
+        }
+    }
+
+    public CommandHandler.CommandOriginType getCommandType() {
+        return type;
     }
 
     public Client getClient() {
         return client;
     }
 
-    public Message getTrigger() {
-        return trigger;
-    }
-
     public Message getMessage() {
-        return trigger;
+        if (type == CommandHandler.CommandOriginType.REGULAR) return trigger;
+        return null;
     }
 
     public User getAuthor() {
-        return trigger.getAuthor();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getAuthor();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getUser();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getUser();
+            }
+        }
+        return null;
     }
 
     public Member getMember() {
-        return trigger.getMember();
-    }
-
-    public String getAuthorId() {
-        return trigger.getAuthor().getId();
-    }
-
-    public Long getAuthorIdLong() {
-        return trigger.getAuthor().getIdLong();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getMember();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getMember();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getMember();
+            }
+        }
+        return null;
     }
 
     public SelfUser getSelfUser() {
-        return trigger.getJDA().getSelfUser();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getJDA().getSelfUser();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getJDA().getSelfUser();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getJDA().getSelfUser();
+            }
+        }
+        return null;
     }
 
     public Member getSelfMember() {
-        Guild guild = trigger.getGuild();
-        return guild.getSelfMember();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getGuild().getSelfMember();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getGuild().getSelfMember();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getGuild().getSelfMember();
+            }
+        }
+        return null;
     }
 
     public String getArgument() {
-        return argument;
+        if (type == CommandHandler.CommandOriginType.REGULAR) {
+            return argument;
+        }
+        return "";
     }
 
-    public String getContentRaw() {
-        return trigger.getContentRaw();
+    @Override
+    public int getTypeRaw() {
+        return 0;
     }
 
-    public String getContentStripped() {
-        return trigger.getContentStripped();
-    }
-
-    public String getContentDisplay() {
-        return trigger.getContentDisplay();
+    @NotNull
+    @Override
+    public String getToken() {
+        return null;
     }
 
     public Guild getGuild() {
-        return trigger.getGuild();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getGuild();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getGuild();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getGuild();
+            }
+        }
+        return null;
     }
 
-    public String getGuildName() {
-        return trigger.getGuild().getName();
+
+    public @NotNull JDA getJDA() {
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getJDA();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getJDA();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getJDA();
+            }
+        }
+        return null;
     }
 
-    public String getGuildId() {
-        return trigger.getGuild().getId();
+    public @NotNull TextChannel getTextChannel() {
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getTextChannel();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getTextChannel();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getTextChannel();
+            }
+        }
+        return null;
     }
 
-    public Long getGuildIdLong() {
-        return trigger.getGuild().getIdLong();
+    public @NotNull ReplyAction reply(@NotNull Message content) {
+        switch (type) {
+            case SLASH -> {
+                return slashCommandEvent.reply(content);
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.reply(content);
+            }
+        }
+        return null;
     }
 
-    public JDA getJDA() {
-        return trigger.getJDA();
+
+    @NotNull
+    @Override
+    public String getName() {
+        return command.name;
     }
 
-    public TextChannel getTextChannel() {
-        return trigger.getTextChannel();
-    }
-
+    @NotNull
+    @Override
     public MessageChannel getChannel() {
-        return trigger.getChannel();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getChannel();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getChannel();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getChannel();
+            }
+        }
+        return null;
     }
 
-    public String getChannelId() {
-        return trigger.getChannel().getId();
+    @NotNull
+    @Override
+    public InteractionHook getHook() {
+        switch (type) {
+            case SLASH -> {
+                return slashCommandEvent.getHook();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getHook();
+            }
+        }
+        return null;
     }
 
-    public Long getChannelIdLong() {
-        return trigger.getChannel().getIdLong();
+    @Override
+    public boolean isAcknowledged() {
+        return false;
     }
 
-    public String getChannelName() {
-        return trigger.getChannel().getName();
+    @NotNull
+    @Override
+    public ReplyAction deferReply() {
+        switch (type) {
+            case SLASH -> {
+                return slashCommandEvent.deferReply();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.deferReply();
+            }
+        }
+        return null;
     }
 
+
+    @Override
+    public long getCommandIdLong() {
+        return 0;
+    }
+
+    @NotNull
     public ChannelType getChannelType() {
-        return trigger.getChannelType();
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getChannelType();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getChannelType();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getChannelType();
+            }
+        }
+        return null;
     }
 
-    public String getMessageId() {
-        return trigger.getId();
-    }
-
-    public Long getMessageIdLong() {
-        return trigger.getIdLong();
-    }
-
-    public MessageType getMessageType() {
-        return trigger.getType();
-    }
-
-    public boolean isWebhookMessage() {
-        return trigger.isWebhookMessage();
-    }
-
-    public boolean isFromBot() {
-        return trigger.getAuthor().isBot();
+    @NotNull
+    @Override
+    public User getUser() {
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getAuthor();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getUser();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getUser();
+            }
+        }
+        return null;
     }
 
     public List<Message.Attachment> getAttachments() {
-        return trigger.getAttachments();
+        if (type == CommandHandler.CommandOriginType.REGULAR) {
+            return trigger.getAttachments();
+        }
+        return null;
     }
 
     public boolean isFromGuild() {
-        return trigger.isFromType(ChannelType.TEXT);
+        switch (type) {
+            case REGULAR -> {
+                return trigger.isFromGuild();
+            }
+            case SLASH -> {
+                return slashCommandEvent.isFromGuild();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.isFromGuild();
+            }
+        }
+        return false;
     }
 
-    public boolean isFromDMs() {
-        return trigger.isFromType(ChannelType.PRIVATE);
+    @NotNull
+    @Override
+    public Message getTargetMessage() {
+        if (type == CommandHandler.CommandOriginType.CONTEXT) {
+            return messageContextCommandEvent.getTargetMessage();
+        }
+        return null;
     }
 
-    public Category getCategory() {
-        return trigger.getCategory();
+    @Override
+    public long getTargetIdLong() {
+        if (type == CommandHandler.CommandOriginType.CONTEXT) {
+            return messageContextCommandEvent.getTargetIdLong();
+        }
+        return 0;
     }
 
-    public String getJumpUrl() {
-        return trigger.getJumpUrl();
+    @Nullable
+    @Override
+    public String getSubcommandName() {
+        if (type == CommandHandler.CommandOriginType.SLASH) {
+            return slashCommandEvent.getSubcommandName();
+        }
+        return null;
     }
 
+    @Nullable
+    @Override
+    public String getSubcommandGroup() {
+        if (type == CommandHandler.CommandOriginType.SLASH) {
+            return slashCommandEvent.getSubcommandGroup();
+        }
+        return null;
+    }
+
+    @Override
+    public @NotNull List<OptionMapping> getOptions() {
+        return slashCommandEvent.getOptions();
+    }
+
+    public OptionMapping getOption(@Nonnull String name) {
+        return slashCommandEvent.getOption(name);
+    }
+
+
+    @Override
+    public long getIdLong() {
+        switch (type) {
+            case REGULAR -> {
+                return trigger.getIdLong();
+            }
+            case SLASH -> {
+                return slashCommandEvent.getIdLong();
+            }
+            case CONTEXT -> {
+                return messageContextCommandEvent.getIdLong();
+            }
+        }
+        return 0;
+    }
 }

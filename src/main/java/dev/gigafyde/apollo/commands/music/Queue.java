@@ -5,7 +5,6 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class Queue extends Command {
         MusicManager musicManager = event.getClient().getMusicManager();
         TrackScheduler scheduler = musicManager.getScheduler(event.getGuild());
         if (scheduler.getQueue().isEmpty()) {
-            event.getMessage().reply("Queue is currently empty").mentionRepliedUser(true).queue();
+            event.getMessage().reply("**Queue is currently empty**").mentionRepliedUser(true).queue();
             return;
         }
         List<AudioTrack> queuedTracks = new ArrayList<>(scheduler.getQueue());
@@ -55,9 +54,5 @@ public class Queue extends Command {
         }
         eb.setFooter("Page " + page + " of " + maxPages, null);
         event.getMessage().replyEmbeds(eb.build()).mentionRepliedUser(false).queue();
-    }
-
-    protected void executeSlash(SlashEvent event) {
-
     }
 }

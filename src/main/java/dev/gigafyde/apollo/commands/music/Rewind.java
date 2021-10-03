@@ -4,7 +4,6 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Message;
@@ -39,24 +38,7 @@ public class Rewind extends Command {
         }
         rewindSong(args, player);
     }
-    protected void executeSlash(SlashEvent event) {
-        slash = true;
-        event.getSlashCommandEvent().deferReply(false).queue();
-        hook = event.getSlashCommandEvent().getHook();
-        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
-        AudioTrack track = player.getPlayingTrack();
-        String args = event.getSlashCommandEvent().getOption("amount").getAsString();
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        if (track == null) {
-            hook.editOriginal("**Nothing is currently playing.**").queue();
-            return;
-        }
-        if (event.getSlashCommandEvent().getOption("amount") == null) {
-            hook.editOriginal("Please provide a new position in seconds.").queue();
-            return;
-        }
-        rewindSong(args, player);
-    }
+
     private void rewindSong(String args, LavalinkPlayer player) {
         try {
             int seekNumber = Integer.parseInt(args);
