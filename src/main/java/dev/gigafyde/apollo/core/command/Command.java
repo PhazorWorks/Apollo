@@ -5,6 +5,7 @@ package dev.gigafyde.apollo.core.command;
  https://github.com/GigaFyde
  */
 
+import dev.gigafyde.apollo.utils.Emoji;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,22 +22,30 @@ public abstract class Command {
 
     public final void run(CommandEvent event) {
         try {
-            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return; //TODO needs to be tested
-
-            /*TODO this needs to be rewritten to the new methods
             if (guildOnly && !event.isFromGuild()) {
-                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-                return;
+                switch (event.getCommandType()) {
+                    case REGULAR -> {
+                        event.getMessage().reply(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                        return;
+                    }
+                    case SLASH -> {
+                        event.deferReply().complete().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                        return;
+                    }
+                    case CONTEXT -> {
+                        event.deferReply().complete().editOriginal("I have no idea how you managed to trigger this in a DM, but that ain't going to work.").queue();
+                        return;
+                    }
+                }
             }
-            */
-
+            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             execute(event);
         } catch (Exception e) {
             switch (event.getCommandType()) {
                 case REGULAR -> {
                     event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
                 }
-                case SLASH -> {
+                case SLASH, CONTEXT -> {
                     event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
                 }
             }
