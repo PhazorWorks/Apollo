@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,9 +26,10 @@ import java.util.Objects;
 public class Lyrics extends Command {
 
     private static final Logger log = LoggerFactory.getLogger(Lyrics.class);
-    private static Message message;
-    private static InteractionHook hook;
-    private static boolean slash;
+    private Message message;
+    private InteractionHook hook;
+    private CommandEvent event;
+
 
     public Lyrics() {
         this.name = "lyrics";
@@ -39,70 +39,88 @@ public class Lyrics extends Command {
     }
 
     protected void execute(CommandEvent event) {
-        slash = false;
-        String args = event.getArgument();
-        message = event.getMessage();
-        if (args.isEmpty()) {
-            if (!SongUtils.passedVoiceChannelChecks(event)) return;
-            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-            if (track == null) {
-                event.getMessage().reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
-                return;
+        this.event = event;
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                message = event.getMessage();
+                if (event.getArgument().isEmpty()) {
+                    if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                    AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+                    if (track == null) {
+                        sendError("**Nothing is currently playing.**");
+                        return;
+                    }
+                    String query = sendRequest(track.getInfo().title);
+                    if (query == null) return;
+                    JSONObject song = new JSONObject(query);
+                    sendEmbed(song);
+                } else {
+                    String query = sendRequest(event.getArgument());
+                    if (query == null) return;
+                    JSONObject song = new JSONObject(query);
+                    sendEmbed(song);
+                }
             }
-            String query = sendRequest(track.getInfo().title);
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
-        } else {
-            String query = sendRequest(event.getArgument());
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
+            case SLASH -> {
+                event.deferReply().queue();
+                hook = event.getHook();
+                if (event.getOption("query") == null) {
+                    if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                    AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+                    if (track == null) {
+                        sendError("**Nothing is currently playing.**");
+                        return;
+                    }
+                    String query = sendRequest(track.getInfo().title);
+                    if (query == null) return;
+                    JSONObject song = new JSONObject(query);
+                    sendEmbed(song);
+                } else {
+                    String query = sendRequest(event.getOption("query").getAsString());
+                    if (query == null) return;
+                    JSONObject song = new JSONObject(query);
+                    sendEmbed(song);
+                }
+            }
         }
     }
 
-    protected void executeSlash(SlashEvent event) {
-        slash = true;
-        event.getSlashCommandEvent().deferReply(false).queue();
-        hook = event.getSlashCommandEvent().getHook();
-        if (event.getSlashCommandEvent().getOption("query") == null) {
-            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-            if (track == null) {
-                hook.editOriginal("**Nothing is currently playing.**").queue();
-                return;
-            }
-            String query = sendRequest(track.getInfo().title);
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
-        } else {
-            String query = sendRequest(Objects.requireNonNull(event.getSlashCommandEvent().getOption("query")).getAsString());
-            if (query == null) return;
-            JSONObject song = new JSONObject(query);
-            sendEmbed(song);
-        }
-    }
 
     private void sendEmbed(JSONObject song) {
         String title = String.format("%s - %s", song.getString("artist"), song.getString("name"));
         String lyrics = song.getString("lyrics");
         Color blue = Color.decode("#4c87c2");
         EmbedBuilder embed = new EmbedBuilder();
-        if (!slash) {
-            if (lyrics.length() > 2000) {
-                List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
-                message.getChannel().sendMessage(embeds.get(0)).queue();
-            } else {
-                message.reply(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                if (lyrics.length() > 2000) {
+                    List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
+                    if (lyrics.length() > 6000) {
+                        for (MessageEmbed messageEmbed : embeds) {
+                            message.getChannel().sendMessageEmbeds(messageEmbed).queue();
+                        }
+                    } else {
+                        message.getChannel().sendMessageEmbeds(embeds).queue();
+                    }
+                } else {
+                    message.replyEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
+                }
             }
-        } else {
-            if (lyrics.length() > 2000) {
-                List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
-                hook.editOriginalEmbeds(embeds.get(0)).queue();
-            } else {
-                hook.editOriginalEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).queue();
+            case SLASH -> {
+                if (lyrics.length() > 2000) {
+                    List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
+                    if (lyrics.length() > 6000) {
+                        for (MessageEmbed messageEmbed : embeds) {
+                            hook.getInteraction().getMessageChannel().sendMessageEmbeds(messageEmbed).queue();
+                        }
+                        hook.editOriginal("**Lyrics**: ").queue();
+                    } else {
+                        hook.editOriginalEmbeds(embeds).queue();
+                    }
+                } else {
+                    hook.editOriginalEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).queue();
+                }
             }
-            hook = null;
         }
     }
 
@@ -110,19 +128,15 @@ public class Lyrics extends Command {
         EmbedBuilder embed = new EmbedBuilder();
         List<MessageEmbed> embeds = new ArrayList<>();
         String content = lyrics.trim();
-        while (content.length() > 2000) {
-            int index = content.lastIndexOf("\n\n", 2000);
-            if (index == -1)
-                index = content.lastIndexOf("\n", 2000);
-            if (index == -1)
-                index = content.lastIndexOf(" ", 2000);
-            if (index == -1)
-                index = 2000;
-            embeds.add(embed.setDescription(content.substring(0, index).trim()).setColor(blue).setTitle(title).build());
+        int page = 0;
+        while (content.length() > 2048) {
+            int index = content.lastIndexOf("", 2048);
+            page++;
+            embeds.add(embed.setDescription(content.substring(0, index).trim()).setColor(blue).setTitle(title).setFooter("Page " + page).build());
             content = content.substring(index).trim();
-            embed.setAuthor(null).setTitle(null, null);
         }
-        embeds.add(embed.setDescription(content).setColor(blue).setTitle(title).build());
+        page++;
+        embeds.add(embed.setDescription(content).setColor(blue).setTitle(title).setFooter("Page " + page).build());
         return embeds;
     }
 
@@ -142,13 +156,18 @@ public class Lyrics extends Command {
         return null;
     }
 
-    private void sendError(String error) {
-        if (hook == null) {
-            message.reply("Lyrics Lookup failed! Aborting!").queue();
-        } else {
-            hook.editOriginal("Lyrics Lookup failed! Aborting!").queue();
+    protected void sendError(String error) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
         }
         log.debug("Lyrics lookup failed with error code: " + error);
     }
 
+    protected void send(String content) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).queue();
+            case SLASH -> hook.editOriginal(content).queue();
+        }
+    }
 }

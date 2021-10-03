@@ -4,10 +4,16 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Loop extends Command {
+
+    private Message message;
+    private InteractionHook hook;
+    private CommandEvent event;
+
     public Loop() {
         this.name = "loop";
         this.triggers = new String[]{"loop"};
@@ -15,24 +21,54 @@ public class Loop extends Command {
     }
 
     protected void execute(CommandEvent event) {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-        AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
-//        if (scheduler == null | track == null) {
-//            event.getMessage().reply("Nothing is currently playing! Queue some tracks first").queue();
-//            return;
-//        }
-        if (!scheduler.isLooped()) {
-            event.getMessage().reply("Loop is now enabled for the current track").mentionRepliedUser(false).queue();
-            scheduler.setLooped(true);
-            scheduler.setLoopedSong(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
-        } else {
-            event.getMessage().reply("Loop is now disabled").mentionRepliedUser(false).queue();
-            scheduler.setLooped(false);
+        this.event = event;
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                message = event.getMessage();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                loop();
+            }
+            case SLASH -> {
+                hook = event.getHook();
+                event.deferReply().queue();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                loop();
+            }
         }
     }
 
-    protected void executeSlash(SlashEvent event) {
+    protected void loop() {
+        try {
+            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+            if (scheduler == null | track == null) {
+                sendError("**Nothing is currently playing! Queue some tracks first**");
+                return;
+            }
+            if (!scheduler.isLooped()) {
+                send("Loop is now enabled for the current track");
+                scheduler.setLooped(true);
+                scheduler.setLoopedSong(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
+            } else {
+                send("Loop is now disabled");
+                scheduler.setLooped(false);
+            }
+        } catch (Exception e) {
+            sendError(e.getMessage());
+        }
+    }
 
+    protected void sendError(String error) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
+        }
+    }
+
+    protected void send(String content) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(content).queue();
+        }
     }
 }

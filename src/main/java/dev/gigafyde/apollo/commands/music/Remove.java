@@ -3,7 +3,6 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 
@@ -31,9 +30,5 @@ public class Remove extends Command {
         } catch (NumberFormatException exception) {
             event.getMessage().reply("Failed to parse number from input").mentionRepliedUser(false).queue();
         }
-    }
-
-    protected void executeSlash(SlashEvent event) {
-
     }
 }

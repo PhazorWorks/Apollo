@@ -8,7 +8,6 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.command.SlashEvent;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
@@ -39,9 +38,5 @@ public class Skip extends Command {
             event.getMessage().reply("Loop was turned off due to manual skip").mentionRepliedUser(true).queue();
         }
         message.addReaction(Emoji.SUCCESS.toString()).queue();
-    }
-
-    protected void executeSlash(SlashEvent event) {
-
     }
 }

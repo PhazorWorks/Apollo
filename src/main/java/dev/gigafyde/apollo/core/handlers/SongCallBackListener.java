@@ -23,28 +23,63 @@ public class SongCallBackListener {
     }
 
     public static void notifyTrackLoaded(AudioTrack track) {
-        listeners.get(0).trackHasLoaded(track);
+        try {
+            for (var listener : listeners) {
+                listener.trackHasLoaded(track);
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
     }
 
     public static void notifyPlaylistLoaded(AudioPlaylist playlist, int added, int amount) {
-        listeners.get(0).playlistLoaded(playlist, added, amount);
+        try {
+            for (var listener : listeners) {
+                listener.playlistLoaded(playlist, added, amount);
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
     }
 
     public static void notifyNoMatches() {
+        try {
+            for (var listener : listeners) {
+                listener.noMatches();
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
         listeners.get(0).noMatches();
     }
 
     public static void notifyTrackLoadFailed(Exception e) {
-        listeners.get(0).trackLoadingFailed(e);
+        try {
+            for (var listener : listeners) {
+                listener.trackLoadingFailed(e);
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
     }
 
     public static void notifySpotifyUnsupported() {
-        listeners.get(0).spotifyUnsupported();
+        try {
+            for (var listener : listeners) {
+                listener.spotifyUnsupported();
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
     }
 
     public static void notifySpotifyAbort(Exception e) {
-
-        listeners.get(0).spotifyFailed(e);
-
+        try {
+            for (var listener : listeners) {
+                listener.spotifyFailed(e);
+            }
+        } catch (Exception ignored) {
+            //Will fail if it can't find any listeners
+        }
     }
 }

@@ -16,6 +16,7 @@ steps:
       - gradle jib --image=gigafyde/apollo:latest -Djib.to.auth.username=gigafyde -Djib.to.auth.password=$DOCKERHUB
     when:
       branch:
+        - production
         - main
       event:
         - push
@@ -28,3 +29,4 @@ steps:
       branch:
         exclude:
           - main
+          - production

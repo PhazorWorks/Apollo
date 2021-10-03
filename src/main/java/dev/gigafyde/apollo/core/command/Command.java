@@ -20,18 +20,35 @@ public abstract class Command {
 
     protected abstract void execute(CommandEvent event);
 
-    protected abstract void executeSlash(SlashEvent event);
-
     public final void run(CommandEvent event) {
         try {
-            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             if (guildOnly && !event.isFromGuild()) {
-                event.getMessage().getChannel().sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-                return;
+                switch (event.getCommandType()) {
+                    case REGULAR -> {
+                        event.getMessage().reply(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                        return;
+                    }
+                    case SLASH -> {
+                        event.deferReply().complete().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                        return;
+                    }
+                    case CONTEXT -> {
+                        event.deferReply().complete().editOriginal("I have no idea how you managed to trigger this in a DM, but that ain't going to work.").queue();
+                        return;
+                    }
+                }
             }
+            if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             execute(event);
         } catch (Exception e) {
-            event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+            switch (event.getCommandType()) {
+                case REGULAR -> {
+                    event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                }
+                case SLASH, CONTEXT -> {
+                    event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                }
+            }
             log.warn("Unexpected exception!", e);
         }
     }
