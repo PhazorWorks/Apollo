@@ -9,7 +9,6 @@ import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.commands.basic.Ping;
 import dev.gigafyde.apollo.commands.music.*;
 import dev.gigafyde.apollo.commands.secret.Eval;
-import dev.gigafyde.apollo.commands.secret.SlashRegister;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
 
@@ -40,7 +39,6 @@ public class CommandList extends CommandRegistry {
         if (Main.LYRICS_WEB_SERVER != null && Main.LYRICS_API_KEY != null) registry.addCommand(new Lyrics());
 
         //secret commands
-        registry.addCommand(new SlashRegister());
         registry.addCommand(new Eval());
     }
 }
