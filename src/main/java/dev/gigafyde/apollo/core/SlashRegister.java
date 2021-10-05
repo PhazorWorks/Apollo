@@ -23,30 +23,9 @@ public class SlashRegister extends ListenerAdapter {
         for (Command command : commands) {
             for (CommandData commandData : getCommandList()) {
                 if (!command.getName().equals(commandData.getName()))
-                    event.getJDA().getGuildById(381926472564211723L).upsertCommand(commandData).queue();
+                    event.getJDA().upsertCommand(commandData).queue();
             }
         }
-
-        // Message context commands
-        // Register slash commands
-//        jda.upsertCommand(clear).queue();
-//        jda.upsertCommand(play).queue();
-//        jda.upsertCommand(ping).queue();
-//        jda.upsertCommand(rewind).queue();
-//        jda.upsertCommand(loop).queue();
-//        jda.upsertCommand(nowPlaying).queue();
-//        jda.upsertCommand(pause).queue();
-        // Register message context commands
-//           jda.upsertCommand(addToQueue).queue();
-//        if (!(Main.LYRICS_WEB_SERVER == null) & !(Main.LYRICS_API_KEY == null)) {
-        // Only register if those values are defined
-//            jda.upsertCommand(lyrics).queue();
-//        } else {
-//            try {
-//                jda.deleteCommandById("lyrics").queue();
-//            } catch (Exception ignored) {
-        // As per the JDA docs, this will only fail with ErrorResponse.UNKNOWN_COMMAND if there's no such command registered.
-        // Which will mean it'll be already unregistered.
     }
 
     private List<CommandData> getCommandList() {
