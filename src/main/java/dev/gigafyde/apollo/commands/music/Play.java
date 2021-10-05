@@ -65,6 +65,11 @@ public class Play extends Command implements SongCallBack {
                     return;
                 }
                 processArgument(event.getArgument());
+                try {
+                    event.getMessage().suppressEmbeds(true).queue();
+                } catch (Exception ignored) {
+                    // Do nothing
+                }
             }
             case SLASH -> {
                 author = event.getAuthor();
