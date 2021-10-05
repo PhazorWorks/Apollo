@@ -54,7 +54,7 @@ public class Grab extends Command {
                     }
                 }
             } catch (Exception e) {
-                sendError("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri);
+                sendError("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri + "\n" + e);
             }
         } else {
             sendError("Nothing is currently playing, so there was nothing to grab.");
