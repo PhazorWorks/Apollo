@@ -42,20 +42,16 @@ public class SongUtils {
             case REGULAR -> {
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 if (vc == null) {
-                    event.getMessage().reply("**Please join a voice channel first!**").mentionRepliedUser(true).queue();
+                    event.getMessage().reply("**You have to join a voice channel before you can use this command!**").mentionRepliedUser(true).queue();
                     return false;
                 }
                 EnumSet<Permission> voicePermissions = event.getSelfMember().getPermissions(vc);
                 if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-                    event.getMessage().reply("**I am unable to see this voice channel!**").mentionRepliedUser(true).queue();
-                    return false;
-                }
-                if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
-                    event.getMessage().reply("**I am unable to connect to this voice channel**").mentionRepliedUser(true).queue();
+                    event.getMessage().reply("**I do not have permission to `view` or `connect` to your voice channel!**").mentionRepliedUser(true).queue();
                     return false;
                 }
                 if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-                    event.getMessage().reply("**I am unable to speak in this voice channel!**").mentionRepliedUser(true).queue();
+                    event.getMessage().reply("**I do not have permission to `speak` in your voice channel!**").mentionRepliedUser(true).queue();
                     return false;
                 }
                 return true;
@@ -64,20 +60,16 @@ public class SongUtils {
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 InteractionHook hook = event.getHook();
                 if (vc == null) {
-                    hook.editOriginal("**Please join a voice channel first!**").queue();
+                    hook.editOriginal("**You have to join a voice channel before you can use this command!**").queue();
                     return false;
                 }
                 EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
                 if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-                    hook.editOriginal("**I am unable to see this voice channel!**").queue();
-                    return false;
-                }
-                if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
-                    hook.editOriginal("**I am unable to connect to this voice channel**").queue();
+                    hook.editOriginal("**I do not have permission to `view` or `connect` to your voice channel!**").queue();
                     return false;
                 }
                 if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-                    hook.editOriginal("**I am unable to speak in this voice channel!**").queue();
+                    hook.editOriginal("**I do not have permission to `speak` in your voice channel!**").queue();
                     return false;
                 }
                 return true;
@@ -85,20 +77,16 @@ public class SongUtils {
             case CONTEXT -> {
                 VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
                 if (vc == null) {
-                    event.reply("**Please join a voice channel first!**").setEphemeral(true).queue();
+                    event.reply("**You have to join a voice channel before you can use this command!**").setEphemeral(true).queue();
                     return false;
                 }
                 EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
                 if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-                    event.reply("**I am unable to see this voice channel!**").setEphemeral(true).queue();
-                    return false;
-                }
-                if (!voicePermissions.contains(Permission.VOICE_CONNECT)) {
-                    event.reply("**I am unable to connect to this voice channel**").setEphemeral(true).queue();
+                    event.reply("**I do not have permission to `view` or `connect` to your voice channel!**").setEphemeral(true).queue();
                     return false;
                 }
                 if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-                    event.reply("**I am unable to speak in this voice channel!**").setEphemeral(true).queue();
+                    event.reply("**I do not have permission to `speak` in your voice channel!**").setEphemeral(true).queue();
                     return false;
                 }
                 return true;
