@@ -166,7 +166,7 @@ public class Lyrics extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

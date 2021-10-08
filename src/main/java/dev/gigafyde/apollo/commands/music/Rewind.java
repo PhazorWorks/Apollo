@@ -12,9 +12,9 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import java.util.concurrent.TimeUnit;
 
 public class Rewind extends Command {
-    private static Message message;
-    private static InteractionHook hook;
-    private static boolean slash;
+    private Message message;
+    private InteractionHook hook;
+    private CommandEvent event;
 
     public Rewind() {
         this.name = "rewind";
@@ -22,21 +22,33 @@ public class Rewind extends Command {
     }
 
     protected void execute(CommandEvent event) {
-        slash = false;
-        String args = event.getArgument();
-        message = event.getMessage();
+        this.event = event;
         LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
         AudioTrack track = player.getPlayingTrack();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        if (track == null) {
-            message.reply("**Nothing is currently playing.**").mentionRepliedUser(true).queue();
-            return;
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                String args = event.getArgument();
+                message = event.getMessage();
+                if (args.isEmpty()) {
+                    sendError("**Please provide a new position in seconds!**");
+                    return;
+                }
+                if (track == null) {
+                    sendError("**Nothing is currently playing!**");
+                    return;
+                }
+                rewindSong(args, player);
+            }
+            case SLASH -> {
+                hook = event.getHook();
+                if (track == null) {
+                    sendError("**Nothing is currently playing!**");
+                    return;
+                }
+                rewindSong(event.getOption("amount").getAsString(), player);
+            }
         }
-        if (args.isEmpty()) {
-            message.reply("Please provide a new position in seconds.").mentionRepliedUser(true).queue();
-            return;
-        }
-        rewindSong(args, player);
     }
 
     private void rewindSong(String args, LavalinkPlayer player) {
@@ -46,20 +58,27 @@ public class Rewind extends Command {
             long currentTime = player.getTrackPosition();
             long newTime = currentTime - amountToSeek;
             player.seekTo(newTime);
-            if (!slash) {
-                if (amountToSeek <= 59000)
-                    message.reply(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
-                else
-                    message.reply(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
-            } else {
-                if (amountToSeek <= 59000)
-                    hook.editOriginal(String.format("** Rewound %d seconds**", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
-                else
-                    hook.editOriginal(String.format("** Rewound %d min, %d seconds**", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek)))).queue();
-            }
+            if (amountToSeek <= 59000)
+                send(String.format("Rewound %d seconds.", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
+            else
+                send(String.format("Rewound %d min, %d seconds.", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
+
         } catch (NumberFormatException exception) {
-            if (!slash) message.reply("Failed to parse number from input").queue();
-            else hook.editOriginal("Failed to parse number from input").queue();
+            sendError("**Failed to parse number from input!**");
+        }
+    }
+
+    protected void sendError(String error) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
+        }
+    }
+
+    protected void send(String content) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
+            case SLASH -> hook.editOriginal(content).queue();
         }
     }
 }

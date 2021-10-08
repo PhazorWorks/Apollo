@@ -45,11 +45,11 @@ public class Pause extends Command {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (track == null) {
-            sendError("**Nothing is currently playing.**");
+            sendError("**Nothing is currently playing!**");
             return;
         }
         scheduler.getPlayer().setPaused(true);
-        send("**Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()) + "`**");
+        send("Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()) + "`");
     }
 
     protected void sendError(String error) {
@@ -61,7 +61,7 @@ public class Pause extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

@@ -42,19 +42,19 @@ public class Loop extends Command {
             TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
             AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
             if (scheduler == null | track == null) {
-                sendError("**Nothing is currently playing! Queue some tracks first**");
+                sendError("**Nothing is currently playing!**");
                 return;
             }
             if (!scheduler.isLooped()) {
-                send("Loop is now enabled for the current track");
+                send("Loop is now enabled for the current track.");
                 scheduler.setLooped(true);
                 scheduler.setLoopedSong(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
             } else {
-                send("Loop is now disabled");
+                send("Loop is now disabled.");
                 scheduler.setLooped(false);
             }
         } catch (Exception e) {
-            sendError(e.getMessage());
+            sendError("**"+ e.getMessage() + "**");
         }
     }
 
@@ -67,7 +67,7 @@ public class Loop extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).mentionRepliedUser(true).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

@@ -42,7 +42,7 @@ public class NowPlaying extends Command {
     protected void nowPlaying() {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
-            sendError("**Nothing is currently playing.**");
+            sendError("**Nothing is currently playing!**");
             return;
         }
         try {
@@ -58,21 +58,21 @@ public class NowPlaying extends Command {
             InputStream inputStream = response.body().byteStream();
             send(inputStream, "song.png");
         } catch (Exception e) {
-            sendError("Something went wrong trying to generate the image. " + e);
+            sendError("**Something went wrong trying to generate the image. " + e + "**");
             send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()));
         }
     }
 
     protected void sendError(String error) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(false).queue();
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
             case SLASH -> hook.editOriginal(error).queue();
         }
     }
 
     protected void send(String content) {
-        switch (event.getCommandType()){
-            case REGULAR -> message.reply(content).mentionRepliedUser(true).queue();
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

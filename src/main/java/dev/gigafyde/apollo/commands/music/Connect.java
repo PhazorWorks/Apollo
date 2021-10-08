@@ -55,7 +55,7 @@ public class Connect extends Command {
         }
         if (event.getSelfMember().getVoiceState().inVoiceChannel()) {
             List<Member> members = selfVC.getMembers().stream().filter(member -> !member.getUser().isBot()).collect(Collectors.toList());
-            if (members.size() >= 2) {
+            if (members.size() >= 1) {
                 sendError("**I am already being used in a different voice channel!**");
                 return;
             }

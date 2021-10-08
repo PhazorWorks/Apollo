@@ -17,6 +17,7 @@ public class Remove extends Command {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
         try {
             int numberToRemove = Integer.parseInt(event.getArgument());
+            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
             if (scheduler.getQueue().size() < numberToRemove) {
                 event.getMessage().reply("").mentionRepliedUser(false).queue();
                 return;

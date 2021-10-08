@@ -136,7 +136,7 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             case CONTEXT -> {
-                event.reply("Added song to queue").setEphemeral(true).queue();
+                event.reply("Queued " + track.getInfo().title).setEphemeral(true).queue();
             }
         }
         SongCallBackListener.removeListener(this);
@@ -144,7 +144,7 @@ public class Play extends Command implements SongCallBack {
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+            case REGULAR -> message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         }
     }

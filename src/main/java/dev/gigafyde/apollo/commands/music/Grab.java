@@ -17,7 +17,7 @@ public class Grab extends Command {
 
     public Grab() {
         this.name = "grab";
-        this.description = "send the currently playing song to your dm's";
+        this.description = "sends the currently playing song to your dm";
         this.triggers = new String[]{"grab", "save"};
         this.guildOnly = true;
     }
@@ -40,6 +40,10 @@ public class Grab extends Command {
     protected void grab() {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        if (scheduler == null) {
+            sendError("**Please play a track to use this command!**");
+            return;
+        }
         if (scheduler.getPlayer().getPlayingTrack() != null) {
             String uri = scheduler.getPlayer().getPlayingTrack().getInfo().uri;
             User author = event.getAuthor();
@@ -50,14 +54,14 @@ public class Grab extends Command {
                         message.addReaction(Emoji.SUCCESS.toString()).queue();
                     }
                     case SLASH -> {
-                        send("Here is a copy of the currently playing track\\n\" + uri");
+                        send("Here is a copy of the currently playing track\n\n" + uri);
                     }
                 }
             } catch (Exception e) {
                 sendError("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri + "\n" + e);
             }
         } else {
-            sendError("Nothing is currently playing, so there was nothing to grab.");
+            sendError("**Please play a track to use this command!**");
         }
     }
 
@@ -70,7 +74,7 @@ public class Grab extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

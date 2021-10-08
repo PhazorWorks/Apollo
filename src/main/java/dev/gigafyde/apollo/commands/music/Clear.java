@@ -5,7 +5,6 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Clear extends Command {
@@ -28,46 +27,39 @@ public class Clear extends Command {
                 message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null) {
-                    scheduler = makeScheduler();
-                }
-                clear(scheduler);
-                send("**Queue cleared**");
+                if (scheduler == null)
+                    sendError("**Nothing is currently playing!**");
+                clear();
+                send("The queue has been cleared.");
             }
             case SLASH -> {
                 hook = event.getHook();
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null) {
-                    scheduler = makeScheduler();
-                }
-                clear(scheduler);
-                send("**Queue cleared**");
+                if (scheduler == null)
+                    scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
+                clear();
+                send("The queue has been cleared.");
             }
         }
     }
 
-    protected void clear(TrackScheduler scheduler) {
+    protected void clear() {
         scheduler.getQueue().clear();
         scheduler.skip();
     }
 
-    protected TrackScheduler makeScheduler() {
-        try {
-            scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
-        } catch (InsufficientPermissionException ignored) {
-            switch (event.getCommandType()) {
-                case SLASH -> hook.editOriginal("**Cannot join VC**").queue();
-                case REGULAR -> message.reply("**Cannot join VC**").mentionRepliedUser(true).queue();
-            }
+    protected void sendError(String error) {
+        switch (event.getCommandType()) {
+            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> hook.editOriginal(error).queue();
         }
-        return null;
     }
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import org.checkerframework.checker.nullness.Opt;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData join = new CommandData("join", "Makes the bot join your voice channel");
         CommandData leave = new CommandData("leave", "Makes the bot leave your voice channel");
         CommandData grab = new CommandData("grab", "Grabs the current playing song");
-        CommandData queue = new CommandData("queue", "Displays the current queue of songs");
+        CommandData queue = new CommandData("queue", "Displays the current queue of songs").addOption(OptionType.INTEGER, "page", "Page you wish to see");
         CommandData remove = new CommandData("remove", "Removes the specified song");
         CommandData restart = new CommandData("restart", "Rewinds to start of song");
         CommandData resume = new CommandData("unpause", "Unpauses the player");
