@@ -14,7 +14,9 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Connect extends Command {
 
@@ -44,18 +46,25 @@ public class Connect extends Command {
     }
 
     protected void connect() {
-        Member member = event.getGuild().retrieveMember(event.getAuthor()).complete();
-        VoiceChannel vc = Objects.requireNonNull(member.getVoiceState()).getChannel();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        if (vc == Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel()) {
-            sendError("**Already connected to **`" + vc.getName() + "`");
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        if (vc == selfVC) {
+            sendError("**I am already connected to this voice channel!**");
             return;
+        }
+        if (event.getSelfMember().getVoiceState().inVoiceChannel()) {
+            List<Member> members = selfVC.getMembers().stream().filter(member -> !member.getUser().isBot()).collect(Collectors.toList());
+            if (members.size() >= 2) {
+                sendError("**I am already being used in a different voice channel!**");
+                return;
+            }
         }
         try {
             event.getClient().getMusicManager().moveVoiceChannel(vc);
-            send("**Connected to **`" + vc.getName() + "`");
+            send("Connected to `" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
-            sendError("**Failed to connect to the desired voice channel.**");
+            sendError("**I am unable to join this voice channel!**");
         }
     }
 
@@ -68,7 +77,7 @@ public class Connect extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }

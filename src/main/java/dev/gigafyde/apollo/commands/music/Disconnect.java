@@ -9,7 +9,10 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+
+import java.util.Objects;
 
 public class Disconnect extends Command {
 
@@ -19,7 +22,7 @@ public class Disconnect extends Command {
 
     public Disconnect() {
         this.name = "disconnect";
-        this.triggers = new String[]{"disconnect", "dc", "fuckoff", "bye"};
+        this.triggers = new String[]{"disconnect", "dc", "fuckoff", "bye", "leave"};
         this.guildOnly = true;
     }
 
@@ -40,13 +43,19 @@ public class Disconnect extends Command {
 
     protected void disconnect() {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        if (!event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().isConnected()) {
-            sendError("**Not connected**");
+        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inVoiceChannel()) {
+            sendError("**I am not connected to a voice channel!**");
+            return;
+        }
+        if (vc != selfVC) {
+            sendError("**I am connected elsewhere, please join my voice channel if you wish to disconnect me!**");
             return;
         }
         event.getClient().getMusicManager().disconnect(event.getGuild());
         event.getClient().getLavalink().getLink(event.getGuild()).destroy();
-        send("**Disconnected!**");
+        send("I have disconnected from this voice channel.");
     }
 
     protected void sendError(String error) {
@@ -58,7 +67,7 @@ public class Disconnect extends Command {
 
     protected void send(String content) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).queue();
+            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(content).queue();
         }
     }
