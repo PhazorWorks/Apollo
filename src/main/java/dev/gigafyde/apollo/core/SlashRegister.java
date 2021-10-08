@@ -6,8 +6,6 @@ package dev.gigafyde.apollo.core;
  */
 
 
-import java.util.ArrayList;
-import java.util.List;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -15,15 +13,23 @@ import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SlashRegister extends ListenerAdapter {
+    private static final Logger log = LoggerFactory.getLogger("SlashRegister");
 
     public void onReady(@NotNull ReadyEvent event) {
         List<Command> commands = event.getJDA().retrieveCommands().complete();
-        for (Command command : commands) {
-            for (CommandData commandData : getCommandList()) {
-                if (!command.getName().equals(commandData.getName()))
-                    event.getJDA().upsertCommand(commandData).queue();
+        List<String> registeredCommands = new ArrayList<>();
+        commands.forEach(c -> registeredCommands.add(c.getName()));
+        for (CommandData commandData : getCommandList()) {
+            if (!registeredCommands.contains(commandData.getName())) {
+                event.getJDA().upsertCommand(commandData).queue();
+                log.info("Registering command " + commandData.getName());
             }
         }
     }

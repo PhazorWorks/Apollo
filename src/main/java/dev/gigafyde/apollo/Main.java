@@ -9,6 +9,7 @@ package dev.gigafyde.apollo;
 import dev.gigafyde.apollo.commands.CommandList;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.LavalinkManager;
+import dev.gigafyde.apollo.core.SlashRegister;
 import io.sentry.Sentry;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -48,7 +49,7 @@ public class Main {
         SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(BOT_TOKEN)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
-                .addEventListeners(client, LAVALINK.getLavalink())
+                .addEventListeners(client, LAVALINK.getLavalink(), new SlashRegister())
                 .setShardsTotal(SHARDS_TOTAL)
                 .setShards(SHARDS_TOTAL - 1)
                 .build();
