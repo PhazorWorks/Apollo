@@ -44,9 +44,6 @@ public class Volume extends Command {
                 }
                 setVolume(Objects.requireNonNull(event.getOption("input")).getAsString());
             }
-            case CONTEXT -> {
-                //This command doesn't benefit from having context menu's, so we'll leave this empty.
-            }
         }
     }
 

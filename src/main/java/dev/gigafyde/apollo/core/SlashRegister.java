@@ -55,7 +55,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData resume = new CommandData("unpause", "Unpauses the player");
         CommandData seek = new CommandData("seek", "Seeks the playing track to the specified time");
         CommandData shuffle = new CommandData("shuffle", "Shuffles the queue");
-        CommandData skip = new CommandData("skip", "Skips to the next song in the queue");
+        CommandData skip = new CommandData("skip", "Skips to the next song in the queue").addOption(OptionType.INTEGER, "tracks", "How many tracks to skip");
         CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
         commands.add(ping);
         commands.add(play);
