@@ -36,15 +36,25 @@ public class SlashRegister extends ListenerAdapter {
 
     private List<CommandData> getCommandList() {
         List<CommandData> commands = new ArrayList<>();
-        CommandData ping = new CommandData("ping", "pong");
-        CommandData play = new CommandData("play", "Add a song to the queue").addOption(OptionType.STRING, "query", "Your search query or URL", true);
-        CommandData rewind = new CommandData("rewind", "Rewinds the specified amount in current song").addOption(OptionType.STRING, "amount", "The amount to rewind", true);
+        CommandData ping = new CommandData("ping", "Shows the latency of the bot");
+        CommandData play = new CommandData("play", "Adds a song to the queue").addOption(OptionType.STRING, "query", "Your search query or URL", true);
+        CommandData rewind = new CommandData("rewind", "Rewinds the playing track to the specified time").addOption(OptionType.STRING, "amount", "The amount to rewind", true);
         CommandData lyrics = new CommandData("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", false);
         CommandData clear = new CommandData("clear", "Clears the queue");
-        CommandData loop = new CommandData("loop", "Loop track or queue");
+        CommandData loop = new CommandData("loop", "Changes loop mode");
         CommandData nowPlaying = new CommandData("now-playing", "Shows current playing song");
         CommandData pause = new CommandData("pause", "Pauses the player");
-        CommandData volume = new CommandData("volume", "Gets or sets a new volume").addOption(OptionType.STRING, "input", "Sets the new volume", false);
+        CommandData volume = new CommandData("volume", "Changes or displays the volume").addOption(OptionType.STRING, "input", "Sets the new volume", false);
+        CommandData join = new CommandData("join", "Makes the bot join your voice channel");
+        CommandData leave = new CommandData("leave", "Makes the bot leave your voice channel");
+        CommandData grab = new CommandData("grab", "Grabs the current playing song");
+        CommandData queue = new CommandData("queue", "Displays the current queue of songs");
+        CommandData remove = new CommandData("remove", "Removes the specified song");
+        CommandData restart = new CommandData("restart", "Rewinds to start of song");
+        CommandData resume = new CommandData("unpause", "Unpauses the player");
+        CommandData seek = new CommandData("seek", "Seeks the playing track to the specified time");
+        CommandData shuffle = new CommandData("shuffle", "Shuffles the queue");
+        CommandData skip = new CommandData("skip", "Skips to the next song in the queue");
         CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
         commands.add(ping);
         commands.add(play);
@@ -55,7 +65,17 @@ public class SlashRegister extends ListenerAdapter {
         commands.add(nowPlaying);
         commands.add(pause);
         commands.add(volume);
+        commands.add(join);
+        commands.add(leave);
+        commands.add(grab);
+        commands.add(queue);
+        commands.add(remove);
+        commands.add(restart);
         commands.add(addToQueue);
+        commands.add(resume);
+        commands.add(seek);
+        commands.add(shuffle);
+        commands.add(skip);
         return commands;
     }
 }
