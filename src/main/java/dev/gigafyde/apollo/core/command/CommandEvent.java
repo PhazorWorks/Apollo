@@ -6,17 +6,9 @@ package dev.gigafyde.apollo.core.command;
  */
 
 import dev.gigafyde.apollo.core.Client;
-import java.util.List;
-import javax.annotation.Nonnull;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.SelfUser;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -26,6 +18,10 @@ import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandIntera
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import java.io.InputStream;
+import java.util.List;
 
 
 @SuppressWarnings("ConstantConditions")
@@ -382,5 +378,32 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
             }
         }
         return 0;
+    }
+
+    public void sendError(String error) {
+        switch (type) {
+            case REGULAR -> trigger.reply(error).mentionRepliedUser(true).queue();
+            case SLASH -> slashCommandEvent.getHook().editOriginal(error).queue();
+        }
+    }
+
+    public void send(String content) {
+        switch (type) {
+            case REGULAR -> trigger.reply(content).mentionRepliedUser(false).queue();
+            case SLASH -> slashCommandEvent.getHook().editOriginal(content).queue();
+        }
+    }
+    public void sendFile(InputStream inputStream, String name) {
+        switch (type) {
+            case REGULAR -> trigger.reply(inputStream, name).mentionRepliedUser(false).queue();
+            case SLASH -> slashCommandEvent.getHook().editOriginal(inputStream, name).queue();
+        }
+    }
+
+    public void sendEmbed(EmbedBuilder embed) {
+        switch (type) {
+            case REGULAR -> trigger.replyEmbeds(embed.build()).mentionRepliedUser(false).queue();
+            case SLASH -> slashCommandEvent.getHook().editOriginalEmbeds(embed.build()).queue();
+        }
     }
 }

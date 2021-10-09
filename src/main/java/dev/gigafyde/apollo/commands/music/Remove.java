@@ -3,33 +3,70 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Remove extends Command {
+    private CommandEvent event;
+    private TrackScheduler scheduler;
+    private Integer numberToRemove;
+
     public Remove() {
         this.name = "remove";
         this.triggers = new String[]{"remove", "rm"};
     }
 
     protected void execute(CommandEvent event) {
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        this.event = event;
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                if (scheduler == null) {
+                    event.sendError(Constants.requireActivePlayerCommand);
+                    return;
+                }
+                remove();
+            }
+            case SLASH -> {
+                event.deferReply().queue();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                if (scheduler == null) {
+                    event.sendError(Constants.requireActivePlayerCommand);
+                    return;
+                }
+                remove();
+            }
+        }
+
+
+    }
+
+    protected void remove() {
         try {
-            int numberToRemove = Integer.parseInt(event.getArgument());
-            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
+            if (!SongUtils.userConnectedToBotVC(event)) return;
+            switch (event.getCommandType()) {
+                case REGULAR -> {
+                    numberToRemove = Integer.parseInt(event.getArgument());
+                }
+                case SLASH -> {
+                    numberToRemove = Integer.parseInt(event.getOption("input").getAsString());
+                }
+            }
             if (scheduler.getQueue().size() < numberToRemove) {
-                event.getMessage().reply("").mentionRepliedUser(false).queue();
+                event.sendError("**Number " + numberToRemove + " is not in the queue the you can only remove numbers 1 to " + scheduler.getQueue().size() + " !**");
                 return;
             }
             if (numberToRemove <= 0) {
-                event.getMessage().reply("").mentionRepliedUser(false).queue();
+                event.sendError(Constants.numberBelowZero);
                 return;
             }
-            event.getMessage().reply(Emoji.SUCCESS + " **Removed** `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` **from the queue!**").mentionRepliedUser(false).queue();
+            event.send(Emoji.SUCCESS + " Removed `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` from the queue.");
             scheduler.removeSong(numberToRemove - 1);
         } catch (NumberFormatException exception) {
-            event.getMessage().reply("Failed to parse number from input").mentionRepliedUser(false).queue();
+            event.sendError(Constants.invalidInt);
         }
     }
 }

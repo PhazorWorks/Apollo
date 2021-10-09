@@ -3,15 +3,12 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class Clear extends Command {
 
     private TrackScheduler scheduler;
-    private Message message;
-    private InteractionHook hook;
     private CommandEvent event;
 
     public Clear() {
@@ -24,44 +21,33 @@ public class Clear extends Command {
         this.event = event;
         switch (event.getCommandType()) {
             case REGULAR -> {
-                message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null)
-                    sendError("**Nothing is currently playing!**");
+                if (scheduler == null) {
+                    event.sendError(Constants.requireActivePlayerCommand);
+                    return;
+                }
                 clear();
-                send("The queue has been cleared.");
             }
             case SLASH -> {
-                hook = event.getHook();
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null)
-                    scheduler = event.getClient().getMusicManager().addScheduler(event.getMember().getVoiceState().getChannel(), false);
+                if (scheduler == null) {
+                    event.sendError(Constants.requireActivePlayerCommand);
+                    return;
+                }
                 clear();
-                send("The queue has been cleared.");
             }
         }
     }
 
     protected void clear() {
-        scheduler.getQueue().clear();
-        scheduler.skip();
-    }
-
-    protected void sendError(String error) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
-            case SLASH -> hook.editOriginal(error).queue();
+        if (SongUtils.userConnectedToBotVC(event)) {
+            scheduler.getPlayer().stopTrack();
+            scheduler.clear();
+            scheduler.skip();
+            event.send("The queue has been cleared.");
         }
     }
-
-    protected void send(String content) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(content).queue();
-        }
-    }
-
 }

@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import okhttp3.MediaType;
@@ -23,8 +24,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class SongUtils {
     public static boolean isValidURL(String url) {
@@ -129,5 +132,24 @@ public class SongUtils {
         } catch (Exception ignored) {
         }
         return null;
+    }
+
+    public static boolean userConnectedToBotVC(CommandEvent event) {
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        if (vc != selfVC) event.sendError(Constants.userNotInVC);
+        return vc == selfVC;
+    }
+
+    public static boolean botAloneInVC(CommandEvent event) {
+        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        if (vc == selfVC) return true;
+        List<Member> members = selfVC.getMembers().stream().filter(member -> !member.getUser().isBot()).filter(member -> !member.getId().equals(event.getMember().getId())).collect(Collectors.toList());
+        if (members.size() >= 1) {
+            event.sendError(Constants.usedElsewhere);
+            return false;
+        }
+        return true;
     }
 }

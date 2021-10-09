@@ -7,10 +7,12 @@ package dev.gigafyde.apollo.commands.music;
 
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import lavalink.client.player.LavalinkPlayer;
+
+import java.util.Objects;
 
 public class Volume extends Command {
     private CommandEvent event;
@@ -29,7 +31,7 @@ public class Volume extends Command {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
                 if (event.getArgument().isEmpty()) {
-                    event.getMessage().reply(Emoji.VOLUME + " **Current volume is: " + getVolume() + "%**").mentionRepliedUser(true).queue();
+                    event.send(Emoji.VOLUME + " Current volume is: " + getVolume() + "%");
                     return;
                 }
                 setVolume(event.getArgument());
@@ -39,7 +41,7 @@ public class Volume extends Command {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
                 if (event.getOptions().size() == 0) {
-                    event.getHook().editOriginal(Emoji.VOLUME + " **Current volume is: " + getVolume() + "%**").queue();
+                    event.send(Emoji.VOLUME + " Current volume is: " + getVolume() + "%");
                     return;
                 }
                 setVolume(Objects.requireNonNull(event.getOption("input")).getAsString());
@@ -53,18 +55,17 @@ public class Volume extends Command {
 
     private void setVolume(String input) {
         try {
+            if (!event.getSelfMember().getVoiceState().inVoiceChannel()) {
+                event.sendError(Constants.botNotInVC);
+                return;
+            }
+            if (!SongUtils.userConnectedToBotVC(event)) return;
             float volume = (float) (Integer.parseInt(input) * 0.01); // Get volume as int and convert to float
             if (volume > 1) volume = 1;
             player.getFilters().setVolume(volume).commit(); //send off the volume change to lavalink
-            switch (event.getCommandType()) {
-                case REGULAR -> event.getMessage().reply(Emoji.VOLUME + "  **Volume set to: " + ((int) (volume * 100)) + "%**").mentionRepliedUser(true).queue();
-                case SLASH -> event.getHook().editOriginal(Emoji.VOLUME + "  **Volume set to: " + ((int) (volume * 100)) + "%**").queue();
-            }
+            event.send(Emoji.VOLUME + "  Volume set to: " + ((int) (volume * 100)) + "%.");
         } catch (NumberFormatException ignored) {
-            switch (event.getCommandType()) {
-                case REGULAR -> event.getMessage().reply("Invalid number").mentionRepliedUser(true).queue();
-                case SLASH -> event.getHook().editOriginal("Invalid number, please try again using numbers only.").queue();
-            }
+            event.sendError(Constants.invalidInt);
         }
     }
 }

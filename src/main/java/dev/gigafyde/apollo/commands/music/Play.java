@@ -84,6 +84,7 @@ public class Play extends Command implements SongCallBack {
                 processArgument(args);
             }
             case CONTEXT -> {
+                event.deferReply().setEphemeral(true).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
@@ -136,7 +137,7 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             case CONTEXT -> {
-                event.reply("Queued " + track.getInfo().title).setEphemeral(true).queue();
+                event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
             }
         }
         SongCallBackListener.removeListener(this);
@@ -146,6 +147,7 @@ public class Play extends Command implements SongCallBack {
         switch (event.getCommandType()) {
             case REGULAR -> message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+            case CONTEXT -> event.getHook().editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         }
     }
 
@@ -153,6 +155,7 @@ public class Play extends Command implements SongCallBack {
         switch (event.getCommandType()) {
             case REGULAR -> message.reply("No matches!").queue();
             case SLASH -> hook.editOriginal("No matches!").queue();
+            case CONTEXT -> event.getHook().editOriginal("No matches!").queue();
         }
     }
 
@@ -164,6 +167,7 @@ public class Play extends Command implements SongCallBack {
         switch (event.getCommandType()) {
             case REGULAR -> message.reply("Invalid/Unsupported Spotify URL!").queue();
             case SLASH -> hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
+            case CONTEXT -> event.getHook().editOriginal("Invalid/Unsupported Spotify URL!").queue();
         }
     }
 
@@ -171,6 +175,7 @@ public class Play extends Command implements SongCallBack {
         switch (event.getCommandType()) {
             case REGULAR -> message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
             case SLASH -> hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
+            case CONTEXT -> event.getHook().editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         }
     }
 }

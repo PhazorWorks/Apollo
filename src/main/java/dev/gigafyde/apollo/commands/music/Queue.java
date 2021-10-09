@@ -5,21 +5,16 @@ import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Queue extends Command {
 
     private TrackScheduler scheduler;
-    private Message message;
-    private InteractionHook hook;
     private CommandEvent event;
 
 
@@ -35,28 +30,26 @@ public class Queue extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 if (scheduler == null)
-                    sendError("**Nothing is currently playing!**");
+                    event.sendError(Constants.requireActivePlayerCommand);
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler.getQueue().isEmpty()) {
-                    send("**Queue is currently empty**");
+                    event.send("**Queue is currently empty**");
                     return;
                 }
                 queue();
             }
             case SLASH -> {
-                hook = event.getHook();
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 if (scheduler == null) {
-                    sendError("**Nothing is currently playing!**");
+                    event.sendError(Constants.requireActivePlayerCommand);
                     return;
                 }
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler.getQueue().isEmpty()) {
-                    send("**Queue is currently empty**");
+                    event.sendError("**Queue is currently empty**");
                 }
                 queue();
             }
@@ -66,9 +59,6 @@ public class Queue extends Command {
 
     protected void queue() {
         List<AudioTrack> queuedTracks = new ArrayList<>(scheduler.getQueue());
-        if (scheduler.getPlayer().isPaused()) {
-            return;
-        }
         if (scheduler.getPlayer().getPlayingTrack().getInfo().uri.isEmpty()) {
             return;
         }
@@ -104,28 +94,6 @@ public class Queue extends Command {
             eb.addField(String.format("`[%d]` %s", i + 1, queuedTracks.get(i).getInfo().title), queuedTracks.get(i).getInfo().uri, false);
         }
         eb.setFooter("Page " + page + " of " + maxPages, null);
-        sendEmbed(eb);
-    }
-
-
-    protected void sendError(String error) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
-            case SLASH -> hook.editOriginal(error).queue();
-        }
-    }
-
-    protected void send(String content) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(content).queue();
-        }
-    }
-
-    protected void sendEmbed(EmbedBuilder embed) {
-        switch (event.getCommandType()) {
-            case REGULAR -> event.getMessage().replyEmbeds(embed.build()).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginalEmbeds(embed.build()).queue();
-        }
+        event.sendEmbed(eb);
     }
 }

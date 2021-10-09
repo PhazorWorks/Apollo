@@ -4,9 +4,8 @@ package dev.gigafyde.apollo.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import okhttp3.*;
 import org.json.JSONObject;
 
@@ -14,8 +13,6 @@ import java.io.InputStream;
 
 public class NowPlaying extends Command {
 
-    private Message message;
-    private InteractionHook hook;
     private CommandEvent event;
 
     public NowPlaying() {
@@ -28,12 +25,10 @@ public class NowPlaying extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                message = event.getMessage();
                 nowPlaying();
             }
             case SLASH -> {
                 event.deferReply().queue();
-                hook = event.getHook();
                 nowPlaying();
             }
         }
@@ -42,7 +37,7 @@ public class NowPlaying extends Command {
     protected void nowPlaying() {
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (track == null) {
-            sendError("**Nothing is currently playing!**");
+            event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
         try {
@@ -56,31 +51,10 @@ public class NowPlaying extends Command {
                             .post(body)
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
-            send(inputStream, "song.png");
+            event.sendFile(inputStream, "song.png");
         } catch (Exception e) {
-            sendError("**Something went wrong trying to generate the image. " + e + "**");
-            send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()));
-        }
-    }
-
-    protected void sendError(String error) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
-            case SLASH -> hook.editOriginal(error).queue();
-        }
-    }
-
-    protected void send(String content) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(content).queue();
-        }
-    }
-
-    protected void send(InputStream inputStream, String name) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(inputStream, name).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(inputStream, name).queue();
+            event.sendError("**Something went wrong trying to generate the image. " + e + "**");
+            event.send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()));
         }
     }
 }

@@ -4,11 +4,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
@@ -26,8 +25,6 @@ import java.util.Objects;
 public class Lyrics extends Command {
 
     private static final Logger log = LoggerFactory.getLogger(Lyrics.class);
-    private Message message;
-    private InteractionHook hook;
     private CommandEvent event;
 
 
@@ -42,12 +39,11 @@ public class Lyrics extends Command {
         this.event = event;
         switch (event.getCommandType()) {
             case REGULAR -> {
-                message = event.getMessage();
                 if (event.getArgument().isEmpty()) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
                     AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
                     if (track == null) {
-                        sendError("**Nothing is currently playing.**");
+                        event.sendError(Constants.requireActivePlayerCommand);
                         return;
                     }
                     String query = sendRequest(track.getInfo().title);
@@ -63,12 +59,11 @@ public class Lyrics extends Command {
             }
             case SLASH -> {
                 event.deferReply().queue();
-                hook = event.getHook();
                 if (event.getOption("query") == null) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
                     AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
                     if (track == null) {
-                        sendError("**Nothing is currently playing.**");
+                        event.sendError(Constants.requireActivePlayerCommand);
                         return;
                     }
                     String query = sendRequest(track.getInfo().title);
@@ -97,13 +92,13 @@ public class Lyrics extends Command {
                     List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
                     if (lyrics.length() > 6000) {
                         for (MessageEmbed messageEmbed : embeds) {
-                            message.getChannel().sendMessageEmbeds(messageEmbed).queue();
+                            event.getMessage().getChannel().sendMessageEmbeds(messageEmbed).queue();
                         }
                     } else {
-                        message.getChannel().sendMessageEmbeds(embeds).queue();
+                        event.getMessage().getChannel().sendMessageEmbeds(embeds).queue();
                     }
                 } else {
-                    message.replyEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
+                    event.getMessage().replyEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).mentionRepliedUser(false).queue();
                 }
             }
             case SLASH -> {
@@ -111,14 +106,14 @@ public class Lyrics extends Command {
                     List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
                     if (lyrics.length() > 6000) {
                         for (MessageEmbed messageEmbed : embeds) {
-                            hook.getInteraction().getMessageChannel().sendMessageEmbeds(messageEmbed).queue();
+                            event.getHook().getInteraction().getMessageChannel().sendMessageEmbeds(messageEmbed).queue();
                         }
-                        hook.editOriginal("**Lyrics**: ").queue();
+                        event.getHook().editOriginal("**Lyrics**: ").queue();
                     } else {
-                        hook.editOriginalEmbeds(embeds).queue();
+                        event.getHook().editOriginalEmbeds(embeds).queue();
                     }
                 } else {
-                    hook.editOriginalEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).queue();
+                    event.getHook().editOriginalEmbeds(embed.setDescription(lyrics).setColor(blue).setTitle(title).build()).queue();
                 }
             }
         }
@@ -147,27 +142,12 @@ public class Lyrics extends Command {
             if (response.isSuccessful()) {
                 return Objects.requireNonNull(response.body()).string();
             } else {
-                sendError(String.valueOf(response.code()));
+                event.sendError("Lyrics lookup failed: " + String.valueOf(response.code()));
                 return null;
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
         return null;
-    }
-
-    protected void sendError(String error) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(error).mentionRepliedUser(true).queue();
-            case SLASH -> hook.editOriginal(error).queue();
-        }
-        log.debug("Lyrics lookup failed with error code: " + error);
-    }
-
-    protected void send(String content) {
-        switch (event.getCommandType()) {
-            case REGULAR -> message.reply(content).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(content).queue();
-        }
     }
 }

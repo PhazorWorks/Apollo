@@ -5,6 +5,9 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
 
 public class Shuffle extends Command {
+
+    private CommandEvent event;
+
     public Shuffle() {
         this.name = "shuffle";
         this.description = "Shuffle's the current queue";
@@ -13,12 +16,29 @@ public class Shuffle extends Command {
     }
 
     protected void execute(CommandEvent event) {
-        if (!SongUtils.passedVoiceChannelChecks(event)) return;
+
+        this.event = event;
+
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                shuffle();
+            }
+            case SLASH -> {
+                event.deferReply().queue();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                shuffle();
+            }
+        }
+    }
+
+    protected void shuffle() {
         try {
+            if (!SongUtils.userConnectedToBotVC(event)) return;
             event.getClient().getMusicManager().getScheduler(event.getGuild()).shuffleQueue();
-            event.getMessage().reply("Shuffled!").mentionRepliedUser(false).queue();
+            event.send("Shuffled!");
         } catch (Exception e) {
-            event.getMessage().reply("Failed to shuffle! error encountered was: " + e.getMessage()).mentionRepliedUser(true).queue();
+            event.sendError("**Failed to shuffle! error encountered was: " + e.getMessage() + "**");
         }
     }
 }
