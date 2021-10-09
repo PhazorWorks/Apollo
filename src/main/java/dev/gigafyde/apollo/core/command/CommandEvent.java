@@ -45,6 +45,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
             }
             case SLASH -> {
                 this.slashCommandEvent = slashCommandEvent;
+                slashCommandEvent.deferReply().queue();
             }
             case CONTEXT -> {
                 this.messageContextCommandEvent = messageCommandEvent;
