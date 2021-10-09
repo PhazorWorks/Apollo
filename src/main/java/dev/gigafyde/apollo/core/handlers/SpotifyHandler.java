@@ -43,9 +43,11 @@ public class SpotifyHandler {
                             .build()).execute();
             JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject jsonObject = jsonResponse.getJSONObject("track");
-            String artist = jsonObject.get("artist").toString();
+            JSONObject artistObject = jsonObject.getJSONArray("artists").getJSONObject(0);
+            String artist = artistObject.get("name").toString();
             String title = jsonObject.get("name").toString();
-            SongHandler.loadHandler(scheduler, artist + " " + title, true, true);
+            String explicit = Boolean.parseBoolean(jsonObject.get("explicit").toString()) ? "explicit" : "";
+            SongHandler.loadHandler(scheduler, artist + " " + title +  " " + explicit, true, true);
         } catch (Exception e) {
             SongCallBackListener.notifySpotifyAbort(e);
             log.error("Spotify Lookup failed! Aborting");
