@@ -149,6 +149,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
             case CONTEXT -> event.getHook().editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
         }
+        SongCallBackListener.removeListener(this);
     }
 
     public void noMatches() {
