@@ -64,8 +64,8 @@ public class SpotifyHandler {
             JSONObject jsonObject = jsonResponse.getJSONObject("playlist");
             JSONArray tracks = jsonObject.getJSONArray("tracks");
             for (int i = 0; i < tracks.length(); i++) {
-                JSONObject track = tracks.getJSONObject(i).getJSONObject("track");
-                String artist = track.get("artist").toString();
+                JSONObject track = tracks.getJSONObject(i).getJSONObject("track").getJSONObject("track");
+                String artist = track.getJSONArray("artists").getJSONObject(0).getString("name");
                 String title = track.get("name").toString();
                 SongHandler.loadPlaylistHandler(tracks, scheduler, artist + " " + title, true, true);
             }
