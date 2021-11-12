@@ -30,7 +30,8 @@ public class Main {
     public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
     public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
     public static String LYRICS_API_KEY = System.getenv("LYRICS_API_KEY");
-    public static Boolean USE_IMAGE_GEN = Boolean.valueOf(System.getenv("USE_IMAGE_GEN"));
+    public static String IMAGE_API_SERVER = System.getenv("IMAGE_API_SERVER");
+    public static Boolean USE_IMAGE_API = Boolean.valueOf(System.getenv("USE_IMAGE_API"));
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
 

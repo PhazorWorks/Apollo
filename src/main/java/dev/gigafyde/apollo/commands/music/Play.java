@@ -84,7 +84,7 @@ public class Play extends Command implements SongCallBack {
                 processArgument(args);
             }
             case CONTEXT -> {
-                event.deferReply().setEphemeral(true).queue();
+                event.deferReply().setEphemeral(false).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
@@ -113,7 +113,7 @@ public class Play extends Command implements SongCallBack {
     public void trackHasLoaded(AudioTrack track) {
         switch (event.getCommandType()) {
             case REGULAR -> {
-                if (Main.USE_IMAGE_GEN) {
+                if (Main.USE_IMAGE_API) {
                     try {
                         message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
                     } catch (Exception e) {
@@ -125,7 +125,7 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             case SLASH -> {
-                if (Main.USE_IMAGE_GEN) {
+                if (Main.USE_IMAGE_API) {
                     try {
                         hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
                     } catch (Exception e) {

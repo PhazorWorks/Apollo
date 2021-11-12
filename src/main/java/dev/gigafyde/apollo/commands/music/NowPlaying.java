@@ -2,6 +2,7 @@ package dev.gigafyde.apollo.commands.music;
 
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
@@ -47,7 +48,7 @@ public class NowPlaying extends Command {
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = client.newCall(
                     new Request.Builder()
-                            .url(System.getenv("IMAGE_API") + "np")
+                            .url(System.getenv(Main.IMAGE_API_SERVER) + "np")
                             .post(body)
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
