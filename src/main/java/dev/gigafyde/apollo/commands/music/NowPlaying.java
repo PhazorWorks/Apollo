@@ -48,7 +48,7 @@ public class NowPlaying extends Command {
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = client.newCall(
                     new Request.Builder()
-                            .url(System.getenv(Main.IMAGE_API_SERVER) + "np")
+                            .url(Main.IMAGE_API_SERVER + "np")
                             .post(body)
                             .build()).execute();
             InputStream inputStream = response.body().byteStream();
