@@ -1,0 +1,40 @@
+version: "3"
+services:
+  apollo:
+    image: gigafyde/apollo
+    environment:
+      - SENTRY_DSN=
+      - BOT_ID=
+      - BOT_PREFIX=
+      - BOT_OWNER_ID=
+      - BOT_TOKEN=-
+      - LAVALINK_URL=
+      - LAVALINK_PASS=
+      - SHARDS_TOTAL=1
+      - USE_IMAGE_API=TRUE
+      - IMAGE_API_SERVER=
+      - SPOTIFY_WEB_SERVER=
+      - LYRICS_WEB_SERVER=
+      - LYRICS_API_KEY=yes
+    restart: always
+  imagegen:
+    image: gigafyde/image-gen:amd64
+    ports:
+      - 2334:3003
+    restart: always
+  spotifyweb:
+    image: gigafyde/spotify-web
+    ports:
+      - 2335:8080
+    environment:
+      - key_size=5
+      - spotify_dev_public=
+      - spotify_dev_private=
+      - port=8080
+      - rotating_keys=true
+    restart: always
+  lyricsapi:
+    image: gigafyde/apollo-lyrics
+    ports:
+      - 2336:8080
+    restart: always
