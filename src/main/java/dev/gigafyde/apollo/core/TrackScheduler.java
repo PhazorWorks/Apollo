@@ -121,6 +121,9 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     }
 
     public void skip(int amount) {
+        if (queue.isEmpty()) {
+            player.stopTrack();
+        }
         if (amount == 1) {
             nextSong(null);
             return;
@@ -134,9 +137,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             player.stopTrack();
             return;
         }
-        if (queue.isEmpty()) {
-            player.stopTrack();
-        }
+
     }
 
     public void clear() {
