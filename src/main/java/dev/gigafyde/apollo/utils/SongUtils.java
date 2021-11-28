@@ -23,10 +23,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SongUtils {
@@ -152,4 +155,22 @@ public class SongUtils {
         }
         return true;
     }
+
+    /**
+     * Returns a list with all links contained in the input
+     */
+    public static String extractUrl(String text) {
+        List<String> containedUrls = new ArrayList<String>();
+        String urlRegex = "((https?|http?):((\\/\\/)|(\\\\))+[\\w\\d:#@%\\/;$()~_?\\+-=\\\\\\.&]*)";
+        Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
+        Matcher urlMatcher = pattern.matcher(text);
+
+        while (urlMatcher.find()) {
+            containedUrls.add(text.substring(urlMatcher.start(0),
+                    urlMatcher.end(0)));
+        }
+        if (containedUrls.isEmpty()) return text;
+        return containedUrls.get(0);
+    }
+
 }

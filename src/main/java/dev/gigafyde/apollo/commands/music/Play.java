@@ -84,7 +84,7 @@ public class Play extends Command implements SongCallBack {
                 processArgument(args);
             }
             case CONTEXT -> {
-                event.deferReply().setEphemeral(false).queue();
+                event.deferReply().setEphemeral(true).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
                 assert vc != null;
@@ -98,6 +98,7 @@ public class Play extends Command implements SongCallBack {
 
     private void processArgument(String arguments) {
         SongCallBackListener.addListener(this); //setup callback
+        arguments = SongUtils.extractUrl(arguments);
         if (arguments.contains("spotify")) {
             handleSpotify(scheduler, arguments);
             return;
