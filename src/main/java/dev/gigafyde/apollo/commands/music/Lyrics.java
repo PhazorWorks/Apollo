@@ -39,6 +39,7 @@ public class Lyrics extends Command {
         this.event = event;
         switch (event.getCommandType()) {
             case REGULAR -> {
+                if (Main.LYRICS_WEB_SERVER == null) return;
                 if (event.getArgument().isEmpty()) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
                     AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
@@ -138,7 +139,9 @@ public class Lyrics extends Command {
     private String sendRequest(String title) {
 
         try {
-            Response response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + Main.LYRICS_API_KEY).build()).execute();
+            Response response = null;
+            if (Main.LYRICS_API_KEY != null) response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + Main.LYRICS_API_KEY).build()).execute();
+            if (Main.LYRICS_API_KEY == null) response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8)).build()).execute();
             if (response.isSuccessful()) {
                 return Objects.requireNonNull(response.body()).string();
             } else {

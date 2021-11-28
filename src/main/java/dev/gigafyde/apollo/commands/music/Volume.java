@@ -50,7 +50,7 @@ public class Volume extends Command {
     }
 
     private float getVolume() {
-        return player.getFilters().getVolume() * 100;
+        return player.getVolume();
     }
 
     private void setVolume(String input) {
@@ -60,10 +60,9 @@ public class Volume extends Command {
                 return;
             }
             if (!SongUtils.userConnectedToBotVC(event)) return;
-            float volume = (float) (Integer.parseInt(input) * 0.01); // Get volume as int and convert to float
-            if (volume > 1) volume = 1;
-            player.getFilters().setVolume(volume).commit(); //send off the volume change to lavalink
-            event.send(Emoji.VOLUME + "  Volume set to: " + ((int) (volume * 100)) + "%.");
+            int volume = Integer.parseInt(input);
+            player.setVolume(volume);
+            event.send(Emoji.VOLUME + "  Volume set to: " + volume + "%.");
         } catch (NumberFormatException ignored) {
             event.sendError(Constants.invalidInt);
         }

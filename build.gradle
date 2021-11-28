@@ -27,8 +27,9 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
     implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.8'
     implementation group: 'io.sentry', name: 'sentry-logback', version: '4.3.0'
+    implementation group: 'com.github.walkyst', name: 'lavaplayer-fork', version: '1.3.96'
     implementation group: 'com.sedmelluq', name: 'lavaplayer', version: '1.3.78'
-    implementation group: 'com.github.freyacodes', name: 'Lavalink-Client', version: '3ea4125238'
+    implementation group: 'com.github.Walkyst', name: 'Lavalink-Client', version: 'b7159c796e'
     implementation group: 'com.github.aasmart', name:'jda', version: 'feature~context-menus-SNAPSHOT'
 }
 
