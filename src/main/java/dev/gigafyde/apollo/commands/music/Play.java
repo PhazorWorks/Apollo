@@ -159,10 +159,11 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> hook.editOriginal("No matches!").queue();
             case CONTEXT -> event.getHook().editOriginal("No matches!").queue();
         }
+        SongCallBackListener.removeListener(this);
     }
 
     public void trackLoadingFailed(Exception e) {
-
+        SongCallBackListener.removeListener(this);
     }
 
     public void spotifyUnsupported() {
@@ -171,6 +172,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
             case CONTEXT -> event.getHook().editOriginal("Invalid/Unsupported Spotify URL!").queue();
         }
+        SongCallBackListener.removeListener(this);
     }
 
     public void spotifyFailed(Exception e) {
@@ -179,5 +181,6 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
             case CONTEXT -> event.getHook().editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         }
+        SongCallBackListener.removeListener(this);
     }
 }
