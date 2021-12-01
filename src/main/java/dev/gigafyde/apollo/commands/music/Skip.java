@@ -18,7 +18,7 @@ public class Skip extends Command {
 
     public Skip() {
         this.name = "skip";
-        this.triggers = new String[]{"skip", "s"};
+        this.triggers = new String[]{"skip", "s", "n", "next"};
         this.guildOnly = true;
     }
 

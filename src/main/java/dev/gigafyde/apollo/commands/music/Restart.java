@@ -16,7 +16,7 @@ public class Restart extends Command {
 
     public Restart() {
         this.name = "restart";
-        this.triggers = new String[]{"restart"};
+        this.triggers = new String[]{"restart", "redo"};
         this.guildOnly = true;
     }
 
