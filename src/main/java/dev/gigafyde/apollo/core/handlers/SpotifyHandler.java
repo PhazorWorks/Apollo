@@ -43,7 +43,7 @@ public class SpotifyHandler {
                             .url(Main.SPOTIFY_WEB_SERVER + "track" + "?id=" + trackId)
                             .build()).execute();
             if (!response.isSuccessful()) {
-                throw new Exception("Track with id " + trackId + " was not found");
+                if (response.code() != 302) throw new Exception("Track with id " + trackId + " was not found");
             }
             JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject jsonObject = jsonResponse.getJSONObject("track");
@@ -65,7 +65,7 @@ public class SpotifyHandler {
                             .url(Main.SPOTIFY_WEB_SERVER + "playlist" + "?id=" + playlistId)
                             .build()).execute();
             if (!response.isSuccessful()) {
-                throw new Exception("Playlist with id " + playlistId + " was not found");
+                if (response.code() != 302) throw new Exception("Playlist with id " + playlistId + " was not found");
             }
             JSONObject jsonResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
             JSONObject jsonObject = jsonResponse.getJSONObject("playlist");
