@@ -50,6 +50,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData grab = new CommandData("grab", "Grabs the current playing song");
         CommandData queue = new CommandData("queue", "Displays the current queue of songs").addOption(OptionType.INTEGER, "page", "Page you wish to see");
         CommandData remove = new CommandData("remove", "Removes the specified song").addOption(OptionType.INTEGER, "input", "Number of specified track you wish to remove", true);
+        CommandData jump = new CommandData("jump", "Jumps to the specified song in the queue.").addOption(OptionType.INTEGER, "input", "Number of specified track you wish to skip", true);
         CommandData restart = new CommandData("restart", "Rewinds to start of song");
         CommandData resume = new CommandData("unpause", "Unpauses the player");
         CommandData seek = new CommandData("seek", "Seeks the playing track to the specified time").addOption(OptionType.INTEGER, "amount", "The amount to seek", true);
@@ -76,6 +77,7 @@ public class SlashRegister extends ListenerAdapter {
         commands.add(seek);
         commands.add(shuffle);
         commands.add(skip);
+        commands.add(jump);
         return commands;
     }
 }

@@ -5,7 +5,7 @@ package dev.gigafyde.apollo.commands;
  https://github.com/GigaFyde
  */
 
-import dev.gigafyde.apollo.Main;
+import  dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.commands.basic.Ping;
 import dev.gigafyde.apollo.commands.music.*;
 import dev.gigafyde.apollo.commands.secret.Eval;
@@ -36,6 +36,7 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Rewind());
         registry.addCommand(new Remove());
         registry.addCommand(new Clear());
+        registry.addCommand(new Jump());
         if (Main.LYRICS_WEB_SERVER != null) registry.addCommand(new Lyrics());
 
         //secret commands
