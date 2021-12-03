@@ -112,7 +112,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         queue = new LinkedBlockingDeque<>(tracks);
     }
 
-    public IPlayer getPlayer() {
+    public LavalinkPlayer getPlayer() {
         return player;
     }
 
