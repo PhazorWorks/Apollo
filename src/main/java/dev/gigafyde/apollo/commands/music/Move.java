@@ -1,0 +1,74 @@
+package dev.gigafyde.apollo.commands.music;
+
+/*
+ Created by SyntaxDragon
+  https://github.com/SyntaxDragon
+ */
+
+import dev.gigafyde.apollo.core.TrackScheduler;
+import dev.gigafyde.apollo.core.command.Command;
+import dev.gigafyde.apollo.core.command.CommandEvent;
+import dev.gigafyde.apollo.utils.Constants;
+import dev.gigafyde.apollo.utils.SongUtils;
+
+public class Move extends Command {
+    private CommandEvent event;
+    private TrackScheduler scheduler;
+
+    public Move() {
+        this.name = "move";
+        this.triggers = new String[]{"move"};
+        this.guildOnly = true;
+    }
+
+    protected void execute(CommandEvent event) {
+        this.event = event;
+        switch (event.getCommandType()) {
+            case REGULAR -> {
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                String[] args = event.getArgument().split(" ", 2);
+
+                try {
+                    int pos1 = Integer.parseInt(args[0]);
+                    int pos2 = Integer.parseInt(args[1]);
+                    move(pos1, pos2);
+                } catch (Exception e) {
+                    event.sendError(Constants.invalidInt);
+                }
+            }
+            case SLASH -> {
+                event.deferReply().queue();
+                if (!SongUtils.passedVoiceChannelChecks(event)) return;
+                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                try {
+                    int pos1 = Integer.parseInt(event.getOption("track").getAsString());
+                    int pos2 = Integer.parseInt(event.getOption("position").getAsString());
+                    move(pos1, pos2);
+                } catch (Exception e) {
+                    event.sendError(Constants.invalidInt);
+                }
+            }
+        }
+    }
+
+    protected void move(Integer pos1, Integer pos2) {
+        if (scheduler == null) {
+            event.sendError(Constants.requireActivePlayerCommand);
+            return;
+        }
+        if (pos1 > scheduler.getQueue().size()) {
+            event.sendError("**Position one is higher then the number of tracks in queue.**");
+            return;
+        }
+        if (pos2 > scheduler.getQueue().size()) {
+            event.sendError("**Position two is higher then the number of tracks in queue.**");
+            return;
+        }
+        scheduler.moveSong(pos1 - 1, pos2 - 1);
+        switch (event.getCommandType()) {
+            case REGULAR, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getSongTitleByPosition(pos2 - 1), pos1, pos2));
+        }
+    }
+
+}

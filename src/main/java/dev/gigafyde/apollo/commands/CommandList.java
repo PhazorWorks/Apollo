@@ -37,6 +37,7 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Remove());
         registry.addCommand(new Clear());
         registry.addCommand(new Jump());
+        registry.addCommand(new Move());
         if (Main.LYRICS_WEB_SERVER != null) registry.addCommand(new Lyrics());
 
         //secret commands
