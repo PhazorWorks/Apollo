@@ -15,6 +15,7 @@ public class Jump extends Command {
     private CommandEvent event;
     private TrackScheduler scheduler;
     private int tracks;
+
     public Jump() {
         this.name = "jump";
         this.triggers = new String[]{"jump", "skipto"};
@@ -28,45 +29,41 @@ public class Jump extends Command {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 try {
-                    tracks = Integer.parseInt(event.getArgument()) - 1;
-                } catch (Exception e) {
+                    jump(Integer.parseInt(event.getArgument()) - 1);
+                } catch (NumberFormatException e) {
                     event.sendError(Constants.invalidInt);
-                    return;
                 }
-                jump();
             }
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 try {
-                    tracks = Integer.parseInt(event.getOption("input").getAsString()) - 1;
-                } catch (Exception e) {
+                    jump(Integer.parseInt(event.getOption("input").getAsString()) - 1);
+                } catch (NumberFormatException e) {
                     event.sendError(Constants.invalidInt);
-                    return;
                 }
-                jump();
             }
         }
     }
 
-    protected void jump() {
+    protected void jump(int pos) {
         if (scheduler == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
-        if (tracks > scheduler.getQueue().size()) {
+        if (pos > scheduler.getQueue().size()) {
             event.sendError("**Input is higher then the number of tracks in queue.**");
             return;
         }
-        scheduler.skip(tracks);
+        scheduler.skip(pos);
         scheduler.skip();
         if (scheduler.isLooped()) {
             scheduler.setLooped(false);
             event.send("Loop was turned off due to manual jump.");
         }
         switch (event.getCommandType()) {
-            case REGULAR, SLASH -> event.send("Skipped to song `" + scheduler.getPlayer().getPlayingTrack().getInfo().title + "`.");
+            case REGULAR, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title ));
         }
     }
 
