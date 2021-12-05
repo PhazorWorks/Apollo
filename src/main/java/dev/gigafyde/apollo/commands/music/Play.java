@@ -104,6 +104,11 @@ public class Play extends Command implements SongCallBack {
             return;
         }
         if (SongUtils.isValidURL(arguments)) {
+            if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {
+                Playlists.loadSharePlaylist(arguments, scheduler, event);
+                return;
+            }
+
             String[] split = arguments.split("&list="); // Prevent accidentally queueing an entire playlist
             SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
