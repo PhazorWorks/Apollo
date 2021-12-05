@@ -37,6 +37,49 @@ public class Playlists extends Command {
         this.guildOnly = true;
     }
 
+    public static void loadSharePlaylist(String url, TrackScheduler scheduler, CommandEvent event) {
+        try {
+            // if bot is not in VC join the VC
+            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+            assert vc != null;
+            scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+
+            // build client and request
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(new Request.Builder()
+                    .url(url + "?raw=true").build()).execute();
+            // if playlists exist
+            if (response.isSuccessful()) {
+                JSONObject playlist = new JSONObject(response.body().string());
+                JSONArray tracks = playlist.getJSONArray("tracks");
+                String name = playlist.getString("name");
+                scheduler.addSongs(decodeTracks(tracks));
+                event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
+                // if no playlists exist / an error happened
+            } else {
+                JSONObject error = new JSONObject(response.body().string());
+                String message = error.getString("message");
+                event.sendError(String.format("**Playlists Error: %s**", message));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    // decode JSON Array into queue tracks
+    private static List<AudioTrack> decodeTracks(JSONArray identifiers) {
+        List<AudioTrack> tracks = new ArrayList<>();
+        for (Object identifier : identifiers) {
+            try {
+                tracks.add(LavalinkUtil.toAudioTrack((String) identifier));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return tracks;
+    }
+
     protected void execute(CommandEvent event) {
         this.event = event;
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
@@ -143,7 +186,6 @@ public class Playlists extends Command {
 
     }
 
-
     private void createPlaylist(String name, String user_id) {
         // if bot isn't being used
         if (scheduler == null) {
@@ -215,36 +257,6 @@ public class Playlists extends Command {
 
     }
 
-    public static void loadSharePlaylist(String url, TrackScheduler scheduler, CommandEvent event) {
-        try {
-            // if bot is not in VC join the VC
-            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
-            assert vc != null;
-            scheduler= event.getClient().getMusicManager().getScheduler(event.getGuild());
-            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-
-            // build client and request
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
-                    .url(url + "?raw=true").build()).execute();
-            // if playlists exist
-            if (response.isSuccessful()) {
-                JSONObject playlist = new JSONObject(response.body().string());
-                JSONArray tracks = playlist.getJSONArray("tracks");
-                String name = playlist.getString("name");
-                scheduler.addSongs(decodeTracks(tracks));
-                event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
-                // if no playlists exist / an error happened
-            } else {
-                JSONObject error = new JSONObject(response.body().string());
-                String message = error.getString("message");
-                event.sendError(String.format("**Playlists Error: %s**", message));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
     private void sharePlaylist(String name, String user_id) {
         try {
             // build client and request
@@ -267,7 +279,6 @@ public class Playlists extends Command {
         }
 
     }
-
 
     private void updatePlaylist(String name, String user_id) {
         if (scheduler == null) {
@@ -335,7 +346,6 @@ public class Playlists extends Command {
         }
     }
 
-
     private void listPlaylists(String username, String user_id, Integer page) {
         try {
             // build client and request
@@ -389,19 +399,6 @@ public class Playlists extends Command {
                 log.error(e.getMessage());
             }
         });
-        return tracks;
-    }
-
-    // decode JSON Array into queue tracks
-    private static List<AudioTrack> decodeTracks(JSONArray identifiers) {
-        List<AudioTrack> tracks = new ArrayList<>();
-        for (Object identifier : identifiers) {
-            try {
-                tracks.add(LavalinkUtil.toAudioTrack((String) identifier));
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
-        }
         return tracks;
     }
 }
