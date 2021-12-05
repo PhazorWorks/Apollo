@@ -104,8 +104,13 @@ public class Play extends Command implements SongCallBack {
             return;
         }
         if (SongUtils.isValidURL(arguments)) {
-            if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {
-                Playlists.loadSharePlaylist(arguments, scheduler, event);
+            if (Main.PLAYLISTS_WEB_SERVER != null) {
+                if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {
+                    Playlists.loadSharePlaylist(arguments, scheduler, event);
+                    return;
+                }
+            } else {
+                event.sendError("**Playlist support is disabled.**");
                 return;
             }
 
