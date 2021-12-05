@@ -31,6 +31,8 @@ public class Main {
     public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
     public static String LYRICS_API_KEY = System.getenv("LYRICS_API_KEY");
     public static String IMAGE_API_SERVER = System.getenv("IMAGE_API_SERVER");
+    public static String PLAYLISTS_WEB_SERVER = System.getenv("PLAYLISTS_WEB_SERVER");
+    public static String PLAYLISTS_API_KEY = System.getenv("PLAYLISTS_API_KEY");
     public static Boolean USE_IMAGE_API = Boolean.valueOf(System.getenv("USE_IMAGE_API"));
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
@@ -43,6 +45,7 @@ public class Main {
     public static void main(String[] args) throws LoginException {
         if (SPOTIFY_WEB_SERVER == null) log.warn("SPOTIFY_WEB_SERVER was not set, Spotify support will not be available!");
         if (LYRICS_WEB_SERVER == null) log.warn("LYRICS_WEB_SERVER was not set, Lyrics will not be available!");
+        if (PLAYLISTS_WEB_SERVER == null) log.warn("PLAYLISTS_WEB_SERVER was not set, Playlists will not be available!");
         if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());

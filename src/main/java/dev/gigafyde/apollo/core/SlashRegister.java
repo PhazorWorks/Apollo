@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,20 @@ public class SlashRegister extends ListenerAdapter {
         CommandData skip = new CommandData("skip", "Skips to the next song in the queue");
         CommandData move = new CommandData("skip", "Moves song to new position.").addOption(OptionType.INTEGER, "track", "The Track to move").addOption(OptionType.INTEGER, "position", "The new position for the track.");
         CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
+        CommandData playlists = new CommandData("playlists", "Manage your playlists")
+                .addSubcommands(new SubcommandData("save", "Save current queue as a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("update", "Add current queue as to existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("load", "Load existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("delete", "Delete a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("share", "Share a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("list", "List playlists")
+                        .addOption(OptionType.INTEGER, "page", "Page you wish to see"));
+
         commands.add(ping);
         commands.add(play);
         commands.add(rewind);
