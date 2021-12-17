@@ -9,12 +9,9 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.entities.Message;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
-import java.util.Objects;
 
 public class Connect extends Command {
 
@@ -52,7 +49,8 @@ public class Connect extends Command {
         }
         try {
             event.getClient().getMusicManager().moveVoiceChannel(vc);
-            event.send("Connected to `" + vc.getName() + "`.");
+            event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
+            event.send("Connected and bound to `" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
             event.sendError(Constants.unableToJoinVC);
         }
