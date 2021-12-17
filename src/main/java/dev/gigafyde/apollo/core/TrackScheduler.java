@@ -18,11 +18,15 @@ import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private final LavalinkPlayer player;
     private final AudioPlayerManager manager;
     private boolean looped;
+    private TextChannel boundChannel;
+    private Message nowPlaying;
     private AudioTrack loopedTrack;
     private Queue<AudioTrack> queue = new LinkedBlockingDeque<>();
 
@@ -30,6 +34,10 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         this.player = player;
         this.manager = manager;
         if (start) nextSong(null);
+    }
+
+    public void setBoundChannel(TextChannel channel) {
+        boundChannel = channel;
     }
 
     public AudioPlayerManager getManager() {
@@ -44,6 +52,13 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         if (nextTrack == null)
             return;
         player.playTrack(nextTrack);
+        try {
+            // Try to delete the previous now playing message
+            nowPlaying.delete().queue();
+        } catch (Exception ignored) {
+            // Do nothing
+        }
+        nowPlaying = boundChannel.sendMessage("Now playing " + nextTrack.getInfo().title).complete();
     }
 
     public void setLoopedSong(AudioTrack track) {
