@@ -54,7 +54,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         player.playTrack(nextTrack);
         try {
             // Try to delete the previous now playing message
-            nowPlaying.delete().queue();
+            nowPlaying.delete().complete();
         } catch (Exception ignored) {
             // Do nothing
         }
