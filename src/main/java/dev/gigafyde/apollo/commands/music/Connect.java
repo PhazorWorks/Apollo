@@ -50,7 +50,7 @@ public class Connect extends Command {
         try {
             event.getClient().getMusicManager().moveVoiceChannel(vc);
             event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
-            event.send("Connected and bound to `" + vc.getName() + "`.");
+            event.send("Connected to`" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
             event.sendError(Constants.unableToJoinVC);
         }

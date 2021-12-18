@@ -8,18 +8,20 @@ package dev.gigafyde.apollo.core;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
+import dev.gigafyde.apollo.Main;
+import dev.gigafyde.apollo.utils.SongUtils;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import okhttp3.*;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private final LavalinkPlayer player;
@@ -56,13 +58,30 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         if (nextTrack == null)
             return;
         player.playTrack(nextTrack);
-        try {
-            // Try to delete the previous now playing message
-            nowPlaying.delete().complete();
-        } catch (Exception ignored) {
-            // Do nothing
+        if (boundChannel != null) {
+            try {
+                // Try to delete the previous now playing message
+                nowPlaying.delete().complete();
+            } catch (Exception ignored) {
+                // Do nothing
+            }
+            try {
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                JSONObject jsonObject = new JSONObject().put("title", nextTrack.getInfo().title).put("position", nextTrack.getPosition()).put("duration", nextTrack.getDuration());
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
+                Response response = client.newCall(
+                        new Request.Builder()
+                                .url(Main.IMAGE_API_SERVER + "np")
+                                .post(body)
+                                .build()).execute();
+                InputStream inputStream = response.body().byteStream();
+                boundChannel.sendFile(inputStream, "song.png").queue(msg -> nowPlaying = msg);
+            } catch (Exception e) {
+                boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
+                boundChannel.sendMessage(nextTrack.getInfo().author + " - " + nextTrack.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);
+            }
         }
-        nowPlaying = boundChannel.sendMessage("Now playing " + nextTrack.getInfo().title).complete();
     }
 
     public void setLoopedSong(AudioTrack track) {
@@ -85,12 +104,12 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         return true;
     }
 
-    public void setLooped(boolean active) {
-        looped = active;
-    }
-
     public boolean isLooped() {
         return looped;
+    }
+
+    public void setLooped(boolean active) {
+        looped = active;
     }
 
     public int addSongs(AudioTrack... tracks) {
