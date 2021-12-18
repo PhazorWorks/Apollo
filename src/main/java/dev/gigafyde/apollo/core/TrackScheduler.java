@@ -68,7 +68,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             try {
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 JSONObject jsonObject = new JSONObject().put("title", nextTrack.getInfo().title).put("position", nextTrack.getPosition()).put("duration", nextTrack.getDuration());
-                OkHttpClient client = new OkHttpClient();
+                OkHttpClient client = Main.httpClient;
                 RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
                 Response response = client.newCall(
                         new Request.Builder()
