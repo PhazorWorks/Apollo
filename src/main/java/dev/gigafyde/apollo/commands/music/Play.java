@@ -123,6 +123,7 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 if (Main.USE_IMAGE_API) {
                     try {
+                        event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
                         message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
