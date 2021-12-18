@@ -36,6 +36,10 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         if (start) nextSong(null);
     }
 
+    public TextChannel getBoundChannel() {
+        return boundChannel;
+    }
+
     public void setBoundChannel(TextChannel channel) {
         boundChannel = channel;
     }
