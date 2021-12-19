@@ -31,7 +31,7 @@ public class Lyrics extends Command {
     public Lyrics() {
         this.name = "lyrics";
         this.description = "Shows lyrics of currently playing song";
-        this.triggers = new String[]{"lyrics"};
+        this.triggers = new String[]{"lyrics", "l"};
         this.guildOnly = true;
     }
 
