@@ -37,7 +37,7 @@ public class Resume extends Command {
 
     protected void resume() {
         TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-        if (scheduler == null) {
+        if (scheduler == null || scheduler.getPlayer().getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
