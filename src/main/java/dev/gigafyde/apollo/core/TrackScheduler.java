@@ -66,17 +66,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 // Do nothing
             }
             try {
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                JSONObject jsonObject = new JSONObject().put("title", nextTrack.getInfo().title).put("position", nextTrack.getPosition()).put("duration", nextTrack.getDuration());
-                OkHttpClient client = Main.httpClient;
-                RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
-                Response response = client.newCall(
-                        new Request.Builder()
-                                .url(Main.IMAGE_API_SERVER + "np")
-                                .post(body)
-                                .build()).execute();
-                InputStream inputStream = response.body().byteStream();
-                boundChannel.sendFile(inputStream, "song.png").queue(msg -> nowPlaying = msg);
+
+                boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack), "nowplaying.png").queue(msg -> nowPlaying = msg);
             } catch (Exception e) {
                 boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
                 boundChannel.sendMessage(nextTrack.getInfo().author + " - " + nextTrack.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);

@@ -17,6 +17,7 @@ import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -35,6 +36,7 @@ public class Play extends Command implements SongCallBack {
     private Message message;
     private InteractionHook hook;
     private CommandEvent event;
+    private TextChannel boundChannel;
 
     public Play() {
         this.name = "play";
@@ -56,6 +58,8 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
+                boundChannel = scheduler.getBoundChannel();
                 if (event.getArgument().isEmpty()) {
                     if (!event.getAttachments().isEmpty()) {
                         processArgument(event.getAttachments().get(0).getUrl());
@@ -80,6 +84,8 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getHook().getInteraction().getTextChannel());
+                boundChannel = scheduler.getBoundChannel();
                 String args = event.getOption("query").getAsString();
                 processArgument(args);
             }
@@ -90,6 +96,8 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getHook().getInteraction().getTextChannel());
+                boundChannel = scheduler.getBoundChannel();
                 String args = event.getTargetMessage().getContentRaw();
                 processArgument(args);
             }
@@ -123,7 +131,6 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
                         message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -147,6 +154,8 @@ public class Play extends Command implements SongCallBack {
             }
             case CONTEXT -> {
                 event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
+                if (boundChannel != null)
+                    boundChannel.sendFile(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
             }
         }
         SongCallBackListener.removeListener(this);
@@ -154,9 +163,13 @@ public class Play extends Command implements SongCallBack {
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(String.format("**Added %s of %s from the playlist!**", added, amount)).mentionRepliedUser(false).queue();
-            case SLASH -> hook.editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
-            case CONTEXT -> event.getHook().editOriginal(String.format("**Added %s of %s from the playlist!**", added, amount)).queue();
+            case REGULAR -> message.reply(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).mentionRepliedUser(false).queue();
+            case SLASH -> hook.editOriginal(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).queue();
+            case CONTEXT -> {
+                event.getHook().editOriginal(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).queue();
+                if (boundChannel != null)
+                    boundChannel.sendMessage(String.format("**Added `%s` of `%s` songs from playlist `%s` (Requested by %s)**", added, amount, playlist.getName(), event.getAuthor().getAsTag())).queue();
+            }
         }
         SongCallBackListener.removeListener(this);
     }
