@@ -211,8 +211,7 @@ public class Playlists extends Command {
         // make body
         RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON);
         try {
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "create" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
@@ -236,8 +235,7 @@ public class Playlists extends Command {
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
 
             // build client and request
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "get" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id + "&name=" + name).build()).execute();
             // if playlists exist
             if (response.isSuccessful()) {
@@ -260,8 +258,7 @@ public class Playlists extends Command {
     private void sharePlaylist(String name, String user_id) {
         try {
             // build client and request
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "get" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id + "&name=" + name).build()).execute();
             // if playlists exist
             if (response.isSuccessful()) {
@@ -304,8 +301,7 @@ public class Playlists extends Command {
         // make body
         RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON);
         try {
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "update" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
@@ -330,8 +326,7 @@ public class Playlists extends Command {
         // make body
         RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON);
         try {
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "delete" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
@@ -349,8 +344,7 @@ public class Playlists extends Command {
     private void listPlaylists(String username, String user_id, Integer page) {
         try {
             // build client and request
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(new Request.Builder()
+            Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "list" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id).build()).execute();
             // if it worked
             if (response.isSuccessful()) {
