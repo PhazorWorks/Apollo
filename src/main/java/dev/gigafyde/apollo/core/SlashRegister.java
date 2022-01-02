@@ -57,6 +57,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData seek = new CommandData("seek", "Seeks the playing track to the specified time").addOption(OptionType.INTEGER, "amount", "The amount to seek", true);
         CommandData shuffle = new CommandData("shuffle", "Shuffles the queue");
         CommandData skip = new CommandData("skip", "Skips to the next song in the queue");
+        CommandData link = new CommandData("link", "Grabs the url to the currently playing track");
         CommandData move = new CommandData("skip", "Moves song to new position.").addOption(OptionType.INTEGER, "track", "The Track to move").addOption(OptionType.INTEGER, "position", "The new position for the track.");
         CommandData addToQueue = new CommandData(CommandType.MESSAGE_CONTEXT, "Add to Queue");
         CommandData playlists = new CommandData("playlists", "Manage your playlists")
@@ -95,6 +96,8 @@ public class SlashRegister extends ListenerAdapter {
         commands.add(skip);
         commands.add(jump);
         commands.add(move);
+        commands.add(playlists);
+        commands.add(link);
         return commands;
     }
 }
