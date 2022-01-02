@@ -118,6 +118,7 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void trackHasLoaded(AudioTrack track) {
+        track.setUserData(author.getAsTag());
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (Main.USE_IMAGE_API) {
