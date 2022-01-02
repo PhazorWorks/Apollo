@@ -128,7 +128,7 @@ public class SongUtils {
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
-                            .url(Main.IMAGE_API_SERVER + "convert")
+                            .url(Main.IMAGE_API_SERVER + "add")
                             .post(body)
                             .build()).execute();
             return Objects.requireNonNull(response.body()).byteStream();

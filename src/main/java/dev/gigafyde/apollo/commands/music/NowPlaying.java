@@ -1,5 +1,10 @@
 package dev.gigafyde.apollo.commands.music;
 
+/*
+ Created by GigaFyde
+ https://github.com/GigaFyde
+ */
+
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
