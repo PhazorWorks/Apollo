@@ -109,11 +109,7 @@ public class Play extends Command implements SongCallBack {
                     Playlists.loadSharePlaylist(arguments, scheduler, event);
                     return;
                 }
-            } else {
-                event.sendError("**Playlist support is disabled.**");
-                return;
             }
-
             String[] split = arguments.split("&list="); // Prevent accidentally queueing an entire playlist
             SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
         } else {
