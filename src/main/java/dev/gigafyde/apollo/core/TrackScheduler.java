@@ -66,7 +66,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 // Do nothing
             }
             try {
-
                 boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack), "nowplaying.png").queue(msg -> nowPlaying = msg);
             } catch (Exception e) {
                 boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
