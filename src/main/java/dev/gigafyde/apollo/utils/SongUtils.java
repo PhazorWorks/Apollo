@@ -140,7 +140,7 @@ public class SongUtils {
     public static InputStream generateNowPlaying(AudioTrack track) {
         try {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", track.getPosition()).put("duration", track.getDuration());
+            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", track.getPosition()).put("duration", track.getDuration()).put("author", track.getUserData().toString());
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
