@@ -1,7 +1,7 @@
 version: "3"
 services:
   apollo:
-    image: gigafyde/apollo
+    image: ghcr.io/phazorworks/apollo:latest
     environment:
       - SENTRY_DSN=
       - BOT_ID=
@@ -20,7 +20,7 @@ services:
       - PLAYLISTS_API_KEY=
     restart: always
   imagegen:
-    image: gigafyde/image-gen:amd64
+    image: ghcr.io/phazorworks/image-gen:dev
     ports:
       - 2334:3003
     restart: always
