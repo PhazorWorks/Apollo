@@ -10,8 +10,8 @@ import dev.gigafyde.apollo.commands.CommandList;
 import dev.gigafyde.apollo.core.Client;
 import dev.gigafyde.apollo.core.LavalinkManager;
 import dev.gigafyde.apollo.core.SlashRegister;
+import dev.gigafyde.apollo.utils.SongUtils;
 import io.sentry.Sentry;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -19,7 +19,11 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.login.LoginException;
+
 public class Main {
+    private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
+    private static final Logger log = LoggerFactory.getLogger("Apollo");
     // Load configuration values from system environment variables
     public static String BOT_ID = System.getenv("BOT_ID");
     public static String BOT_PREFIX = System.getenv("BOT_PREFIX");
@@ -35,17 +39,23 @@ public class Main {
     public static String PLAYLISTS_API_KEY = System.getenv("PLAYLISTS_API_KEY");
     public static Boolean USE_IMAGE_API = Boolean.valueOf(System.getenv("USE_IMAGE_API"));
     public static int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
-    private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
-
     public static ShardManager SHARD_MANAGER;
     public static LavalinkManager LAVALINK;
     public static OkHttpClient httpClient = new OkHttpClient();
-    private static final Logger log = LoggerFactory.getLogger("Apollo");
 
     public static void main(String[] args) throws LoginException {
-        if (SPOTIFY_WEB_SERVER == null) log.warn("SPOTIFY_WEB_SERVER was not set, Spotify support will not be available!");
-        if (LYRICS_WEB_SERVER == null) log.warn("LYRICS_WEB_SERVER was not set, Lyrics will not be available!");
-        if (PLAYLISTS_WEB_SERVER == null) log.warn("PLAYLISTS_WEB_SERVER was not set, Playlists will not be available!");
+        if (!SongUtils.isValidURL(SPOTIFY_WEB_SERVER) || SPOTIFY_WEB_SERVER == null) {
+            log.warn("SPOTIFY_WEB_SERVER was not set, Spotify support will not be available!");
+            SPOTIFY_WEB_SERVER = null;
+        }
+        if (!SongUtils.isValidURL(LYRICS_WEB_SERVER) || LYRICS_WEB_SERVER == null) {
+            log.warn("LYRICS_WEB_SERVER was not set, Lyrics will not be available!");
+            LYRICS_WEB_SERVER = null;
+        }
+        if (!SongUtils.isValidURL(PLAYLISTS_WEB_SERVER) || PLAYLISTS_WEB_SERVER == null) {
+            log.warn("PLAYLISTS_WEB_SERVER was not set, Playlists will not be available!");
+            PLAYLISTS_WEB_SERVER = null;
+        }
         if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
         LAVALINK = new LavalinkManager();
         Client client = new Client(LAVALINK.getLavalink());
