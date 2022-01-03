@@ -96,7 +96,6 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getHook().getInteraction().getTextChannel());
                 boundChannel = scheduler.getBoundChannel();
                 String args = event.getTargetMessage().getContentRaw();
                 processArgument(args);
