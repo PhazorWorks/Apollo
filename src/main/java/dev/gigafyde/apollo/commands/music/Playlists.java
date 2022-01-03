@@ -54,7 +54,7 @@ public class Playlists extends Command {
                 JSONObject playlist = new JSONObject(response.body().string());
                 JSONArray tracks = playlist.getJSONArray("tracks");
                 String name = playlist.getString("name");
-                scheduler.addSongs(decodeTracks(tracks));
+                scheduler.addSongs("Playlist", decodeTracks(tracks));
                 event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {
@@ -241,7 +241,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 JSONObject playlist = new JSONObject(response.body().string());
                 JSONArray tracks = playlist.getJSONArray("tracks");
-                scheduler.addSongs(decodeTracks(tracks));
+                scheduler.addSongs("Playlist", decodeTracks(tracks));
                 event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {

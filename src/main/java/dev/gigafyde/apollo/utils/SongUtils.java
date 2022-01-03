@@ -31,8 +31,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SongUtils {
+    private static final Logger log = LoggerFactory.getLogger("SongUtils");
     public static boolean isValidURL(String url) {
         try {
             new URL(url).toURI();
@@ -137,18 +140,24 @@ public class SongUtils {
         return null;
     }
 
-    public static InputStream generateNowPlaying(AudioTrack track) {
+    public static InputStream generateNowPlaying(AudioTrack track, long positionOverride) {
         try {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", track.getPosition()).put("duration", track.getDuration()).put("author", track.getUserData().toString());
+            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title)
+                    .put("position", positionOverride)
+                    .put("duration", track.getDuration())
+                    .put("author", track.getUserData().toString())
+                    .put("identifier", track.getIdentifier());
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
                             .url(Main.IMAGE_API_SERVER + "np")
                             .post(body)
                             .build()).execute();
-            return Objects.requireNonNull(response.body()).byteStream();
-        } catch (Exception ignored) {
+            InputStream inputStream = response.body().byteStream();
+            return inputStream;
+        } catch (Exception error) {
+            log.error(error.getMessage());
         }
         return null;
     }

@@ -7,17 +7,16 @@ package dev.gigafyde.apollo.commands.music;
 
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import okhttp3.*;
-import org.json.JSONObject;
-
 import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NowPlaying extends Command {
+    private static final Logger log = LoggerFactory.getLogger("NowPlaying");
 
     private CommandEvent event;
 
@@ -47,16 +46,7 @@ public class NowPlaying extends Command {
             return;
         }
         try {
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("position", event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getTrackPosition()).put("duration", track.getDuration()).put("author", track.getUserData().toString());
-            OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
-            Response response = client.newCall(
-                    new Request.Builder()
-                            .url(Main.IMAGE_API_SERVER + "np")
-                            .post(body)
-                            .build()).execute();
-            InputStream inputStream = response.body().byteStream();
+            InputStream inputStream = SongUtils.generateNowPlaying(track, event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getTrackPosition());
             event.sendFile(inputStream, "song.png");
         } catch (Exception e) {
             event.sendError("**Something went wrong trying to generate the image. " + e + "**");

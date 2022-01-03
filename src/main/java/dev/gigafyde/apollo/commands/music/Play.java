@@ -107,7 +107,7 @@ public class Play extends Command implements SongCallBack {
         SongCallBackListener.addListener(this); //setup callback
         arguments = SongUtils.extractUrl(arguments);
         if (arguments.contains("spotify")) {
-            handleSpotify(scheduler, arguments);
+            handleSpotify(scheduler, arguments, author);
             return;
         }
         if (SongUtils.isValidURL(arguments)) {
@@ -118,9 +118,9 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             String[] split = arguments.split("&list="); // Prevent accidentally queueing an entire playlist
-            SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true);
+            SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true, event.getAuthor().getAsTag());
         } else {
-            SongHandler.loadHandler(scheduler, arguments, true, true);
+            SongHandler.loadHandler(scheduler, arguments, true, true, event.getAuthor().getAsTag());
         }
     }
 

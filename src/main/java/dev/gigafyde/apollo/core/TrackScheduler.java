@@ -8,22 +8,24 @@ package dev.gigafyde.apollo.core;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import okhttp3.*;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
+    private static final Logger log = LoggerFactory.getLogger("TrackScheduler");
     private final LavalinkPlayer player;
     private final AudioPlayerManager manager;
     private boolean looped;
@@ -66,7 +68,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 // Do nothing
             }
             try {
-                boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack), "nowplaying.png").queue(msg -> nowPlaying = msg);
+                boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack, 1), "nowplaying.png").queue(msg -> nowPlaying = msg);
             } catch (Exception e) {
                 boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
                 boundChannel.sendMessage(nextTrack.getInfo().author + " - " + nextTrack.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);
@@ -78,7 +80,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         loopedTrack = track;
     }
 
-    public boolean addSong(AudioTrack track) {
+    public boolean addSong(AudioTrack track, String author) {
+        track.setUserData(author);
         if (queue.contains(track))
             return false;
         queue.add(track);
@@ -102,14 +105,14 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         looped = active;
     }
 
-    public int addSongs(AudioTrack... tracks) {
-        return addSongs(Arrays.asList(tracks));
+    public int addSongs(String author, AudioTrack... tracks) {
+        return addSongs(author,Arrays.asList(tracks));
     }
 
-    public int addSongs(List<AudioTrack> tracks) {
+    public int addSongs(String author, List<AudioTrack> tracks) {
         int added = 0;
         for (AudioTrack track : tracks) {
-            if (addSong(track)) added++;
+            if (addSong(track, author)) added++;
         }
         return added;
     }

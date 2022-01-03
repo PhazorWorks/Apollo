@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.core.handlers;
 
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
+import net.dv8tion.jda.api.entities.User;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
@@ -20,9 +21,11 @@ import java.util.Objects;
 public class SpotifyHandler {
     private static final Logger log = LoggerFactory.getLogger("SpotifyHandler");
     private static TrackScheduler scheduler;
+    private static User user;
 
 
-    public static void handleSpotify(TrackScheduler trackScheduler, String input) {
+    public static void handleSpotify(TrackScheduler trackScheduler, String input, User author) {
+        user = author;
         String[] url = input.split("/");
         String[] object = url[4].split("\\?si");
         scheduler = trackScheduler;
@@ -51,7 +54,7 @@ public class SpotifyHandler {
             String artist = artistObject.get("name").toString();
             String title = jsonObject.get("name").toString();
             String explicit = Boolean.parseBoolean(jsonObject.get("explicit").toString()) ? "explicit" : "";
-            SongHandler.loadHandler(scheduler, artist + " " + title + " " + explicit, true, true);
+            SongHandler.loadHandler(scheduler, artist + " " + title + " " + explicit, true, true, user.getAsTag());
         } catch (Exception e) {
             SongCallBackListener.notifySpotifyAbort(e);
             log.error("Spotify Lookup failed! Aborting");
@@ -74,7 +77,7 @@ public class SpotifyHandler {
                 JSONObject track = tracks.getJSONObject(i).getJSONObject("track").getJSONObject("track");
                 String artist = track.getJSONArray("artists").getJSONObject(0).getString("name");
                 String title = track.get("name").toString();
-                SongHandler.loadPlaylistHandler(tracks, scheduler, artist + " " + title, true, true);
+                SongHandler.loadPlaylistHandler(tracks, scheduler, artist + " " + title, true, true, user.getAsTag());
             }
 
 //            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();

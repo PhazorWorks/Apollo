@@ -14,11 +14,11 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import org.slf4j.LoggerFactory;
 
 public class SongHandler {
-    public static void loadPlaylistHandler(Object key, TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
+    public static void loadPlaylistHandler(Object key, TrackScheduler scheduler, String searchQuery, boolean search, boolean send, String author) {
         scheduler.getManager().loadItemOrdered(key, search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (scheduler.addSong(track) && send) {
+                if (scheduler.addSong(track, author) && send) {
                     SongCallBackListener.notifyTrackLoaded(track);
                 }
             }
@@ -31,7 +31,7 @@ public class SongHandler {
                     }
                     trackLoaded(playlist.getTracks().get(0));
                 } else {
-                    int added = scheduler.addSongs(playlist.getTracks());
+                    int added = scheduler.addSongs(author, playlist.getTracks());
                     int amount = playlist.getTracks().size();
                     SongCallBackListener.notifyPlaylistLoaded(playlist, added, amount);
                 }
@@ -52,11 +52,11 @@ public class SongHandler {
         });
     }
 
-    public static void loadHandler(TrackScheduler scheduler, String searchQuery, boolean search, boolean send) {
+    public static void loadHandler(TrackScheduler scheduler, String searchQuery, boolean search, boolean send, String author) {
         scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (scheduler.addSong(track) && send) {
+                if (scheduler.addSong(track, author) && send) {
                     SongCallBackListener.notifyTrackLoaded(track);
                 }
             }
@@ -69,7 +69,7 @@ public class SongHandler {
                     }
                     trackLoaded(playlist.getTracks().get(0));
                 } else {
-                    int added = scheduler.addSongs(playlist.getTracks());
+                    int added = scheduler.addSongs(author, playlist.getTracks());
                     int amount = playlist.getTracks().size();
                     SongCallBackListener.notifyPlaylistLoaded(playlist, added, amount);
                 }
