@@ -86,14 +86,12 @@ public class Playlists extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                if (!SongUtils.passedVoiceChannelChecks(event)) return;
-
                 String[] args = event.getArgument().split(" ", 3);
                 // 0 = command, 1 = name, 2 = page
 
                 // if command has no args return a reminder of what commands exist
                 if (event.getArgument().isEmpty()) {
-                    event.sendError("**" + Main.BOT_PREFIX + "playlists <save|update|load|delete|list|share> <name>**");
+                    event.sendError("**" + Main.BOT_PREFIX + "playlists <save|update|add|load|delete|list|share> <name>**");
                     return;
                 }
                 // parse what sub command is being used here
@@ -105,6 +103,16 @@ public class Playlists extends Command {
                             return;
                         }
                         createPlaylist(args[1], event.getAuthor().getId());
+                        return;
+                    }
+                    case "add" -> {
+                        // if no name is provided
+                        if (args.length == 1) {
+                            event.sendError("**" + Main.BOT_PREFIX + "playlists add <name>**");
+                            return;
+                        }
+                        addPlaylist(args[1], event.getAuthor().getId());
+                        return;
                     }
                     case "load" -> {
                         // if no name is provided
@@ -113,6 +121,7 @@ public class Playlists extends Command {
                             return;
                         }
                         loadPlaylist(args[1], event.getAuthor().getId());
+                        return;
                     }
                     case "update" -> {
                         // if no name is provided
@@ -121,6 +130,7 @@ public class Playlists extends Command {
                             return;
                         }
                         updatePlaylist(args[1], event.getAuthor().getId());
+                        return;
                     }
                     case "share" -> {
                         // if no name is provided
@@ -129,6 +139,7 @@ public class Playlists extends Command {
                             return;
                         }
                         sharePlaylist(args[1], event.getAuthor().getId());
+                        return;
                     }
 
                     case "list" -> {
@@ -142,6 +153,7 @@ public class Playlists extends Command {
                             }
                         }
                         listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), 0);
+                        return;
                     }
                     case "delete" -> {
                         // if no name is provided
@@ -150,8 +162,10 @@ public class Playlists extends Command {
                             return;
                         }
                         deletePlaylist(args[1], event.getAuthor().getId());
+                        return;
                     }
                 }
+                event.sendError("**Unable to find playlist command  " + args[0] + "**");
             }
             case SLASH -> {
                 switch (event.getSubcommandName()) {
@@ -163,6 +177,9 @@ public class Playlists extends Command {
                     }
                     case "update" -> {
                         updatePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
+                    }
+                    case "add" -> {
+                        addPlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
                     }
                     case "share" -> {
                         sharePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
@@ -229,6 +246,7 @@ public class Playlists extends Command {
 
     private void loadPlaylist(String name, String user_id) {
         try {
+            if (!SongUtils.passedVoiceChannelChecks(event)) return;
             // if bot is not in VC join the VC
             VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
             assert vc != null;
@@ -316,6 +334,44 @@ public class Playlists extends Command {
             log.error(e.getMessage());
         }
     }
+
+    private void addPlaylist(String name, String user_id) {
+        if (scheduler == null) {
+            event.sendError(Constants.requireActivePlayerCommand);
+            return;
+        }
+        // create tracks list
+        List<AudioTrack> track = new ArrayList<>();
+        // add current playing track
+        track.add(scheduler.getPlayer().getPlayingTrack());
+        // turn it into an array list
+        track = new ArrayList<>(track);
+        // set json header
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        // make json object
+        JSONArray convertedTrack = convertTracks(track);
+        JSONObject jsonObject = new JSONObject()
+                .put("track", convertedTrack)
+                .put("user_id", user_id)
+                .put("name", name);
+        // make body
+        RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON);
+        try {
+            Response response = Main.httpClient.newCall(new Request.Builder()
+                    .url(Main.PLAYLISTS_WEB_SERVER + "add" + "?key=" + Main.PLAYLISTS_API_KEY)
+                    .post(body).build()).execute();
+            if (response.isSuccessful()) {
+                event.send(String.format("Added song to playlist `%s`.", name));
+            } else {
+                JSONObject error = new JSONObject(response.body().string());
+                String message = error.getString("message");
+                event.sendError(String.format("**Playlists Error: %s**", message));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
 
     private void deletePlaylist(String name, String user_id) {
         // set json header

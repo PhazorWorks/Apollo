@@ -65,6 +65,8 @@ public class SlashRegister extends ListenerAdapter {
                         .addOption(OptionType.STRING, "name", "Name of playlist", true))
                 .addSubcommands(new SubcommandData("update", "Add current queue as to existing playlist")
                         .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("add", "Add current track to an existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
                 .addSubcommands(new SubcommandData("load", "Load existing playlist")
                         .addOption(OptionType.STRING, "name", "Name of playlist", true))
                 .addSubcommands(new SubcommandData("delete", "Delete a playlist")
