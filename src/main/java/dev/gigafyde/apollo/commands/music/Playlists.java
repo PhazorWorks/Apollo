@@ -93,7 +93,7 @@ public class Playlists extends Command {
 
                 // if command has no args return a reminder of what commands exist
                 if (event.getArgument().isEmpty()) {
-                    event.sendError("**" + Main.BOT_PREFIX + "playlists <save|update|load|delete|list> <name>**");
+                    event.sendError("**" + Main.BOT_PREFIX + "playlists <save|update|load|delete|list|share> <name>**");
                     return;
                 }
                 // parse what sub command is being used here
@@ -165,9 +165,10 @@ public class Playlists extends Command {
                         updatePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
                     }
                     case "share" -> {
+                        sharePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
                     }
                     case "list" -> {
-                        if (event.getOptions().isEmpty()) {
+                        if (!event.getOptions().isEmpty()) {
                             try {
                                 listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), Integer.parseInt(event.getOption("page").getAsString()));
                             } catch (Exception e) {
