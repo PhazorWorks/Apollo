@@ -6,11 +6,9 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
-import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class Queue extends Command {
 
@@ -30,7 +28,6 @@ public class Queue extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 if (scheduler == null)
                     event.sendError(Constants.requireActivePlayerCommand);
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
@@ -42,7 +39,6 @@ public class Queue extends Command {
             }
             case SLASH -> {
                 event.deferReply().queue();
-                if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
