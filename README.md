@@ -2,8 +2,8 @@
   Apollo
 </h1>
 <p align="center">
-  <a href="https://ci.gigafyde.dev/GigaFyde/Apollo">
-    <img src="https://ci.gigafyde.dev/api/badges/GigaFyde/Apollo/status.svg"  >
+  <a href="https://ci.gigafyde.dev/PhazorWorks/Apollo">
+    <img src="https://ci.gigafyde.dev/api/badges/PhazorWorks/Apollo/status.svg?ref=refs/heads/development"  >
   </a>
 </p>
 
