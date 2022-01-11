@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Pause extends Command {
 
@@ -34,7 +35,7 @@ public class Pause extends Command {
     }
 
     protected void pause() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
         AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (!SongUtils.userConnectedToBotVC(event)) return;

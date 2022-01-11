@@ -43,6 +43,7 @@ public class CommandRegistry {
             }
         }
     }
+
     Command getCommand(String trigger) {
         return commands.getOrDefault(trigger, null);
     }

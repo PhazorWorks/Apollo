@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Skip extends Command {
     private CommandEvent event;
@@ -27,13 +28,13 @@ public class Skip extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 skip();
             }
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 skip();
             }
         }

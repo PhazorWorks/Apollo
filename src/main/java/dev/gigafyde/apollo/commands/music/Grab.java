@@ -5,6 +5,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.User;
 
 public class Grab extends Command {
@@ -29,7 +30,7 @@ public class Grab extends Command {
     }
 
     protected void grab() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
         if (scheduler == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;

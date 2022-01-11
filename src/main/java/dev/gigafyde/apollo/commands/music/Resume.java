@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Resume extends Command {
     private CommandEvent event;
@@ -36,7 +37,7 @@ public class Resume extends Command {
     }
 
     protected void resume() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
         if (scheduler == null || scheduler.getPlayer().getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;

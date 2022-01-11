@@ -12,6 +12,7 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.io.InputStream;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +30,7 @@ public class NowPlaying extends Command {
         this.event = event;
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
-                nowPlaying();
-            }
+            case REGULAR -> nowPlaying();
             case SLASH -> {
                 event.deferReply().queue();
                 nowPlaying();
@@ -46,7 +45,7 @@ public class NowPlaying extends Command {
             return;
         }
         try {
-            InputStream inputStream = SongUtils.generateNowPlaying(track, event.getClient().getMusicManager().getScheduler(event.getGuild()).getPlayer().getTrackPosition());
+            InputStream inputStream = SongUtils.generateNowPlaying(track, event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).getPlayer().getTrackPosition());
             event.sendFile(inputStream, "song.png");
         } catch (Exception e) {
             event.sendError("**Something went wrong trying to generate the image. " + e + "**");

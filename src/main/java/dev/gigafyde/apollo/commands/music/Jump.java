@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Jump extends Command {
     private CommandEvent event;
@@ -27,7 +28,7 @@ public class Jump extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 try {
                     jump(Integer.parseInt(event.getArgument()) - 1);
                 } catch (NumberFormatException e) {
@@ -37,9 +38,9 @@ public class Jump extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 try {
-                    jump(Integer.parseInt(event.getOption("input").getAsString()) - 1);
+                    jump(Integer.parseInt(Objects.requireNonNull(event.getOption("input")).getAsString()) - 1);
                 } catch (NumberFormatException e) {
                     event.sendError(Constants.invalidInt);
                 }
@@ -63,7 +64,7 @@ public class Jump extends Command {
             event.send("Loop was turned off due to manual jump.");
         }
         switch (event.getCommandType()) {
-            case REGULAR, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title ));
+            case REGULAR, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title));
         }
     }
 

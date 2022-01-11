@@ -6,6 +6,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Loop extends Command {
     private CommandEvent event;
@@ -33,7 +34,7 @@ public class Loop extends Command {
 
     protected void loop() {
         try {
-            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
             if (scheduler == null | track == null) {
                 event.sendError(Constants.requireActivePlayerCommand);

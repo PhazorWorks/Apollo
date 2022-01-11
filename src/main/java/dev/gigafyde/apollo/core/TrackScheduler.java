@@ -12,6 +12,7 @@ import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 import lavalink.client.player.IPlayer;
@@ -73,7 +74,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             }
             if (player.getPlayingTrack() == track)
                 try {
-                    boundChannel.sendFile(SongUtils.generateNowPlaying(track, 1), "nowplaying.png").queue(msg -> nowPlaying = msg);
+                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "nowplaying.png").queue(msg -> nowPlaying = msg);
                 } catch (Exception e) {
                     boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
                     boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);

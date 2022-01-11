@@ -11,7 +11,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lavalink.client.io.jda.JdaLink;
-import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;

@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Move extends Command {
     private CommandEvent event;
@@ -26,7 +27,7 @@ public class Move extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 String[] args = event.getArgument().split(" ", 2);
 
                 try {
@@ -40,10 +41,10 @@ public class Move extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 try {
-                    int pos1 = Integer.parseInt(event.getOption("track").getAsString());
-                    int pos2 = Integer.parseInt(event.getOption("position").getAsString());
+                    int pos1 = Integer.parseInt(Objects.requireNonNull(event.getOption("track")).getAsString());
+                    int pos2 = Integer.parseInt(Objects.requireNonNull(event.getOption("position")).getAsString());
                     move(pos1, pos2);
                 } catch (Exception e) {
                     event.sendError(Constants.invalidInt);

@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEven
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 public class Client extends ListenerAdapter {
     private final CommandRegistry registry = new CommandRegistry();
@@ -27,16 +28,16 @@ public class Client extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         handler.handle(event);
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
         handler.handleSlashCommand(event);
     }
 
-    public void onMessageContextCommand(MessageContextCommandEvent event) {
+    public void onMessageContextCommand(@NotNull MessageContextCommandEvent event) {
         handler.handleMessageContextCommand(event);
     }
 

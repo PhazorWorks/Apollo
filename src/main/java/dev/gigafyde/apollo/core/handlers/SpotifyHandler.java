@@ -8,6 +8,7 @@ package dev.gigafyde.apollo.core.handlers;
 
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.User;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -15,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class SpotifyHandler {
     private static final Logger log = LoggerFactory.getLogger("SpotifyHandler");
