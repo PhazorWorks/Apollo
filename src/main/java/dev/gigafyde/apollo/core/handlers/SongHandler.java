@@ -18,7 +18,7 @@ public class SongHandler {
         scheduler.getManager().loadItemOrdered(key, search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (scheduler.addSong(track, author) && send) {
+                if (scheduler.addTrack(track, author) && send) {
                     SongCallBackListener.notifyTrackLoaded(track);
                 }
             }
@@ -31,7 +31,7 @@ public class SongHandler {
                     }
                     trackLoaded(playlist.getTracks().get(0));
                 } else {
-                    int added = scheduler.addSongs(author, playlist.getTracks());
+                    int added = scheduler.addTracks(author, playlist.getTracks());
                     int amount = playlist.getTracks().size();
                     SongCallBackListener.notifyPlaylistLoaded(playlist, added, amount);
                 }
@@ -56,7 +56,7 @@ public class SongHandler {
         scheduler.getManager().loadItem(search ? "ytsearch:" + searchQuery : searchQuery, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                if (scheduler.addSong(track, author) && send) {
+                if (scheduler.addTrack(track, author) && send) {
                     SongCallBackListener.notifyTrackLoaded(track);
                 }
             }
@@ -69,7 +69,7 @@ public class SongHandler {
                     }
                     trackLoaded(playlist.getTracks().get(0));
                 } else {
-                    int added = scheduler.addSongs(author, playlist.getTracks());
+                    int added = scheduler.addTracks(author, playlist.getTracks());
                     int amount = playlist.getTracks().size();
                     SongCallBackListener.notifyPlaylistLoaded(playlist, added, amount);
                 }

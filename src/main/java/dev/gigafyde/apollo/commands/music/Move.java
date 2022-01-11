@@ -65,9 +65,9 @@ public class Move extends Command {
             event.sendError("**Position two is higher then the number of tracks in queue.**");
             return;
         }
-        scheduler.moveSong(pos1 - 1, pos2 - 1);
+        scheduler.moveTrack(pos1 - 1, pos2 - 1);
         switch (event.getCommandType()) {
-            case REGULAR, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getSongTitleByPosition(pos2 - 1), pos1, pos2));
+            case REGULAR, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getTrackTitleByPosition(pos2 - 1), pos1, pos2));
         }
     }
 

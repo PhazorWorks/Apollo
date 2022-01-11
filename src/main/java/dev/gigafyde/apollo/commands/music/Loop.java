@@ -43,7 +43,7 @@ public class Loop extends Command {
             if (!scheduler.isLooped()) {
                 event.send("Loop is now enabled for the current track.");
                 scheduler.setLooped(true);
-                scheduler.setLoopedSong(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
+                scheduler.setLoopedTrack(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
             } else {
                 event.send("Loop is now disabled.");
                 scheduler.setLooped(false);
