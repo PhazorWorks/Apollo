@@ -65,8 +65,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         }
         if (nextTrack == null)
             return;
-        if (player.getPlayingTrack() == nextTrack) setPreviousTrack(previousTrack);
         player.playTrack(nextTrack);
+        if (player.getPlayingTrack() == nextTrack) setPreviousTrack(nextTrack);
         if (boundChannel != null) {
             try {
                 // Try to delete the previous now playing message

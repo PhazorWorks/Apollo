@@ -14,7 +14,7 @@ public class PlayBack extends Command {
 
     public PlayBack() {
         this.name = "playback";
-        this.triggers = new String[]{"playback", "playprevious", "back"};
+        this.triggers = new String[]{"playback", "playprevious", "back", "previous"};
     }
 
     protected void execute(CommandEvent event) {
