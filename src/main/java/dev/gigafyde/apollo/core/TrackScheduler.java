@@ -67,12 +67,13 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             } catch (Exception ignored) {
                 // Do nothing
             }
-            try {
-                boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack, 1), "nowplaying.png").queue(msg -> nowPlaying = msg);
-            } catch (Exception e) {
-                boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
-                boundChannel.sendMessage(nextTrack.getInfo().author + " - " + nextTrack.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);
-            }
+            if (player.getPlayingTrack() == nextTrack)
+                try {
+                    boundChannel.sendFile(SongUtils.generateNowPlaying(nextTrack, 1), "nowplaying.png").queue(msg -> nowPlaying = msg);
+                } catch (Exception e) {
+                    boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
+                    boundChannel.sendMessage(nextTrack.getInfo().author + " - " + nextTrack.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);
+                }
         }
     }
 
@@ -106,7 +107,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     }
 
     public int addSongs(String author, AudioTrack... tracks) {
-        return addSongs(author,Arrays.asList(tracks));
+        return addSongs(author, Arrays.asList(tracks));
     }
 
     public int addSongs(String author, List<AudioTrack> tracks) {
