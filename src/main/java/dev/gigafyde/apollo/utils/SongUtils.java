@@ -127,7 +127,12 @@ public class SongUtils {
     public static InputStream generateAndSendImage(AudioTrack track, String author) {
         try {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title).put("author", author).put("duration", track.getDuration()).put("uri", track.getInfo().uri).put("identifier", track.getInfo().identifier);
+            JSONObject jsonObject = new JSONObject()
+                    .put("title", track.getInfo().title)
+                    .put("author", author)
+                    .put("duration", track.getDuration())
+                    .put("uri", track.getInfo().uri)
+                    .put("identifier", track.getInfo().identifier);
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = Main.httpClient.newCall(
                     new Request.Builder()
@@ -143,10 +148,12 @@ public class SongUtils {
     public static InputStream generateNowPlaying(AudioTrack track, long positionOverride) {
         try {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            JSONObject jsonObject = new JSONObject().put("title", track.getInfo().title)
+            JSONObject jsonObject = new JSONObject()
+                    .put("title", track.getInfo().title)
                     .put("position", positionOverride)
                     .put("duration", track.getDuration())
                     .put("author", track.getUserData().toString())
+                    .put("uri", track.getInfo().uri)
                     .put("identifier", track.getIdentifier());
             RequestBody body = RequestBody.create(String.valueOf(jsonObject), JSON); // new
             Response response = Main.httpClient.newCall(
