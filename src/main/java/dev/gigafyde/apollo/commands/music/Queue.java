@@ -28,8 +28,10 @@ public class Queue extends Command {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                if (scheduler == null)
+                if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
+                    return;
+                }
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler.getQueue().isEmpty()) {
                     event.send("**Queue is currently empty**");
