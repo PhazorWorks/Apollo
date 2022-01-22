@@ -153,10 +153,10 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         queue = new LinkedBlockingDeque<>(tracks);
     }
 
-    public void moveTrack(int oldPosition, int newPostition) {
+    public void moveTrack(int oldPosition, int newPosition) {
         List<AudioTrack> tracks = new ArrayList<>(queue);
         AudioTrack oldPos = tracks.remove(oldPosition);
-        tracks.add(newPostition, oldPos);
+        tracks.add(newPosition, oldPos);
         queue = new LinkedBlockingDeque<>(tracks);
     }
 
