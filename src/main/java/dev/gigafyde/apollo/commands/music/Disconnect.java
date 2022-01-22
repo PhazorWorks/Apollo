@@ -8,7 +8,6 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
-
 import java.util.Objects;
 
 public class Disconnect extends Command {
@@ -24,9 +23,7 @@ public class Disconnect extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
-                disconnect();
-            }
+            case REGULAR -> disconnect();
             case SLASH -> {
                 event.deferReply().queue();
                 disconnect();
@@ -42,7 +39,7 @@ public class Disconnect extends Command {
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
         if (!SongUtils.botAloneInVC(event)) return;
-        event.getClient().getMusicManager().disconnect(event.getGuild());
+        event.getClient().getMusicManager().disconnect(Objects.requireNonNull(event.getGuild()));
         event.getClient().getLavalink().getLink(event.getGuild()).destroy();
         event.send("I have disconnected from this voice channel.");
     }

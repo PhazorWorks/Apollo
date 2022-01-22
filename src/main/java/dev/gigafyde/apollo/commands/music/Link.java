@@ -11,6 +11,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Link extends Command {
     public Link() {
@@ -22,18 +23,14 @@ public class Link extends Command {
 
     protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
         if (scheduler == null || scheduler.getPlayer().getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
         switch (event.getCommandType()) {
-            case REGULAR -> {
-                event.getMessage().reply("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
-            }
-            case SLASH -> {
-                event.getHook().editOriginal("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
-            }
+            case REGULAR -> event.getMessage().reply("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
+            case SLASH -> event.getHook().editOriginal("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
         }
     }
 }

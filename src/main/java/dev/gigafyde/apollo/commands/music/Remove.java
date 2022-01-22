@@ -6,6 +6,7 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Remove extends Command {
     private CommandEvent event;
@@ -22,7 +23,7 @@ public class Remove extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -32,7 +33,7 @@ public class Remove extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -48,12 +49,8 @@ public class Remove extends Command {
         try {
             if (!SongUtils.userConnectedToBotVC(event)) return;
             switch (event.getCommandType()) {
-                case REGULAR -> {
-                    numberToRemove = Integer.parseInt(event.getArgument());
-                }
-                case SLASH -> {
-                    numberToRemove = Integer.parseInt(event.getOption("input").getAsString());
-                }
+                case REGULAR -> numberToRemove = Integer.parseInt(event.getArgument());
+                case SLASH -> numberToRemove = Integer.parseInt(Objects.requireNonNull(event.getOption("input")).getAsString());
             }
             if (scheduler.getQueue().size() < numberToRemove) {
                 event.sendError("**Number " + numberToRemove + " is not in the queue the you can only remove numbers 1 to " + scheduler.getQueue().size() + " !**");
@@ -63,8 +60,8 @@ public class Remove extends Command {
                 event.sendError(Constants.numberBelowZero);
                 return;
             }
-            event.send(Emoji.SUCCESS + " Removed `" + scheduler.getSongTitleByPosition(numberToRemove - 1) + "` from the queue.");
-            scheduler.removeSong(numberToRemove - 1);
+            event.send(Emoji.SUCCESS + " Removed `" + scheduler.getTrackTitleByPosition(numberToRemove - 1) + "` from the queue.");
+            scheduler.removeTrack(numberToRemove - 1);
         } catch (NumberFormatException exception) {
             event.sendError(Constants.invalidInt);
         }

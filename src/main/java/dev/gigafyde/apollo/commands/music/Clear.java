@@ -5,6 +5,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Clear extends Command {
 
@@ -22,7 +23,7 @@ public class Clear extends Command {
         switch (event.getCommandType()) {
             case REGULAR -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -32,7 +33,7 @@ public class Clear extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;

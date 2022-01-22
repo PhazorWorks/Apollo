@@ -8,17 +8,6 @@ package dev.gigafyde.apollo.utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import lavalink.client.player.LavalinkPlayer;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.json.JSONObject;
-
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -30,12 +19,22 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import lavalink.client.player.LavalinkPlayer;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SongUtils {
     private static final Logger log = LoggerFactory.getLogger("SongUtils");
+
     public static boolean isValidURL(String url) {
         try {
             new URL(url).toURI();
@@ -49,7 +48,7 @@ public class SongUtils {
 
         switch (event.getCommandType()) {
             case REGULAR -> {
-                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.getMessage().reply("**You have to join a voice channel before you can use this command!**").mentionRepliedUser(true).queue();
                     return false;
@@ -66,13 +65,13 @@ public class SongUtils {
                 return true;
             }
             case SLASH -> {
-                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 InteractionHook hook = event.getHook();
                 if (vc == null) {
                     hook.editOriginal("**You have to join a voice channel before you can use this command!**").queue();
                     return false;
                 }
-                EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
+                EnumSet<Permission> voicePermissions = Objects.requireNonNull(event.getGuild()).getSelfMember().getPermissions(vc);
                 if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
                     hook.editOriginal("**I do not have permission to `view` or `connect` to your voice channel!**").queue();
                     return false;
@@ -84,12 +83,12 @@ public class SongUtils {
                 return true;
             }
             case CONTEXT -> {
-                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.reply("**You have to join a voice channel before you can use this command!**").setEphemeral(true).queue();
                     return false;
                 }
-                EnumSet<Permission> voicePermissions = event.getGuild().getSelfMember().getPermissions(vc);
+                EnumSet<Permission> voicePermissions = Objects.requireNonNull(event.getGuild()).getSelfMember().getPermissions(vc);
                 if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
                     event.reply("**I do not have permission to `view` or `connect` to your voice channel!**").setEphemeral(true).queue();
                     return false;
@@ -161,8 +160,7 @@ public class SongUtils {
                             .url(Main.IMAGE_API_SERVER + "np")
                             .post(body)
                             .build()).execute();
-            InputStream inputStream = response.body().byteStream();
-            return inputStream;
+            return Objects.requireNonNull(response.body()).byteStream();
         } catch (Exception error) {
             log.error(error.getMessage());
         }
@@ -170,7 +168,7 @@ public class SongUtils {
     }
 
     public static boolean userConnectedToBotVC(CommandEvent event) {
-        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
         VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
         if (vc != selfVC) event.sendError(Constants.userNotInVC);
         return vc == selfVC;
@@ -178,9 +176,9 @@ public class SongUtils {
 
     public static boolean botAloneInVC(CommandEvent event) {
         VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
-        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
         if (vc == selfVC) return true;
-        List<Member> members = selfVC.getMembers().stream().filter(member -> !member.getUser().isBot()).filter(member -> !member.getId().equals(event.getMember().getId())).collect(Collectors.toList());
+        List<Member> members = Objects.requireNonNull(selfVC).getMembers().stream().filter(member -> !member.getUser().isBot()).filter(member -> !member.getId().equals(event.getMember().getId())).toList();
         if (members.size() >= 1) {
             event.sendError(Constants.usedElsewhere);
             return false;
@@ -192,8 +190,8 @@ public class SongUtils {
      * Returns a list with all links contained in the input
      */
     public static String extractUrl(String text) {
-        List<String> containedUrls = new ArrayList<String>();
-        String urlRegex = "((https?|http?):((\\/\\/)|(\\\\))+[\\w\\d:#@%\\/;$()~_?\\+-=\\\\\\.&]*)";
+        List<String> containedUrls = new ArrayList<>();
+        String urlRegex = "((https?|http?):((//)|(\\\\))+[\\w:#@%;$()~_?+-=\\\\&]*)";
         Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
         Matcher urlMatcher = pattern.matcher(text);
 

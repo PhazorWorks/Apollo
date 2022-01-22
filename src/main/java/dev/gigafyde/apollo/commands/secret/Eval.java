@@ -12,12 +12,11 @@ import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.Haste;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public final class Eval extends Command {
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("Eval Pool");

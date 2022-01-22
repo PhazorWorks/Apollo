@@ -8,6 +8,7 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class Queue extends Command {
@@ -24,7 +25,7 @@ public class Queue extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         MusicManager musicManager = event.getClient().getMusicManager();
-        scheduler = musicManager.getScheduler(event.getGuild());
+        scheduler = musicManager.getScheduler(Objects.requireNonNull(event.getGuild()));
 
         switch (event.getCommandType()) {
             case REGULAR -> {
@@ -73,7 +74,7 @@ public class Queue extends Command {
                 case REGULAR -> page = Integer.parseInt(event.getArgument());
                 case SLASH -> {
                     try {
-                        page = Integer.parseInt(event.getOption("page").getAsString());
+                        page = Integer.parseInt(Objects.requireNonNull(event.getOption("page")).getAsString());
                     } catch (Exception e) {
                         page = 0;
                     }

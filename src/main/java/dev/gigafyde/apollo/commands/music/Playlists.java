@@ -12,19 +12,22 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.LavalinkUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import okhttp3.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lavalink.client.LavalinkUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Playlists extends Command {
     private static final Logger log = LoggerFactory.getLogger("Playlists");
@@ -40,9 +43,9 @@ public class Playlists extends Command {
     public static void loadSharePlaylist(String url, TrackScheduler scheduler, CommandEvent event) {
         try {
             // if bot is not in VC join the VC
-            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+            VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
             assert vc != null;
-            scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+            scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
 
             // build client and request
@@ -51,14 +54,14 @@ public class Playlists extends Command {
                     .url(url + "?raw=true").build()).execute();
             // if playlists exist
             if (response.isSuccessful()) {
-                JSONObject playlist = new JSONObject(response.body().string());
+                JSONObject playlist = new JSONObject(Objects.requireNonNull(response.body()).string());
                 JSONArray tracks = playlist.getJSONArray("tracks");
                 String name = playlist.getString("name");
-                scheduler.addSongs("Playlist", decodeTracks(tracks));
+                scheduler.addTracks("Playlist", decodeTracks(tracks));
                 event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -82,7 +85,7 @@ public class Playlists extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
 
         switch (event.getCommandType()) {
             case REGULAR -> {
@@ -168,26 +171,16 @@ public class Playlists extends Command {
                 event.sendError("**Unable to find playlist command  " + args[0] + "**");
             }
             case SLASH -> {
-                switch (event.getSubcommandName()) {
-                    case "save" -> {
-                        createPlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
-                    case "load" -> {
-                        loadPlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
-                    case "update" -> {
-                        updatePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
-                    case "add" -> {
-                        addPlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
-                    case "share" -> {
-                        sharePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
+                switch (Objects.requireNonNull(event.getSubcommandName())) {
+                    case "save" -> createPlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
+                    case "load" -> loadPlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
+                    case "update" -> updatePlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
+                    case "add" -> addPlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
+                    case "share" -> sharePlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
                     case "list" -> {
                         if (!event.getOptions().isEmpty()) {
                             try {
-                                listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), Integer.parseInt(event.getOption("page").getAsString()));
+                                listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), Integer.parseInt(Objects.requireNonNull(event.getOption("page")).getAsString()));
                             } catch (Exception e) {
                                 event.sendError(Constants.invalidInt);
                             }
@@ -195,9 +188,7 @@ public class Playlists extends Command {
                             listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), 0);
                         }
                     }
-                    case "delete" -> {
-                        deletePlaylist(event.getOption("name").getAsString(), event.getAuthor().getId());
-                    }
+                    case "delete" -> deletePlaylist(Objects.requireNonNull(event.getOption("name")).getAsString(), event.getAuthor().getId());
                 }
             }
         }
@@ -235,7 +226,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 event.send(String.format("Created playlist `%s` with `%s` tracks.", name, convertedTracks.length()));
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -248,9 +239,9 @@ public class Playlists extends Command {
         try {
             if (!SongUtils.passedVoiceChannelChecks(event)) return;
             // if bot is not in VC join the VC
-            VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+            VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
             assert vc != null;
-            scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+            scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
 
             // build client and request
@@ -258,13 +249,13 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "get" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id + "&name=" + name).build()).execute();
             // if playlists exist
             if (response.isSuccessful()) {
-                JSONObject playlist = new JSONObject(response.body().string());
+                JSONObject playlist = new JSONObject(Objects.requireNonNull(response.body()).string());
                 JSONArray tracks = playlist.getJSONArray("tracks");
-                scheduler.addSongs("Playlist", decodeTracks(tracks));
+                scheduler.addTracks("Playlist", decodeTracks(tracks));
                 event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -281,12 +272,12 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "get" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id + "&name=" + name).build()).execute();
             // if playlists exist
             if (response.isSuccessful()) {
-                JSONObject playlist = new JSONObject(response.body().string());
+                JSONObject playlist = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String url = playlist.getString("_id");
                 event.send(Main.PLAYLISTS_WEB_SERVER + "share/" + url);
                 // if no playlists exist / an error happened
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -326,7 +317,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 event.send(String.format("Updated playlist `%s` now containing `%s` tracks.", name, convertedTracks.length()));
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -363,7 +354,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 event.send(String.format("Added song to playlist `%s`.", name));
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -389,7 +380,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 event.send(String.format("Deleted playlist `%s`", name));
             } else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }
@@ -405,7 +396,7 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "list" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id).build()).execute();
             // if it worked
             if (response.isSuccessful()) {
-                JSONArray playlists = new JSONArray(response.body().string());
+                JSONArray playlists = new JSONArray(Objects.requireNonNull(response.body()).string());
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setTitle(username + "'s Saved Playlists");
 
@@ -418,7 +409,7 @@ public class Playlists extends Command {
                 int higherLimit = lowerLimit + 10;
                 if (higherLimit > playlists.length()) higherLimit = playlists.length();
 
-                ArrayList<String> playlistArray = new ArrayList<String>();
+                ArrayList<String> playlistArray = new ArrayList<>();
                 playlistArray.add("```nim\n");
                 for (int i = lowerLimit; i < higherLimit; i++) {
                     JSONObject playlist = playlists.getJSONObject(i);
@@ -431,7 +422,7 @@ public class Playlists extends Command {
             }
             // if it fails
             else {
-                JSONObject error = new JSONObject(response.body().string());
+                JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
                 event.sendError(String.format("**Playlists Error: %s**", message));
             }

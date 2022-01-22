@@ -42,12 +42,8 @@ public abstract class Command {
             execute(event);
         } catch (Exception e) {
             switch (event.getCommandType()) {
-                case REGULAR -> {
-                    event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
-                }
-                case SLASH, CONTEXT -> {
-                    event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
-                }
+                case REGULAR -> event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                case SLASH, CONTEXT -> event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
             }
             log.warn("Unexpected exception!", e);
         }

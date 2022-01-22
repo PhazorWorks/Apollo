@@ -6,9 +6,9 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.LavalinkPlayer;
-
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Rewind extends Command {
 
@@ -47,7 +47,7 @@ public class Rewind extends Command {
         try {
             switch (event.getCommandType()) {
                 case REGULAR -> seekNumber = Integer.parseInt(event.getArgument());
-                case SLASH -> seekNumber = Integer.parseInt(event.getOption("amount").getAsString());
+                case SLASH -> seekNumber = Integer.parseInt(Objects.requireNonNull(event.getOption("amount")).getAsString());
             }
             long amountToSeek = seekNumber * 1000L;
             long currentTime = player.getTrackPosition();

@@ -53,13 +53,6 @@ public class CommandHandler {
         handleCommand(cmdAndArgs, trigger);
     }
 
-    public enum CommandOriginType {
-        REGULAR,
-        SLASH,
-        CONTEXT,
-        UNDEFINED
-    }
-
     private void handleCommand(String cmdAndArgs, Message trigger) {
         String[] parts = cmdAndArgs.split("\\s+", 2);
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
@@ -103,5 +96,12 @@ public class CommandHandler {
 
             });
         }
+    }
+
+    public enum CommandOriginType {
+        REGULAR,
+        SLASH,
+        CONTEXT,
+        UNDEFINED
     }
 }

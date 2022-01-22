@@ -26,9 +26,7 @@ public class Connect extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
-                connect();
-            }
+            case REGULAR -> connect();
             case SLASH -> {
                 event.deferReply().queue();
                 connect();
@@ -38,7 +36,7 @@ public class Connect extends Command {
 
     protected void connect() {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
         VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
         if (vc == selfVC) {
             event.sendError("**I am already connected to this voice channel!**");
@@ -48,8 +46,8 @@ public class Connect extends Command {
             if (!SongUtils.botAloneInVC(event)) return;
         }
         try {
-            event.getClient().getMusicManager().moveVoiceChannel(vc);
-            event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
+            event.getClient().getMusicManager().moveVoiceChannel(Objects.requireNonNull(vc));
+            event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).setBoundChannel(event.getTextChannel());
             event.send("Connected to`" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
             event.sendError(Constants.unableToJoinVC);

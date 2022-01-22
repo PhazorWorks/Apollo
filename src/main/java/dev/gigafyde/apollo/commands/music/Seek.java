@@ -6,9 +6,9 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.LavalinkPlayer;
-
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Seek extends Command {
 
@@ -52,7 +52,7 @@ public class Seek extends Command {
                 }
                 seekNumber = Integer.parseInt(event.getArgument());
             }
-            case SLASH -> seekNumber = Integer.parseInt(event.getOption("amount").getAsString());
+            case SLASH -> seekNumber = Integer.parseInt(Objects.requireNonNull(event.getOption("amount")).getAsString());
         }
         try {
             long maxSeekLength = playingTrack.getDuration();

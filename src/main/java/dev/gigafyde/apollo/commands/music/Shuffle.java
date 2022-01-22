@@ -9,6 +9,7 @@ package dev.gigafyde.apollo.commands.music;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 
 public class Shuffle extends Command {
 
@@ -41,7 +42,7 @@ public class Shuffle extends Command {
     protected void shuffle() {
         try {
             if (!SongUtils.userConnectedToBotVC(event)) return;
-            event.getClient().getMusicManager().getScheduler(event.getGuild()).shuffleQueue();
+            event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).shuffleQueue();
             event.send("Shuffled!");
         } catch (Exception e) {
             event.sendError("**Failed to shuffle! error encountered was: " + e.getMessage() + "**");

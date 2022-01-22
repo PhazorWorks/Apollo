@@ -6,6 +6,13 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.awt.Color;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import okhttp3.Request;
@@ -13,14 +20,6 @@ import okhttp3.Response;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.*;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Lyrics extends Command {
 
@@ -72,7 +71,7 @@ public class Lyrics extends Command {
                     JSONObject song = new JSONObject(query);
                     sendEmbed(song);
                 } else {
-                    String query = sendRequest(event.getOption("query").getAsString());
+                    String query = sendRequest(Objects.requireNonNull(event.getOption("query")).getAsString());
                     if (query == null) return;
                     JSONObject song = new JSONObject(query);
                     sendEmbed(song);
@@ -140,12 +139,14 @@ public class Lyrics extends Command {
 
         try {
             Response response = null;
-            if (Main.LYRICS_API_KEY != null) response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + Main.LYRICS_API_KEY).build()).execute();
-            if (Main.LYRICS_API_KEY == null) response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8)).build()).execute();
+            if (Main.LYRICS_API_KEY != null)
+                response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8) + "&key=" + Main.LYRICS_API_KEY).build()).execute();
+            if (Main.LYRICS_API_KEY == null)
+                response = Main.httpClient.newCall(new Request.Builder().url(Main.LYRICS_WEB_SERVER + "?q=" + URLEncoder.encode(title, StandardCharsets.UTF_8)).build()).execute();
             if (response.isSuccessful()) {
                 return Objects.requireNonNull(response.body()).string();
             } else {
-                event.sendError("Lyrics lookup failed: " + String.valueOf(response.code()));
+                event.sendError("Lyrics lookup failed: " + response.code());
                 return null;
             }
         } catch (IOException e) {

@@ -16,6 +16,7 @@ import dev.gigafyde.apollo.core.handlers.SongCallBack;
 import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
 import dev.gigafyde.apollo.core.handlers.SongHandler;
 import dev.gigafyde.apollo.utils.SongUtils;
+import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -23,9 +24,6 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
-
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
 
 public class Play extends Command implements SongCallBack {
@@ -54,9 +52,9 @@ public class Play extends Command implements SongCallBack {
                 author = event.getAuthor();
                 message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(event.getMember().getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 assert vc != null;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
                 event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
                 boundChannel = scheduler.getBoundChannel();
@@ -80,19 +78,19 @@ public class Play extends Command implements SongCallBack {
                 event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
                 event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getHook().getInteraction().getTextChannel());
                 boundChannel = scheduler.getBoundChannel();
-                String args = event.getOption("query").getAsString();
+                String args = Objects.requireNonNull(event.getOption("query")).getAsString();
                 processArgument(args);
             }
             case CONTEXT -> {
                 event.deferReply().setEphemeral(true).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(event.getGuild().getMember(event.getUser()).getVoiceState()).getChannel();
+                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
@@ -130,7 +128,7 @@ public class Play extends Command implements SongCallBack {
             case REGULAR -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        message.reply(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").mentionRepliedUser(false).queue();
+                        message.reply(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png").mentionRepliedUser(false).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
@@ -142,7 +140,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        hook.editOriginal(SongUtils.generateAndSendImage(track, author.getAsTag()), "thumbnail.png").queue();
+                        hook.editOriginal(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png").queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         hook.editOriginal("Queued " + track.getInfo().title).queue();
@@ -154,7 +152,7 @@ public class Play extends Command implements SongCallBack {
             case CONTEXT -> {
                 event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
                 if (boundChannel != null)
-                    boundChannel.sendFile(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag()), "thumbnail.png").queue();
+                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag())), "thumbnail.png").queue();
             }
         }
         SongCallBackListener.removeListener(this);

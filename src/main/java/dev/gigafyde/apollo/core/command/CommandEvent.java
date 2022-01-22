@@ -6,9 +6,19 @@ package dev.gigafyde.apollo.core.command;
  */
 
 import dev.gigafyde.apollo.core.Client;
+import java.io.InputStream;
+import java.util.List;
+import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.SelfUser;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -19,18 +29,14 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import java.io.InputStream;
-import java.util.List;
-
 
 @SuppressWarnings("ConstantConditions")
 public class CommandEvent implements SlashCommandInteraction, MessageCommandInteraction {
-    private Command command;
-    private Client client;
+    private final Command command;
+    private final Client client;
+    private final CommandHandler.CommandOriginType type;
     private Message trigger = null;
     private String argument = "";
-    private CommandHandler.CommandOriginType type;
     private SlashCommandEvent slashCommandEvent;
     private MessageContextCommandEvent messageContextCommandEvent;
 
@@ -47,9 +53,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
                 this.slashCommandEvent = slashCommandEvent;
                 slashCommandEvent.deferReply().queue();
             }
-            case CONTEXT -> {
-                this.messageContextCommandEvent = messageCommandEvent;
-            }
+            case CONTEXT -> this.messageContextCommandEvent = messageCommandEvent;
         }
     }
 
@@ -394,6 +398,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageCommandInte
             case SLASH -> slashCommandEvent.getHook().editOriginal(content).queue();
         }
     }
+
     public void sendFile(InputStream inputStream, String name) {
         switch (type) {
             case REGULAR -> trigger.reply(inputStream, name).mentionRepliedUser(false).queue();

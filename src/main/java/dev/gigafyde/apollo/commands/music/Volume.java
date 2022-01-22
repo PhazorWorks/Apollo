@@ -10,9 +10,8 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.LavalinkPlayer;
-
 import java.util.Objects;
+import lavalink.client.player.LavalinkPlayer;
 
 public class Volume extends Command {
     private CommandEvent event;
@@ -55,7 +54,7 @@ public class Volume extends Command {
 
     private void setVolume(String input) {
         try {
-            if (!event.getSelfMember().getVoiceState().inVoiceChannel()) {
+            if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inVoiceChannel()) {
                 event.sendError(Constants.botNotInVC);
                 return;
             }
