@@ -23,9 +23,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
-
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger("TrackScheduler");
     private final LavalinkPlayer player;
@@ -62,22 +59,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
 
     public void nextSong() {
         AudioTrack track = queue.poll();
-
-    public AudioTrack getPreviousTrack() {
-        return previousTrack;
-    }
-
-    public void setPreviousTrack(AudioTrack track) {
-        previousTrack = track;
-    }
-
-    public AudioPlayerManager getManager() {
-        return manager;
-    }
-
-    public void nextSong(AudioTrack previousTrack) {
-        AudioTrack nextTrack = queue.poll();
-
         if (looped) {
             track = loopedTrack;
         }
