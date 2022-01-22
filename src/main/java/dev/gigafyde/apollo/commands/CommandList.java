@@ -19,6 +19,7 @@ import dev.gigafyde.apollo.commands.music.Move;
 import dev.gigafyde.apollo.commands.music.NowPlaying;
 import dev.gigafyde.apollo.commands.music.Pause;
 import dev.gigafyde.apollo.commands.music.Play;
+import dev.gigafyde.apollo.commands.music.PlayBack;
 import dev.gigafyde.apollo.commands.music.Playlists;
 import dev.gigafyde.apollo.commands.music.Queue;
 import dev.gigafyde.apollo.commands.music.Remove;
