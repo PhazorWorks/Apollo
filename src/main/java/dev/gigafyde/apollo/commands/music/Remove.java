@@ -21,7 +21,7 @@ public class Remove extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {
@@ -49,7 +49,7 @@ public class Remove extends Command {
         try {
             if (!SongUtils.userConnectedToBotVC(event)) return;
             switch (event.getCommandType()) {
-                case REGULAR -> numberToRemove = Integer.parseInt(event.getArgument());
+                case MESSAGE -> numberToRemove = Integer.parseInt(event.getArgument());
                 case SLASH -> numberToRemove = Integer.parseInt(Objects.requireNonNull(event.getOption("input")).getAsString());
             }
             if (scheduler.getQueue().size() < numberToRemove) {

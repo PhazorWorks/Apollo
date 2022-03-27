@@ -26,7 +26,7 @@ public class Pause extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> pause();
+            case MESSAGE -> pause();
             case SLASH -> {
                 event.deferReply().queue();
                 pause();

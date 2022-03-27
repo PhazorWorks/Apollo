@@ -20,7 +20,7 @@ import java.util.Objects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +48,11 @@ public class Play extends Command implements SongCallBack {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 author = event.getAuthor();
                 message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
@@ -75,10 +75,10 @@ public class Play extends Command implements SongCallBack {
             }
             case SLASH -> {
                 author = event.getAuthor();
-                event.getHook().getInteraction().deferReply(false).queue();
+                //event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
@@ -87,15 +87,15 @@ public class Play extends Command implements SongCallBack {
                 String args = Objects.requireNonNull(event.getOption("query")).getAsString();
                 processArgument(args);
             }
-            case CONTEXT -> {
+            case USER -> {
                 event.deferReply().setEphemeral(true).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
                 boundChannel = scheduler.getBoundChannel();
-                String args = event.getTargetMessage().getContentRaw();
+                String args = event.getTarget().getContentRaw();
                 processArgument(args);
             }
         }
@@ -125,7 +125,7 @@ public class Play extends Command implements SongCallBack {
     public void trackHasLoaded(AudioTrack track) {
         track.setUserData(author.getAsTag());
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (Main.USE_IMAGE_API) {
                     try {
                         message.reply(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png").mentionRepliedUser(false).queue();
@@ -149,7 +149,7 @@ public class Play extends Command implements SongCallBack {
                     hook.editOriginal("Queued " + track.getInfo().title).queue();
                 }
             }
-            case CONTEXT -> {
+            case USER -> {
                 event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
                 if (boundChannel != null)
                     boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag())), "thumbnail.png").queue();
@@ -160,9 +160,9 @@ public class Play extends Command implements SongCallBack {
 
     public void playlistLoaded(AudioPlaylist playlist, int added, int amount) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).mentionRepliedUser(false).queue();
+            case MESSAGE -> message.reply(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).mentionRepliedUser(false).queue();
             case SLASH -> hook.editOriginal(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).queue();
-            case CONTEXT -> {
+            case USER -> {
                 event.getHook().editOriginal(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).queue();
                 if (boundChannel != null)
                     boundChannel.sendMessage(String.format("**Added `%s` of `%s` songs from playlist `%s` (Requested by %s)**", added, amount, playlist.getName(), event.getAuthor().getAsTag())).queue();
@@ -173,9 +173,9 @@ public class Play extends Command implements SongCallBack {
 
     public void noMatches() {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply("No matches!").queue();
+            case MESSAGE -> message.reply("No matches!").queue();
             case SLASH -> hook.editOriginal("No matches!").queue();
-            case CONTEXT -> event.getHook().editOriginal("No matches!").queue();
+            case USER -> event.getHook().editOriginal("No matches!").queue();
         }
         SongCallBackListener.removeListener(this);
     }
@@ -186,18 +186,18 @@ public class Play extends Command implements SongCallBack {
 
     public void spotifyUnsupported() {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply("Invalid/Unsupported Spotify URL!").queue();
+            case MESSAGE -> message.reply("Invalid/Unsupported Spotify URL!").queue();
             case SLASH -> hook.editOriginal("Invalid/Unsupported Spotify URL!").queue();
-            case CONTEXT -> event.getHook().editOriginal("Invalid/Unsupported Spotify URL!").queue();
+            case USER -> event.getHook().editOriginal("Invalid/Unsupported Spotify URL!").queue();
         }
         SongCallBackListener.removeListener(this);
     }
 
     public void spotifyFailed(Exception e) {
         switch (event.getCommandType()) {
-            case REGULAR -> message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
+            case MESSAGE -> message.reply("Spotify Lookup failed! Aborting " + e.getMessage()).queue();
             case SLASH -> hook.editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
-            case CONTEXT -> event.getHook().editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
+            case USER -> event.getHook().editOriginal("Spotify Lookup failed! Aborting! " + e.getMessage()).queue();
         }
         SongCallBackListener.removeListener(this);
     }

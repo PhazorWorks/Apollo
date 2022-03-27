@@ -26,7 +26,7 @@ public class Volume extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
                 if (event.getArgument().isEmpty()) {
@@ -54,7 +54,7 @@ public class Volume extends Command {
 
     private void setVolume(String input) {
         try {
-            if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inVoiceChannel()) {
+            if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inAudioChannel()) {
                 event.sendError(Constants.botNotInVC);
                 return;
             }

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.LavalinkPlayer;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -34,21 +35,21 @@ public final class MusicManager {
         schedulers.remove(guild.getIdLong());
     }
 
-    public void moveVoiceChannel(VoiceChannel voiceChannel) {
-        Guild guild = voiceChannel.getGuild();
+    public void moveVoiceChannel(AudioChannel AudioChannel) {
+        Guild guild = AudioChannel.getGuild();
         JdaLink link = client.getLavalink().getLink(guild);
         AudioManager audioManager = guild.getAudioManager();
         if (!audioManager.isConnected()) {
-            addScheduler(voiceChannel, true);
+            addScheduler(AudioChannel, true);
         } else {
-            link.connect(voiceChannel);
+            link.connect((VoiceChannel) AudioChannel);
         }
     }
 
-    public TrackScheduler addScheduler(VoiceChannel voiceChannel, boolean start) {
-        Guild guild = voiceChannel.getGuild();
+    public TrackScheduler addScheduler(AudioChannel AudioChannel, boolean start) {
+        Guild guild = AudioChannel.getGuild();
         JdaLink link = client.getLavalink().getLink(guild);
-        link.connect(voiceChannel);
+        link.connect((VoiceChannel) AudioChannel);
         LavalinkPlayer player = link.getPlayer();
         TrackScheduler scheduler = new TrackScheduler(player, playerManager, start);
         player.addListener(scheduler);

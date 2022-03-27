@@ -24,7 +24,7 @@ public abstract class Command {
         try {
             if (guildOnly && !event.isFromGuild()) {
                 switch (event.getCommandType()) {
-                    case REGULAR -> {
+                    case MESSAGE -> {
                         event.getMessage().reply(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
                         return;
                     }
@@ -32,7 +32,7 @@ public abstract class Command {
                         event.deferReply().complete().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
                         return;
                     }
-                    case CONTEXT -> {
+                    case USER -> {
                         event.deferReply().complete().editOriginal("I have no idea how you managed to trigger this in a DM, but that ain't going to work.").queue();
                         return;
                     }
@@ -42,8 +42,8 @@ public abstract class Command {
             execute(event);
         } catch (Exception e) {
             switch (event.getCommandType()) {
-                case REGULAR -> event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
-                case SLASH, CONTEXT -> event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                case MESSAGE -> event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+                case SLASH, USER -> event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
             }
             log.warn("Unexpected exception!", e);
         }

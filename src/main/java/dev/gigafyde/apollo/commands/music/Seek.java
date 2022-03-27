@@ -24,7 +24,7 @@ public class Seek extends Command {
         this.event = event;
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 seek();
             }
@@ -45,7 +45,7 @@ public class Seek extends Command {
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (event.getArgument().isEmpty()) {
                     event.sendError(Constants.invalidInt);
                     return;

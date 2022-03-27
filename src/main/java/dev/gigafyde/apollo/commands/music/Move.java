@@ -25,7 +25,7 @@ public class Move extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 String[] args = event.getArgument().split(" ", 2);
@@ -68,7 +68,7 @@ public class Move extends Command {
         }
         scheduler.moveTrack(pos1 - 1, pos2 - 1);
         switch (event.getCommandType()) {
-            case REGULAR, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getTrackTitleByPosition(pos2 - 1), pos1, pos2));
+            case MESSAGE, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getTrackTitleByPosition(pos2 - 1), pos1, pos2));
         }
     }
 

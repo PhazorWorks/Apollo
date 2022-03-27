@@ -26,7 +26,7 @@ public class Skip extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 skip();
@@ -51,7 +51,7 @@ public class Skip extends Command {
             event.send("Loop was turned off due to manual skip.");
         }
         switch (event.getCommandType()) {
-            case REGULAR -> event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
+            case MESSAGE -> event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
             case SLASH -> event.send("Skipped!");
         }
     }

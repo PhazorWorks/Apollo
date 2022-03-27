@@ -29,7 +29,7 @@ public class Link extends Command {
             return;
         }
         switch (event.getCommandType()) {
-            case REGULAR -> event.getMessage().reply("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
+            case MESSAGE -> event.getMessage().reply("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
             case SLASH -> event.getHook().editOriginal("Currently playing: " + scheduler.getPlayer().getPlayingTrack().getInfo().uri).queue();
         }
     }

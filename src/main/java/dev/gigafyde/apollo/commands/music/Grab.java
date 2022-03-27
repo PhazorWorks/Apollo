@@ -21,7 +21,7 @@ public class Grab extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> grab();
+            case MESSAGE -> grab();
             case SLASH -> {
                 event.deferReply().queue();
                 grab();
@@ -40,7 +40,7 @@ public class Grab extends Command {
             User author = event.getAuthor();
             try {
                 switch (event.getCommandType()) {
-                    case REGULAR -> {
+                    case MESSAGE -> {
                         author.openPrivateChannel().complete().sendMessage("Here is a copy of the currently playing track\n" + uri).complete();
                         event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
                     }
