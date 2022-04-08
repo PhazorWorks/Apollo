@@ -24,7 +24,7 @@ public class Rewind extends Command {
         this.event = event;
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 rewind();
             }
@@ -46,7 +46,7 @@ public class Rewind extends Command {
         if (!SongUtils.userConnectedToBotVC(event)) return;
         try {
             switch (event.getCommandType()) {
-                case REGULAR -> seekNumber = Integer.parseInt(event.getArgument());
+                case MESSAGE -> seekNumber = Integer.parseInt(event.getArgument());
                 case SLASH -> seekNumber = Integer.parseInt(Objects.requireNonNull(event.getOption("amount")).getAsString());
             }
             long amountToSeek = seekNumber * 1000L;

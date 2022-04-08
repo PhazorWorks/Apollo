@@ -20,7 +20,7 @@ public class Loop extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 loop();
             }

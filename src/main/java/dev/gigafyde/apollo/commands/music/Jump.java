@@ -26,7 +26,7 @@ public class Jump extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 try {
@@ -64,7 +64,7 @@ public class Jump extends Command {
             event.send("Loop was turned off due to manual jump.");
         }
         switch (event.getCommandType()) {
-            case REGULAR, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title));
+            case MESSAGE, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title));
         }
     }
 

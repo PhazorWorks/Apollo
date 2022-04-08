@@ -21,7 +21,7 @@ public class Clear extends Command {
 
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) {

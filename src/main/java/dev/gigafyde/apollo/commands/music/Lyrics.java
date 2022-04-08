@@ -37,7 +37,7 @@ public class Lyrics extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (Main.LYRICS_WEB_SERVER == null) return;
                 if (event.getArgument().isEmpty()) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
@@ -87,7 +87,7 @@ public class Lyrics extends Command {
         Color blue = Color.decode("#4c87c2");
         EmbedBuilder embed = new EmbedBuilder();
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (lyrics.length() > 2000) {
                     List<MessageEmbed> embeds = splitLyrics(lyrics, blue, title);
                     if (lyrics.length() > 6000) {

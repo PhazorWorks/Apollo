@@ -30,7 +30,7 @@ public class NowPlaying extends Command {
         this.event = event;
 
         switch (event.getCommandType()) {
-            case REGULAR -> nowPlaying();
+            case MESSAGE -> nowPlaying();
             case SLASH -> {
                 event.deferReply().queue();
                 nowPlaying();

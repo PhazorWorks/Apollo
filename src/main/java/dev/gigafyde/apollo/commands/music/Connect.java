@@ -10,7 +10,7 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.Objects;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class Connect extends Command {
@@ -26,7 +26,7 @@ public class Connect extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> connect();
+            case MESSAGE -> connect();
             case SLASH -> {
                 event.deferReply().queue();
                 connect();
@@ -36,13 +36,13 @@ public class Connect extends Command {
 
     protected void connect() {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
-        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+        AudioChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
         if (vc == selfVC) {
             event.sendError("**I am already connected to this voice channel!**");
             return;
         }
-        if (event.getSelfMember().getVoiceState().inVoiceChannel()) {
+        if (event.getSelfMember().getVoiceState().inAudioChannel()) {
             if (!SongUtils.botAloneInVC(event)) return;
         }
         try {

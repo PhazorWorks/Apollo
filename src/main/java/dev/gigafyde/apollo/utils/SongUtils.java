@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -47,8 +47,8 @@ public class SongUtils {
     public static boolean passedVoiceChannelChecks(CommandEvent event) {
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            case MESSAGE -> {
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.getMessage().reply("**You have to join a voice channel before you can use this command!**").mentionRepliedUser(true).queue();
                     return false;
@@ -65,7 +65,7 @@ public class SongUtils {
                 return true;
             }
             case SLASH -> {
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 InteractionHook hook = event.getHook();
                 if (vc == null) {
                     hook.editOriginal("**You have to join a voice channel before you can use this command!**").queue();
@@ -82,8 +82,8 @@ public class SongUtils {
                 }
                 return true;
             }
-            case CONTEXT -> {
-                VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            case USER -> {
+                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.reply("**You have to join a voice channel before you can use this command!**").setEphemeral(true).queue();
                     return false;
@@ -168,15 +168,15 @@ public class SongUtils {
     }
 
     public static boolean userConnectedToBotVC(CommandEvent event) {
-        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
-        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+        AudioChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
         if (vc != selfVC) event.sendError(Constants.userNotInVC);
         return vc == selfVC;
     }
 
     public static boolean botAloneInVC(CommandEvent event) {
-        VoiceChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
-        VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+        AudioChannel selfVC = Objects.requireNonNull(event.getSelfMember().getVoiceState()).getChannel();
+        AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
         if (vc == selfVC) return true;
         List<Member> members = Objects.requireNonNull(selfVC).getMembers().stream().filter(member -> !member.getUser().isBot()).filter(member -> !member.getId().equals(event.getMember().getId())).toList();
         if (members.size() >= 1) {

@@ -22,7 +22,7 @@ public class PlayBack extends Command {
         scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;

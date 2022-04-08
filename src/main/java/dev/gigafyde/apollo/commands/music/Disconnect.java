@@ -23,7 +23,7 @@ public class Disconnect extends Command {
     protected void execute(CommandEvent event) {
         this.event = event;
         switch (event.getCommandType()) {
-            case REGULAR -> disconnect();
+            case MESSAGE -> disconnect();
             case SLASH -> {
                 event.deferReply().queue();
                 disconnect();
@@ -33,7 +33,7 @@ public class Disconnect extends Command {
 
     protected void disconnect() {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inVoiceChannel()) {
+        if (!Objects.requireNonNull(event.getSelfMember().getVoiceState()).inAudioChannel()) {
             event.sendError("**I am not connected to a voice channel!**");
             return;
         }

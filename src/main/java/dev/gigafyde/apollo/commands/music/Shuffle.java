@@ -27,7 +27,7 @@ public class Shuffle extends Command {
         this.event = event;
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
                 shuffle();
             }

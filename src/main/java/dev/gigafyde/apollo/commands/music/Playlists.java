@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import lavalink.client.LavalinkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +43,7 @@ public class Playlists extends Command {
     public static void loadSharePlaylist(String url, TrackScheduler scheduler, CommandEvent event) {
         try {
             // if bot is not in VC join the VC
-            VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
             assert vc != null;
             scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
@@ -88,7 +88,7 @@ public class Playlists extends Command {
         scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 String[] args = event.getArgument().split(" ", 3);
                 // 0 = command, 1 = name, 2 = page
 
@@ -239,7 +239,7 @@ public class Playlists extends Command {
         try {
             if (!SongUtils.passedVoiceChannelChecks(event)) return;
             // if bot is not in VC join the VC
-            VoiceChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
             assert vc != null;
             scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);

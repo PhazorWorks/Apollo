@@ -28,7 +28,7 @@ public class Queue extends Command {
         scheduler = musicManager.getScheduler(Objects.requireNonNull(event.getGuild()));
 
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -71,7 +71,7 @@ public class Queue extends Command {
         int page = 1;
         try {
             switch (event.getCommandType()) {
-                case REGULAR -> page = Integer.parseInt(event.getArgument());
+                case MESSAGE -> page = Integer.parseInt(event.getArgument());
                 case SLASH -> {
                     try {
                         page = Integer.parseInt(Objects.requireNonNull(event.getOption("page")).getAsString());

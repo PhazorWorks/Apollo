@@ -11,9 +11,9 @@ import dev.gigafyde.apollo.core.Client;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, CommandOriginType.REGULAR, trigger, parts.length == 1 ? "" : parts[1], null, null);
+                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE, trigger, parts.length == 1 ? "" : parts[1], null, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -68,11 +68,11 @@ public class CommandHandler {
         }
     }
 
-    public void handleSlashCommand(SlashCommandEvent slashCommandEvent) {
+    public void handleSlashCommand(SlashCommandInteraction slashCommandEvent) {
         Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, CommandOriginType.SLASH, null, null, slashCommandEvent, null);
+                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.SLASH, null, null, slashCommandEvent, null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -83,25 +83,18 @@ public class CommandHandler {
         }
     }
 
-    public void handleMessageContextCommand(MessageContextCommandEvent event) {
+    public void handleMessageContextCommand(MessageContextInteraction event) {
         Command command = client.getCommandRegistry().getCommand(event.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, CommandOriginType.CONTEXT, null, null, null, event);
+                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.USER, null, null, null, event);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
-                    log.error("MESSAGE CONTEXT COMMAND FAILED", t);
+                    log.error("MESSAGE USER COMMAND FAILED", t);
                 }
 
             });
         }
-    }
-
-    public enum CommandOriginType {
-        REGULAR,
-        SLASH,
-        CONTEXT,
-        UNDEFINED
     }
 }

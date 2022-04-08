@@ -18,7 +18,7 @@ public class Ping extends Command {
 
     public void execute(CommandEvent event) {
         switch (event.getCommandType()) {
-            case REGULAR -> {
+            case MESSAGE -> {
                 long currentTime = System.currentTimeMillis();
                 event.getMessage().reply("Pinging...").mentionRepliedUser(false).queue(message -> message.editMessageEmbeds(new EmbedBuilder().setDescription(Emoji.HEARTBEAT + " " + event.getJDA().getGatewayPing() + " ms\n\n" + Emoji.PINGPONG + " " + (System.currentTimeMillis() - currentTime) + " ms").build()).override(true).queue());
             }
