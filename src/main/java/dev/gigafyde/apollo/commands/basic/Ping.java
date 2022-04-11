@@ -24,7 +24,7 @@ public class Ping extends Command {
             }
             case SLASH -> {
                 long currentTime = System.currentTimeMillis();
-                event.deferReply().complete();
+//                event.deferReply().complete();
                 String embed = Emoji.HEARTBEAT + " %s ms" + "\n" + Emoji.PINGPONG + " %s ms";
                 event.getHook().editOriginal(String.format(embed, event.getJDA().getGatewayPing(), (System.currentTimeMillis() - currentTime))).queue();
             }
