@@ -10,10 +10,10 @@ import dev.gigafyde.apollo.core.command.CommandHandler;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import org.jetbrains.annotations.NotNull;
 
 public class Client extends ListenerAdapter {
@@ -32,12 +32,14 @@ public class Client extends ListenerAdapter {
         handler.handle(event);
     }
 
-    //@Override
-    public void onSlashCommand(@NotNull SlashCommandInteraction event) {
+
+    @Override
+    public void onSlashCommandInteraction (@NotNull SlashCommandInteractionEvent event) {
         handler.handleSlashCommand(event);
     }
 
-    public void onMessageContextCommand(@NotNull MessageContextInteraction event) {
+    @Override
+    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
         handler.handleMessageContextCommand(event);
     }
 
