@@ -31,6 +31,9 @@ public class SlashRegister extends ListenerAdapter {
                 log.info("Registering command " + commandData.getName());
             }
         }
+        event.getJDA().updateCommands().addCommands(getCommandList()).queue();
+//        log.info(getCommandList().get(0).getName());
+//        event.getJDA().upsertCommand(getCommandList().get(0)).queue();
     }
 
     private List<CommandData> getCommandList() {
@@ -57,7 +60,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData shuffle = Commands.slash("shuffle", "Shuffles the queue");
         CommandData skip = Commands.slash("skip", "Skips to the next song in the queue");
         CommandData link = Commands.slash("link", "Grabs the url to the currently playing track");
-        CommandData move = Commands.slash("skip", "Moves song to new position.").addOption(OptionType.INTEGER, "track", "The Track to move").addOption(OptionType.INTEGER, "position", "The new position for the track.");
+        CommandData move = Commands.slash("move", "Moves song to new position.").addOption(OptionType.INTEGER, "track", "The Track to move").addOption(OptionType.INTEGER, "position", "The new position for the track.");
 
 //        CommandData addToQueue = Commands.slash(CommandType.MESSAGE_CONTEXT, "Add to Queue");
 //        CommandData playlists = Commands.slash("playlists", "Manage your playlists")
