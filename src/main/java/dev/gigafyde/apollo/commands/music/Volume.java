@@ -61,6 +61,10 @@ public class Volume extends Command {
             }
             if (!SongUtils.userConnectedToBotVC(event)) return;
             int volume = Integer.parseInt(input.replaceAll("[^0-9.]+", ""));
+            if (volume > 300) {
+                volume = 300;
+                event.send("Requested volume exceeds 300, limiting to 300%");
+            }
             player.setVolume(volume);
             event.send(Emoji.VOLUME + "  Volume set to: " + volume + "%.");
         } catch (NumberFormatException ignored) {
