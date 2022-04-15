@@ -243,7 +243,8 @@ public class Playlists extends Command {
             assert vc != null;
             scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-
+            // set boundChannel here
+            scheduler.setBoundChannel(event.getTextChannel());
             // build client and request
             Response response = Main.httpClient.newCall(new Request.Builder()
                     .url(Main.PLAYLISTS_WEB_SERVER + "get" + "?key=" + Main.PLAYLISTS_API_KEY + "&user_id=" + user_id + "&name=" + name).build()).execute();

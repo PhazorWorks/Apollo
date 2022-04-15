@@ -56,7 +56,7 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getTextChannel());
+                scheduler.setBoundChannel(event.getTextChannel());
                 boundChannel = scheduler.getBoundChannel();
                 if (event.getArgument().isEmpty()) {
                     if (!event.getAttachments().isEmpty()) {
@@ -82,7 +82,7 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-                event.getClient().getMusicManager().getScheduler(event.getGuild()).setBoundChannel(event.getHook().getInteraction().getTextChannel());
+                scheduler.setBoundChannel(event.getTextChannel());
                 boundChannel = scheduler.getBoundChannel();
                 String args = Objects.requireNonNull(event.getOption("query")).getAsString();
                 processArgument(args);
