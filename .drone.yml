@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build-production-image
-    image: gradle:jdk16
+    image: gradle:jdk18
     environment:
       GITHUB:
         from_secret: github-token
@@ -23,7 +23,7 @@ steps:
         - push
 
   - name: compile check
-    image: gradle:jdk16
+    image: gradle:jdk18
     commands:
       - gradle build
     when:
