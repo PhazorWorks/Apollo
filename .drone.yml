@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build-production-image
-    image: gradle:jdk18
+    image: gradle:jdk17
     environment:
       GITHUB:
         from_secret: github-token
