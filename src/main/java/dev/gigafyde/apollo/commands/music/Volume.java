@@ -10,8 +10,9 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
 import lavalink.client.player.LavalinkPlayer;
+
+import java.util.Objects;
 
 public class Volume extends Command {
     private CommandEvent event;
@@ -59,7 +60,7 @@ public class Volume extends Command {
                 return;
             }
             if (!SongUtils.userConnectedToBotVC(event)) return;
-            int volume = Integer.parseInt(input);
+            int volume = Integer.parseInt(input.replaceAll("[^0-9.]+", ""));
             player.setVolume(volume);
             event.send(Emoji.VOLUME + "  Volume set to: " + volume + "%.");
         } catch (NumberFormatException ignored) {
