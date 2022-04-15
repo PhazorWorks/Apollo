@@ -12,22 +12,19 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lavalink.client.LavalinkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Playlists extends Command {
     private static final Logger log = LoggerFactory.getLogger("Playlists");
@@ -40,12 +37,12 @@ public class Playlists extends Command {
         this.guildOnly = true;
     }
 
-    public static void loadSharePlaylist(String url, TrackScheduler scheduler, CommandEvent event) {
+    public static void loadSharePlaylist(String url, CommandEvent event) {
         try {
             // if bot is not in VC join the VC
             AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
             assert vc != null;
-            scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
             if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
 
             // build client and request
@@ -89,7 +86,7 @@ public class Playlists extends Command {
 
         switch (event.getCommandType()) {
             case MESSAGE -> {
-                String[] args = event.getArgument().split(" ", 3);
+                List<String> args = new ArrayList<>(List.of(event.getArgument().split(" ", 3)));
                 // 0 = command, 1 = name, 2 = page
 
                 // if command has no args return a reminder of what commands exist
@@ -98,57 +95,62 @@ public class Playlists extends Command {
                     return;
                 }
                 // parse what sub command is being used here
-                switch (args[0]) {
+                switch (args.get(0)) {
                     case "save" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists save <name>**");
                             return;
                         }
-                        createPlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        createPlaylist(String.join(" ", args), event.getAuthor().getId());
                         return;
                     }
                     case "add" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists add <name>**");
                             return;
                         }
-                        addPlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        addPlaylist(String.join(" ", args), event.getAuthor().getId());
                         return;
                     }
                     case "load" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists load <name>**");
                             return;
                         }
-                        loadPlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        loadPlaylist(String.join(" ", String.join(" ", args)), event.getAuthor().getId());
                         return;
                     }
                     case "update" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists update <name>**");
                             return;
                         }
-                        updatePlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        updatePlaylist(String.join(" ", args), event.getAuthor().getId());
                         return;
                     }
                     case "share" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists share <name>**");
                             return;
                         }
-                        sharePlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        sharePlaylist(String.join(" ", args), event.getAuthor().getId());
                         return;
                     }
 
                     case "list" -> {
-                        if (args.length != 1) {
+                        if (args.size() != 1) {
                             try {
-                                listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), Integer.parseInt(args[1]));
+                                listPlaylists(event.getAuthor().getName(), event.getAuthor().getId(), Integer.parseInt(args.get(1)));
                                 return;
                             } catch (Exception e) {
                                 event.sendError(Constants.invalidInt);
@@ -160,15 +162,16 @@ public class Playlists extends Command {
                     }
                     case "delete" -> {
                         // if no name is provided
-                        if (args.length == 1) {
+                        if (args.size() == 1) {
                             event.sendError("**" + Main.BOT_PREFIX + "playlists delete <name>**");
                             return;
                         }
-                        deletePlaylist(args[1], event.getAuthor().getId());
+                        args.remove(0);
+                        deletePlaylist(String.join(" ", args), event.getAuthor().getId());
                         return;
                     }
                 }
-                event.sendError("**Unable to find playlist command  " + args[0] + "**");
+                event.sendError("**Unable to find playlist command  " + args.get(0) + "**");
             }
             case SLASH -> {
                 switch (Objects.requireNonNull(event.getSubcommandName())) {

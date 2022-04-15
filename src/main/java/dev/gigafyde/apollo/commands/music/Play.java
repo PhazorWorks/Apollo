@@ -111,7 +111,7 @@ public class Play extends Command implements SongCallBack {
         if (SongUtils.isValidURL(arguments)) {
             if (Main.PLAYLISTS_WEB_SERVER != null) {
                 if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {
-                    Playlists.loadSharePlaylist(arguments, scheduler, event);
+                    Playlists.loadSharePlaylist(arguments, event);
                     return;
                 }
             }
