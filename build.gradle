@@ -8,8 +8,8 @@ plugins {
 
 group 'dev.gigafyde'
 mainClassName = 'dev.gigafyde.apollo.Main'
-sourceCompatibility = 17
-targetCompatibility = 17
+sourceCompatibility = 16
+targetCompatibility = 16
 
 repositories {
     maven {
@@ -37,7 +37,7 @@ dependencies {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-jdk'
+        image = 'openjdk:16.0.2-buster'
     }
 
     container {
