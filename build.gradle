@@ -37,7 +37,7 @@ dependencies {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-jdk'
+        image = 'gcr.io/distroless/java17-debian11'
     }
 
     container {
