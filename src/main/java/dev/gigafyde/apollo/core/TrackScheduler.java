@@ -9,12 +9,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavalinkPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
@@ -23,11 +17,16 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
+
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger("TrackScheduler");
     private final LavalinkPlayer player;
     private final AudioPlayerManager audioPlayerManager;
     private boolean looped;
+    private boolean announceTrack = true;
+    private boolean announceLoop = true;
     private TextChannel boundChannel;
     private Message nowPlaying;
     private AudioTrack loopedTrack;
@@ -70,6 +69,8 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
 
         if (boundChannel != null) {
             try {
+                // if announcements are disabled stop code execution
+                if (!announceTrack || !announceLoop && looped) return;
                 // Try to delete the previous now-playing message
                 nowPlaying.delete().complete();
             } catch (Exception ignored) {
@@ -120,6 +121,22 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
 
     public void setLooped(boolean active) {
         looped = active;
+    }
+
+    public boolean isAnnounceTrack() {
+        return announceTrack;
+    }
+
+    public void setAnnounceTrack(boolean active) {
+        announceTrack = active;
+    }
+
+    public boolean isAnnounceLoop() {
+        return announceLoop;
+    }
+
+    public void setAnnounceLoop(boolean active) {
+        announceLoop = active;
     }
 
 //    public int addTracks(String author, AudioTrack... tracks) {
