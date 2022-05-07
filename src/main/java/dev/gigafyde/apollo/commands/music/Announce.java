@@ -1,11 +1,11 @@
 package dev.gigafyde.apollo.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.util.Objects;
 
@@ -36,12 +36,10 @@ public class Announce extends Command {
     protected void announce(String option) {
         try {
             TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-            if (scheduler == null | track == null) {
-                event.sendError(Constants.requireActivePlayerCommand);
+            if (scheduler == null) {
+                event.sendError(Constants.botNotInVC);
                 return;
             }
-            if (!SongUtils.userConnectedToBotVC(event)) return;
             if ("tracks".equals(option)) {
                 if (scheduler.isAnnounceTrack()) {
                     scheduler.setAnnounceTrack(false);
@@ -59,7 +57,12 @@ public class Announce extends Command {
                     scheduler.setAnnounceLoop(true);
                 }
             } else {
-                event.sendError("**" + event.getClient().getPrefix() + "announce <tracks|loop>**");
+                String enabledTracks = scheduler.isAnnounceTrack() ? "Enabled" : "Disabled";
+                String enabledLoop = scheduler.isAnnounceLoop() ? "Enabled" : "Disabled";
+                EmbedBuilder eb = new EmbedBuilder()
+                        .setTitle("Announcements Menu")
+                        .setDescription(String.format("**__Description__**:\nManage if the bot should send a message when a new song is playing.\n\n**__Status__**:\n**Tracks** are currently **%s**\n**Looped Tracks** are currently **%s**\n\n**__How to use__**:\n%sannounce <tracks|loop>", enabledTracks, enabledLoop, event.getClient().getPrefix()));
+                event.sendEmbed(eb);
             }
         } catch (Exception e) {
             event.sendError("**" + e.getMessage() + "**");
