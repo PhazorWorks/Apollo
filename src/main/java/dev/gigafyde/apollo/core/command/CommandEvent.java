@@ -37,6 +37,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
@@ -516,6 +518,16 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
         return SlashCommandInteraction.super.getCommandId();
     }
 
+    @Override
+    public boolean isGuildCommand() {
+        return false;
+    }
+
+    @Override
+    public boolean isGlobalCommand() {
+        return SlashCommandInteraction.super.isGlobalCommand();
+    }
+
     @NotNull
     @Override
     public List<OptionMapping> getOptionsByName(@NotNull String name) {
@@ -596,5 +608,11 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @Override
     public OffsetDateTime getTimeCreated() {
         return SlashCommandInteraction.super.getTimeCreated();
+    }
+
+    @NotNull
+    @Override
+    public ModalCallbackAction replyModal(@NotNull Modal modal) {
+        return null;
     }
 }
