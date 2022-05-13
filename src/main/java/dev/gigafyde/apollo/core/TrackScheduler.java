@@ -65,7 +65,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             return;
 
         player.playTrack(track);
-        if (player.getPlayingTrack() == track) setPreviousTrack(track);
 
         if (boundChannel != null) {
             try {
