@@ -77,6 +77,14 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
                 // If it fails. it'll most likely be because of something on discord's end. so it's not our problem.
             }
             if (player.getPlayingTrack() == track)
+
+				/*
+				If this is null, it should mean we only just created a new scheduler
+		        Sending a now-playing image in this case is overkill as we already sent a added to queue image
+				 */
+	            if (previousTrack == null) return;
+
+
                 try {
                     boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "nowplaying.png").queue(msg -> nowPlaying = msg);
                 } catch (Exception e) {
