@@ -181,6 +181,11 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void trackLoadingFailed(Exception e) {
+        switch (event.getCommandType()) {
+            case MESSAGE -> message.reply("Loading failed: " + e.getMessage()).queue();
+            case SLASH -> hook.editOriginal("Loading failed: " + e.getMessage()).queue();
+            case USER -> event.getHook().editOriginal("Loading failed: " + e.getMessage()).queue();
+        }
         SongCallBackListener.removeListener(this);
     }
 

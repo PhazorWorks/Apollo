@@ -45,6 +45,9 @@ public class Skip extends Command {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
+
+        scheduler.setPreviousTrack(scheduler.getPlayer().getPlayingTrack());
+
         scheduler.skip();
         if (scheduler.isLooped()) {
             scheduler.setLooped(false);

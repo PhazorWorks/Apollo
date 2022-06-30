@@ -7,16 +7,18 @@ package dev.gigafyde.apollo.core;
 
 
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SlashRegister extends ListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger("SlashRegister");
@@ -45,6 +47,7 @@ public class SlashRegister extends ListenerAdapter {
         CommandData lyrics = Commands.slash("lyrics", "Shows lyrics of a song").addOption(OptionType.STRING, "query", "Your search query", false);
         CommandData clear = Commands.slash("clear", "Clears the queue");
         CommandData loop = Commands.slash("loop", "Changes loop mode");
+        CommandData announce = Commands.slash("announce", "Manage if the bot will announce songs").addSubcommands(new SubcommandData("tracks", "Announces when a new song is playing"), new SubcommandData("loop", "Announces when a looped song is playing"));
         CommandData nowPlaying = Commands.slash("now-playing", "Shows current playing song");
         CommandData pause = Commands.slash("pause", "Pauses the player");
         CommandData volume = Commands.slash("volume", "Changes or displays the volume").addOption(OptionType.INTEGER, "input", "Sets the new volume", false);
@@ -62,22 +65,22 @@ public class SlashRegister extends ListenerAdapter {
         CommandData link = Commands.slash("link", "Grabs the url to the currently playing track");
         CommandData move = Commands.slash("move", "Moves song to new position.").addOption(OptionType.INTEGER, "track", "The Track to move").addOption(OptionType.INTEGER, "position", "The new position for the track.");
 
-//        CommandData addToQueue = Commands.slash(CommandType.MESSAGE_CONTEXT, "Add to Queue");
-//        CommandData playlists = Commands.slash("playlists", "Manage your playlists")
-//                .addSubcommands(new SubcommandData("save", "Save current queue as a playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("update", "Add current queue as to existing playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("add", "Add current track to an existing playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("load", "Load existing playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("delete", "Delete a playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("share", "Share a playlist")
-//                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
-//                .addSubcommands(new SubcommandData("list", "List playlists")
-//                        .addOption(OptionType.INTEGER, "page", "Page you wish to see"));
+        CommandData addToQueue = Commands.context(Command.Type.MESSAGE, "Add to Queue");
+        CommandData playlists = Commands.slash("playlists", "Manage your playlists")
+                .addSubcommands(new SubcommandData("save", "Save current queue as a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("update", "Add current queue as to existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("add", "Add current track to an existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("load", "Load existing playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("delete", "Delete a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("share", "Share a playlist")
+                        .addOption(OptionType.STRING, "name", "Name of playlist", true))
+                .addSubcommands(new SubcommandData("list", "List playlists")
+                        .addOption(OptionType.INTEGER, "page", "Page you wish to see"));
 
         commands.add(ping);
         commands.add(play);
@@ -94,15 +97,16 @@ public class SlashRegister extends ListenerAdapter {
         commands.add(queue);
         commands.add(remove);
         commands.add(restart);
-//        commands.add(addToQueue);
+        commands.add(addToQueue);
         commands.add(resume);
         commands.add(seek);
         commands.add(shuffle);
         commands.add(skip);
         commands.add(jump);
         commands.add(move);
-//        commands.add(playlists);
+        commands.add(playlists);
         commands.add(link);
+        commands.add(announce);
         return commands;
     }
 }
