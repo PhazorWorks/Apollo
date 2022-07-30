@@ -42,10 +42,10 @@ public final class Eval extends Command {
     }
 
     protected void execute(CommandEvent event) {
-        MessageChannel channel = event.getTextChannel();
+        MessageChannel channel = event.getChannel();
         if (event.getArgument().isEmpty()) {
             try {
-                event.getMessage().addReaction(Emoji.ERROR.toString()).queue();
+                event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(Emoji.ERROR.toString())).queue();
             } catch (Exception e) {
                 event.getMessage().reply(Emoji.ERROR + " **Please enter something to evaluate!**").queue();
             }
@@ -58,7 +58,7 @@ public final class Eval extends Command {
                 Object result = shell.evaluate(arg);
                 if (result == null) {
                     try {
-                        event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
+                        event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(Emoji.SUCCESS.toString())).queue();
                     } catch (Exception e) {
                         channel.sendMessage(Emoji.SUCCESS + " **Executed successfully**").queue();
                     }
@@ -70,7 +70,7 @@ public final class Eval extends Command {
                     if (url == null) url = "Failed to generate error report!";
                     channel.sendMessage(Emoji.SUCCESS + " **Executed successfully:** " + url).queue();
                 } else {
-                    event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
+                    event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(Emoji.SUCCESS.toString())).queue();
                     channel.sendMessage("```\n" + resultString + "```").queue();
                 }
             } catch (Throwable t) {

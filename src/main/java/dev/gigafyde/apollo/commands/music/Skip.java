@@ -54,7 +54,7 @@ public class Skip extends Command {
             event.send("Loop was turned off due to manual skip.");
         }
         switch (event.getCommandType()) {
-            case MESSAGE -> event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
+            case MESSAGE -> event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(Emoji.SUCCESS.toString())).queue();
             case SLASH -> event.send("Skipped!");
         }
     }

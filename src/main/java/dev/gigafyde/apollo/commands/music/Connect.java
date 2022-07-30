@@ -47,7 +47,7 @@ public class Connect extends Command {
         }
         try {
             event.getClient().getMusicManager().moveVoiceChannel(Objects.requireNonNull(vc));
-            event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).setBoundChannel(event.getTextChannel());
+            event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).setBoundChannel(event.getChannel());
             event.send("Connected to`" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
             event.sendError(Constants.unableToJoinVC);
