@@ -49,7 +49,7 @@ public final class MusicManager {
     public TrackScheduler addScheduler(AudioChannel AudioChannel, boolean start) {
         Guild guild = AudioChannel.getGuild();
         JdaLink link = client.getLavalink().getLink(guild);
-        link.connect((VoiceChannel) AudioChannel);
+        link.connect(AudioChannel);
         LavalinkPlayer player = link.getPlayer();
         TrackScheduler scheduler = new TrackScheduler(player, playerManager, start);
         player.addListener(scheduler);

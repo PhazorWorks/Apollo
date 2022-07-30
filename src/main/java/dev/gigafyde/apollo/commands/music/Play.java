@@ -6,25 +6,18 @@ package dev.gigafyde.apollo.commands.music;
  */
 
 
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.gigafyde.apollo.Main;
-import dev.gigafyde.apollo.core.TrackScheduler;
-import dev.gigafyde.apollo.core.command.Command;
-import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.core.handlers.SongCallBack;
-import dev.gigafyde.apollo.core.handlers.SongCallBackListener;
-import dev.gigafyde.apollo.core.handlers.SongHandler;
-import dev.gigafyde.apollo.utils.SongUtils;
-import java.util.Objects;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.handleSpotify;
+import com.sedmelluq.discord.lavaplayer.track.*;
+import dev.gigafyde.apollo.*;
+import dev.gigafyde.apollo.core.*;
+import dev.gigafyde.apollo.core.command.*;
+import dev.gigafyde.apollo.core.handlers.*;
+import dev.gigafyde.apollo.utils.*;
+import java.util.*;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.*;
+import net.dv8tion.jda.api.interactions.*;
+import org.slf4j.*;
+import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.*;
 
 public class Play extends Command implements SongCallBack {
 
@@ -34,7 +27,7 @@ public class Play extends Command implements SongCallBack {
     private Message message;
     private InteractionHook hook;
     private CommandEvent event;
-    private TextChannel boundChannel;
+    private MessageChannelUnion boundChannel;
 
     public Play() {
         this.name = "play";
@@ -56,7 +49,7 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-                scheduler.setBoundChannel(event.getTextChannel());
+                scheduler.setBoundChannel(event.getChannel());
                 boundChannel = scheduler.getBoundChannel();
                 if (event.getArgument().isEmpty()) {
                     if (!event.getAttachments().isEmpty()) {
@@ -82,7 +75,7 @@ public class Play extends Command implements SongCallBack {
                 assert vc != null;
                 scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-                scheduler.setBoundChannel(event.getTextChannel());
+                scheduler.setBoundChannel(event.getChannel());
                 boundChannel = scheduler.getBoundChannel();
                 String args = Objects.requireNonNull(event.getOption("query")).getAsString();
                 processArgument(args);

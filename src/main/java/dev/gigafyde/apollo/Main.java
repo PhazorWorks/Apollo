@@ -61,6 +61,7 @@ public class Main {
         new CommandList(client);
         SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(BOT_TOKEN)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES,
+                               GatewayIntent.MESSAGE_CONTENT,
                                GatewayIntent.GUILD_MEMBERS,
                                GatewayIntent.GUILD_PRESENCES)
                 .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())

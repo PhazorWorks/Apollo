@@ -5,47 +5,25 @@ package dev.gigafyde.apollo.core.command;
  https://github.com/GigaFyde
  */
 
-import dev.gigafyde.apollo.core.Client;
-import java.io.File;
-import java.io.InputStream;
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.NewsChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.SelfUser;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.InteractionType;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
-import net.dv8tion.jda.api.interactions.components.Modal;
-import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
-import org.jetbrains.annotations.NotNull;
+import dev.gigafyde.apollo.core.*;
+import java.io.*;
+import java.time.*;
+import java.util.*;
+import java.util.function.*;
+import javax.annotation.*;
+import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.*;
+import net.dv8tion.jda.api.interactions.*;
+import net.dv8tion.jda.api.interactions.commands.*;
+import net.dv8tion.jda.api.interactions.commands.context.*;
+import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.requests.restaction.interactions.*;
+import net.dv8tion.jda.api.utils.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 
-@SuppressWarnings("ConstantConditions")
 public class CommandEvent implements SlashCommandInteraction, MessageContextInteraction {
     private final Command command;
     private final Client client;
@@ -194,20 +172,20 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
         return null;
     }
 
-    public @NotNull TextChannel getTextChannel() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getTextChannel();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getTextChannel();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getTextChannel();
-            }
-        }
-        return null;
-    }
+//    public @NotNull TextChannel getTextChannel() {
+//        switch (type) {
+//            case MESSAGE -> {
+//                return trigger.getChannel();
+//            }
+//            case SLASH -> {
+//                return slashCommandEvent.getTextChannel();
+//            }
+//            case USER -> {
+//                return messageContextCommandEvent.getTextChannel();
+//            }
+//        }
+//        return null;
+//    }
 
     public @NotNull ReplyCallbackAction reply(@NotNull Message content) {
         switch (type) {
@@ -230,7 +208,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
 
     @NotNull
     @Override
-    public MessageChannel getChannel() {
+    public MessageChannelUnion getChannel() {
         switch (type) {
             case MESSAGE -> {
                 return trigger.getChannel();
@@ -430,13 +408,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
 
     @NotNull
     @Override
-    public Locale getUserLocale() {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public GuildMessageChannel getGuildChannel() {
+    public GuildMessageChannelUnion getGuildChannel() {
         return SlashCommandInteraction.super.getGuildChannel();
     }
 
@@ -570,32 +542,14 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
 
     @NotNull
     @Override
-    public NewsChannel getNewsChannel() {
-        return SlashCommandInteraction.super.getNewsChannel();
+    public DiscordLocale getUserLocale() {
+        return slashCommandEvent.getUserLocale();
     }
 
     @NotNull
     @Override
-    public VoiceChannel getVoiceChannel() {
-        return SlashCommandInteraction.super.getVoiceChannel();
-    }
-
-    @NotNull
-    @Override
-    public PrivateChannel getPrivateChannel() {
-        return SlashCommandInteraction.super.getPrivateChannel();
-    }
-
-    @NotNull
-    @Override
-    public ThreadChannel getThreadChannel() {
-        return SlashCommandInteraction.super.getThreadChannel();
-    }
-
-    @NotNull
-    @Override
-    public Locale getGuildLocale() {
-        return SlashCommandInteraction.super.getGuildLocale();
+    public DiscordLocale getGuildLocale() {
+        return slashCommandEvent.getGuildLocale();
     }
 
     @NotNull
@@ -615,4 +569,6 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     public ModalCallbackAction replyModal(@NotNull Modal modal) {
         return null;
     }
+
+
 }

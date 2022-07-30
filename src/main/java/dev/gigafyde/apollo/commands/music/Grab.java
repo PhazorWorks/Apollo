@@ -4,9 +4,9 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
-import dev.gigafyde.apollo.utils.Emoji;
 import java.util.Objects;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.*;
 
 public class Grab extends Command {
     private CommandEvent event;
@@ -42,7 +42,7 @@ public class Grab extends Command {
                 switch (event.getCommandType()) {
                     case MESSAGE -> {
                         author.openPrivateChannel().complete().sendMessage("Here is a copy of the currently playing track\n" + uri).complete();
-                        event.getMessage().addReaction(Emoji.SUCCESS.toString()).queue();
+                        event.getMessage().addReaction(Emoji.fromUnicode(String.valueOf(dev.gigafyde.apollo.utils.Emoji.SUCCESS))).queue();
                     }
                     case SLASH -> event.send("Here is a copy of the currently playing track\n" + uri);
                 }

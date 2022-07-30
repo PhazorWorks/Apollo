@@ -5,20 +5,16 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.IPlayer;
-import lavalink.client.player.LavalinkPlayer;
-import lavalink.client.player.event.PlayerEventListenerAdapter;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.sedmelluq.discord.lavaplayer.player.*;
+import com.sedmelluq.discord.lavaplayer.track.*;
+import dev.gigafyde.apollo.utils.*;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
+import lavalink.client.player.*;
+import lavalink.client.player.event.*;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.*;
+import org.slf4j.*;
 
 public class TrackScheduler extends PlayerEventListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger("TrackScheduler");
@@ -27,7 +23,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
     private boolean looped;
     private boolean announceTrack = true;
     private boolean announceLoop = true;
-    private TextChannel boundChannel;
+    private MessageChannelUnion boundChannel;
     private Message nowPlaying;
     private AudioTrack loopedTrack;
     private AudioTrack previousTrack;
@@ -47,11 +43,11 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         return player;
     }
 
-    public TextChannel getBoundChannel() {
+    public MessageChannelUnion getBoundChannel() {
         return boundChannel;
     }
 
-    public void setBoundChannel(TextChannel channel) {
+    public void setBoundChannel(MessageChannelUnion channel) {
         boundChannel = channel;
     }
 
