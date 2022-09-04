@@ -29,7 +29,7 @@ public abstract class Command {
                         return;
                     }
                     case SLASH -> {
-                        event.deferReply().complete().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
+                        event.getHook().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
                         return;
                     }
                     case USER -> {
