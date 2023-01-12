@@ -42,7 +42,7 @@ public class Shuffle extends Command {
     protected void shuffle() {
         try {
             if (!SongUtils.userConnectedToBotVC(event)) return;
-            event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild())).shuffleQueue();
+            event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler.shuffleQueue();
             event.send("Shuffled!");
         } catch (Exception e) {
             event.sendError("**Failed to shuffle! error encountered was: " + e.getMessage() + "**");

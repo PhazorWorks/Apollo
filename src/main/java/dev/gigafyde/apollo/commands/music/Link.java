@@ -23,7 +23,7 @@ public class Link extends Command {
 
     protected void execute(CommandEvent event) {
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+        TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
         if (scheduler == null || scheduler.getPlayer().getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;

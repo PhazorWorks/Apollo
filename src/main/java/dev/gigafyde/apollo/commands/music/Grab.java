@@ -30,7 +30,7 @@ public class Grab extends Command {
     }
 
     protected void grab() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+        TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
         if (scheduler == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;

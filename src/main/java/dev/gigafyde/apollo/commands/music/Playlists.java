@@ -11,10 +11,11 @@ import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
+import dev.gigafyde.apollo.utils.LavaUtil;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.LavalinkUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,11 +41,9 @@ public class Playlists extends Command {
     public static void loadSharePlaylist(String url, CommandEvent event) {
         try {
             // if bot is not in VC join the VC
-            AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            VoiceChannel vc = event.getGuild().getVoiceChannelById(event.getMember().getVoiceState().getChannel().getIdLong());
             assert vc != null;
-            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
-
+            TrackScheduler scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
             // build client and request
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(new Request.Builder()
@@ -72,7 +71,7 @@ public class Playlists extends Command {
         List<AudioTrack> tracks = new ArrayList<>();
         for (Object identifier : identifiers) {
             try {
-                tracks.add(LavalinkUtil.toAudioTrack((String) identifier));
+                tracks.add(LavaUtil.toAudioTrack((String) identifier));
             } catch (IOException e) {
                 log.error(e.getMessage());
             }
@@ -82,7 +81,7 @@ public class Playlists extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+        scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
 
         switch (event.getCommandType()) {
             case MESSAGE -> {
@@ -242,10 +241,9 @@ public class Playlists extends Command {
         try {
             if (!SongUtils.passedVoiceChannelChecks(event)) return;
             // if bot is not in VC join the VC
-            AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+            VoiceChannel vc = event.getGuild().getVoiceChannelById(event.getMember().getVoiceState().getChannel().getIdLong());
             assert vc != null;
-            scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-            if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+            scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
             // set boundChannel here
             scheduler.setBoundChannel(event.getChannel());
             // build client and request
@@ -440,7 +438,7 @@ public class Playlists extends Command {
         JSONArray tracks = new JSONArray();
         songs.forEach(track -> {
             try {
-                tracks.put(LavalinkUtil.toMessage(track));
+                tracks.put(LavaUtil.toMessage(track));
             } catch (IOException e) {
                 log.error(e.getMessage());
             }

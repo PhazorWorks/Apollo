@@ -23,7 +23,7 @@ public class Clear extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -33,7 +33,7 @@ public class Clear extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 if (scheduler == null) {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
@@ -45,7 +45,6 @@ public class Clear extends Command {
 
     protected void clear() {
         if (SongUtils.userConnectedToBotVC(event)) {
-            scheduler.getPlayer().stopTrack();
             scheduler.clear();
             scheduler.skip();
             event.send("The queue has been cleared.");

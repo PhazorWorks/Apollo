@@ -1,6 +1,7 @@
 package dev.gigafyde.apollo.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.core.GuildMusicManager;
 import dev.gigafyde.apollo.core.MusicManager;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
@@ -24,8 +25,9 @@ public class Queue extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        MusicManager musicManager = event.getClient().getMusicManager();
-        scheduler = musicManager.getScheduler(Objects.requireNonNull(event.getGuild()));
+        GuildMusicManager musicManager = event.getClient().getMusicManager().getGuildMusicManager(event.getGuild());
+        scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
+
 
         switch (event.getCommandType()) {
             case MESSAGE -> {
@@ -33,7 +35,6 @@ public class Queue extends Command {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
                 }
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler.getQueue().isEmpty()) {
                     event.send("**Queue is currently empty**");
                     return;
@@ -46,7 +47,6 @@ public class Queue extends Command {
                     event.sendError(Constants.requireActivePlayerCommand);
                     return;
                 }
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
                 if (scheduler.getQueue().isEmpty()) {
                     event.sendError("**Queue is currently empty**");
                 }

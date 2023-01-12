@@ -6,6 +6,8 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 
+import java.util.Objects;
+
 public class PlayBack extends Command {
 
     private TrackScheduler scheduler;
@@ -19,7 +21,7 @@ public class PlayBack extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
+        scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
 
         switch (event.getCommandType()) {
             case MESSAGE -> {
