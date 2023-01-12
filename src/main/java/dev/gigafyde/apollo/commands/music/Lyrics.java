@@ -2,6 +2,7 @@ package dev.gigafyde.apollo.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
+import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
@@ -41,7 +42,8 @@ public class Lyrics extends Command {
                 if (Main.LYRICS_WEB_SERVER == null) return;
                 if (event.getArgument().isEmpty()) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                    AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+                    TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
+                    AudioTrack track = scheduler.getPlayer().getPlayingTrack();
                     if (track == null) {
                         event.sendError(Constants.requireActivePlayerCommand);
                         return;
@@ -61,7 +63,8 @@ public class Lyrics extends Command {
                 event.deferReply().queue();
                 if (event.getOption("query") == null) {
                     if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                    AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+                    TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
+                    AudioTrack track = scheduler.getPlayer().getPlayingTrack();
                     if (track == null) {
                         event.sendError(Constants.requireActivePlayerCommand);
                         return;

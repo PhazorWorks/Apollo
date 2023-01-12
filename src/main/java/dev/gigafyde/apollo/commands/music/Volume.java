@@ -5,18 +5,18 @@ package dev.gigafyde.apollo.commands.music;
  https://github.com/GigaFyde
  */
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.Emoji;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.LavalinkPlayer;
 
 import java.util.Objects;
 
 public class Volume extends Command {
     private CommandEvent event;
-    private LavalinkPlayer player;
+    private AudioPlayer player;
 
     public Volume() {
         this.name = "volume";
@@ -29,7 +29,7 @@ public class Volume extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+                player = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).player;
                 if (event.getArgument().isEmpty()) {
                     event.send(Emoji.VOLUME + " Current volume is: " + getVolume() + "%");
                     return;
@@ -39,7 +39,7 @@ public class Volume extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+                player = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).player;
                 if (event.getOptions().size() == 0) {
                     event.send(Emoji.VOLUME + " Current volume is: " + getVolume() + "%");
                     return;

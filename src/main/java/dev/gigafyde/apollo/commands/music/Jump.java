@@ -28,7 +28,7 @@ public class Jump extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 try {
                     jump(Integer.parseInt(event.getArgument()) - 1);
                 } catch (NumberFormatException e) {
@@ -38,7 +38,7 @@ public class Jump extends Command {
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 try {
                     jump(Integer.parseInt(Objects.requireNonNull(event.getOption("input")).getAsString()) - 1);
                 } catch (NumberFormatException e) {
@@ -59,8 +59,8 @@ public class Jump extends Command {
         }
         scheduler.skip(pos);
         scheduler.skip();
-        if (scheduler.isLooped()) {
-            scheduler.setLooped(false);
+        if (scheduler.isRepeating()) {
+            scheduler.setRepeat(false);
             event.send("Loop was turned off due to manual jump.");
         }
         switch (event.getCommandType()) {

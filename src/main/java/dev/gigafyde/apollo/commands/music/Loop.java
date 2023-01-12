@@ -1,10 +1,8 @@
 package dev.gigafyde.apollo.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
-import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.Objects;
 
@@ -34,20 +32,15 @@ public class Loop extends Command {
 
     protected void loop() {
         try {
-            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-            AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
-            if (scheduler == null | track == null) {
-                event.sendError(Constants.requireActivePlayerCommand);
-                return;
-            }
+            TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
+
             if (!SongUtils.userConnectedToBotVC(event)) return;
-            if (!scheduler.isLooped()) {
+            if (!scheduler.isRepeating()) {
                 event.send("Loop is now enabled for the current track.");
-                scheduler.setLooped(true);
-                scheduler.setLoopedTrack(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack());
+                scheduler.setRepeat(true);
             } else {
                 event.send("Loop is now disabled.");
-                scheduler.setLooped(false);
+                scheduler.setRepeat(false);
             }
         } catch (Exception e) {
             event.sendError("**" + e.getMessage() + "**");

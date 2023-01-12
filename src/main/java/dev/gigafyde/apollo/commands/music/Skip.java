@@ -28,13 +28,13 @@ public class Skip extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 skip();
             }
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+                scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 skip();
             }
         }
@@ -46,11 +46,10 @@ public class Skip extends Command {
             return;
         }
 
-        scheduler.setPreviousTrack(scheduler.getPlayer().getPlayingTrack());
 
         scheduler.skip();
-        if (scheduler.isLooped()) {
-            scheduler.setLooped(false);
+        if (scheduler.isRepeating()) {
+            scheduler.setRepeat(false);
             event.send("Loop was turned off due to manual skip.");
         }
         switch (event.getCommandType()) {

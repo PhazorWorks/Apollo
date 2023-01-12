@@ -5,7 +5,6 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.util.Objects;
 
@@ -23,47 +22,30 @@ public class Announce extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                announce(event.getArgument());
+                announce();
             }
             case SLASH -> {
                 event.deferReply().queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                announce(event.getSubcommandName());
+                announce();
             }
         }
     }
 
-    protected void announce(String option) {
+    protected void announce() {
         try {
-            TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+            TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
             if (scheduler == null) {
                 event.sendError(Constants.botNotInVC);
                 return;
             }
-            if ("tracks".equals(option)) {
-                if (scheduler.isAnnounceTrack()) {
-                    scheduler.setAnnounceTrack(false);
+                if (scheduler.isSending()) {
+                    scheduler.setSendPlaying(false);
                     event.send("Announcing of **tracks** is now **disabled**");
                 } else {
                     event.send("Announcing of **tracks** is now **enabled**");
-                    scheduler.setAnnounceTrack(true);
+                    scheduler.setSendPlaying(true);
                 }
-            } else if ("loop".equals(option)) {
-                if (scheduler.isAnnounceLoop()) {
-                    scheduler.setAnnounceLoop(false);
-                    event.send("Announcing of **looped tracks** is now **disabled**");
-                } else {
-                    event.send("Announcing of **looped tracks** is now **enabled**");
-                    scheduler.setAnnounceLoop(true);
-                }
-            } else {
-                String enabledTracks = scheduler.isAnnounceTrack() ? "Enabled" : "Disabled";
-                String enabledLoop = scheduler.isAnnounceLoop() ? "Enabled" : "Disabled";
-                EmbedBuilder eb = new EmbedBuilder()
-                        .setTitle("Announcements Menu")
-                        .setDescription(String.format("**__Description__**:\nManage if the bot should send a message when a new song is playing.\n\n**__Status__**:\n**Tracks** are currently **%s**\n**Looped Tracks** are currently **%s**\n\n**__How to use__**:\n%sannounce <tracks|loop>", enabledTracks, enabledLoop, event.getClient().getPrefix()));
-                event.sendEmbed(eb);
-            }
         } catch (Exception e) {
             event.sendError("**" + e.getMessage() + "**");
         }

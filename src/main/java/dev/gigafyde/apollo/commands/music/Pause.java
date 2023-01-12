@@ -35,15 +35,15 @@ public class Pause extends Command {
     }
 
     protected void pause() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-        AudioTrack track = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer().getPlayingTrack();
+        TrackScheduler scheduler = event.getClient().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
+        AudioTrack track = scheduler.getPlayer().getPlayingTrack();
         if (!SongUtils.passedVoiceChannelChecks(event)) return;
         if (!SongUtils.userConnectedToBotVC(event)) return;
-        if (track == null || scheduler == null) {
+        if (track == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
         scheduler.getPlayer().setPaused(true);
-        event.send("Paused at: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()) + "`");
+        event.send("Paused at: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
     }
 }
