@@ -5,6 +5,7 @@ package dev.gigafyde.apollo.utils;
  https://github.com/GigaFyde
  */
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandEvent;
@@ -19,7 +20,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.AudioChannel;
@@ -114,9 +114,9 @@ public class SongUtils {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    public static String getSongProgress(LavalinkPlayer player) {
+    public static String getSongProgress(AudioPlayer player) {
         long dms = player.getPlayingTrack().getDuration();
-        long pms = player.getTrackPosition();
+        long pms = player.getPlayingTrack().getPosition();
         long pmin = TimeUnit.MILLISECONDS.toMinutes(pms);
         long psec = TimeUnit.MILLISECONDS.toSeconds(pms) % 60;
         String duration = calculateSongLength(player.getPlayingTrack());

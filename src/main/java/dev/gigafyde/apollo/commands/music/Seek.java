@@ -1,6 +1,7 @@
 package dev.gigafyde.apollo.commands.music;
 
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
@@ -8,7 +9,6 @@ import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import lavalink.client.player.LavalinkPlayer;
 
 public class Seek extends Command {
 
@@ -37,7 +37,7 @@ public class Seek extends Command {
     }
 
     protected void seek() {
-        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+        AudioPlayer player = event.getClient().getGuildMusicManager(event.getGuild()).player;
         AudioTrack playingTrack = player.getPlayingTrack();
         if (playingTrack == null) {
             event.sendError(Constants.requireActivePlayerCommand);
@@ -57,13 +57,13 @@ public class Seek extends Command {
         try {
             long maxSeekLength = playingTrack.getDuration();
             long amountToSeek = seekNumber * 1000L;
-            long currentTime = player.getTrackPosition();
+            long currentTime = player.getPlayingTrack().getPosition();
             if (amountToSeek + currentTime >= maxSeekLength) {
                 event.sendError("**Input is larger then song duration!**");
                 return;
             }
             long newTime = currentTime + amountToSeek;
-            player.seekTo(newTime);
+            player.getPlayingTrack().setPosition(newTime);
             if (event.getArgument().startsWith("-")) {
                 long amountRewound = -amountToSeek;
                 if (amountToSeek < 61000)

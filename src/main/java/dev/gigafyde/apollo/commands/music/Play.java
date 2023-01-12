@@ -45,10 +45,10 @@ public class Play extends Command implements SongCallBack {
                 author = event.getAuthor();
                 message = event.getMessage();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+                VoiceChannel vc = event.getGuild().getVoiceChannelById(event.getMember().getVoiceState().getChannel().getIdLong());
+                event.getGuild().getAudioManager().openAudioConnection(vc);
                 assert vc != null;
-                scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
-                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 scheduler.setBoundChannel(event.getChannel());
                 boundChannel = scheduler.getBoundChannel();
                 if (event.getArgument().isEmpty()) {
@@ -71,10 +71,10 @@ public class Play extends Command implements SongCallBack {
                 //event.getHook().getInteraction().deferReply(false).queue();
                 hook = event.getHook();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
+                VoiceChannel vc = event.getGuild().getVoiceChannelById(event.getMember().getVoiceState().getChannel().getIdLong());
+                event.getGuild().getAudioManager().openAudioConnection(vc);
                 assert vc != null;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 scheduler.setBoundChannel(event.getChannel());
                 boundChannel = scheduler.getBoundChannel();
                 String args = Objects.requireNonNull(event.getOption("query")).getAsString();
@@ -83,10 +83,10 @@ public class Play extends Command implements SongCallBack {
             case USER -> {
                 event.deferReply().setEphemeral(true).queue();
                 if (!SongUtils.passedVoiceChannelChecks(event)) return;
-                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(event.getGuild()).getMember(event.getUser())).getVoiceState()).getChannel();
+                VoiceChannel vc = event.getGuild().getVoiceChannelById(event.getMember().getVoiceState().getChannel().getIdLong());
+                event.getGuild().getAudioManager().openAudioConnection(vc);
                 assert vc != null;
-                scheduler = event.getClient().getMusicManager().getScheduler(event.getGuild());
-                if (scheduler == null) scheduler = event.getClient().getMusicManager().addScheduler(vc, false);
+                scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
                 boundChannel = scheduler.getBoundChannel();
                 String args = event.getTarget().getContentRaw();
                 processArgument(args);
@@ -97,10 +97,11 @@ public class Play extends Command implements SongCallBack {
     private void processArgument(String arguments) {
         SongCallBackListener.addListener(this); //setup callback
         arguments = SongUtils.extractUrl(arguments);
-        if (arguments.contains("spotify")) {
-            handleSpotify(scheduler, arguments, author);
-            return;
-        }
+        // this is disabled as web server is not needed
+       // if (arguments.contains("spotify")) {
+       //     handleSpotify(scheduler, arguments, author);
+       //     return;
+       // }
         if (SongUtils.isValidURL(arguments)) {
             if (Main.PLAYLISTS_WEB_SERVER != null) {
                 if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {

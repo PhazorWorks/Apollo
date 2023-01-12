@@ -5,55 +5,57 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
+import com.github.topisenpai.lavasrc.applemusic.AppleMusicSourceManager;
+import com.github.topisenpai.lavasrc.spotify.SpotifySourceManager;
+import com.github.topisenpai.lavasrc.deezer.DeezerAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import lavalink.client.io.jda.JdaLink;
-import lavalink.client.player.LavalinkPlayer;
-import net.dv8tion.jda.api.entities.AudioChannel;
+
+import dev.gigafyde.apollo.Main;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.managers.AudioManager;
 
 public final class MusicManager {
-    private final Client client;
-    private final Map<Long, TrackScheduler> schedulers = new ConcurrentHashMap<>();
     private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+    private static MusicManager INSTANCE;
+    private final Map<Long, GuildMusicManager> musicManagers;
 
-    public MusicManager(Client client) {
-        this.client = client;
+    public MusicManager() {
+
+        this.musicManagers = new HashMap<>();
+        playerManager.registerSourceManager(new SpotifySourceManager(null, Main.SPOTIFY_CLIENT_ID, Main.SPOTIFY_CLIENT_SECRET, "US", playerManager));
+        playerManager.registerSourceManager(new AppleMusicSourceManager(null, null, "US", playerManager));
+        playerManager.registerSourceManager(new DeezerAudioSourceManager(Main.DEEZER_KEY));
+
         AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+        AudioSourceManagers.registerRemoteSources(playerManager);
+
     }
 
-    public TrackScheduler getScheduler(Guild guild) {
-        return schedulers.get(guild.getIdLong());
-    }
-
-    public void disconnect(Guild guild) {
-        schedulers.remove(guild.getIdLong());
-    }
-
-    public void moveVoiceChannel(AudioChannel AudioChannel) {
-        Guild guild = AudioChannel.getGuild();
-        JdaLink link = client.getLavalink().getLink(guild);
-        AudioManager audioManager = guild.getAudioManager();
-        if (!audioManager.isConnected()) {
-            addScheduler(AudioChannel, true);
-        } else {
-            link.connect((VoiceChannel) AudioChannel);
+    public static synchronized MusicManager getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new MusicManager();
         }
+
+        return INSTANCE;
     }
 
-    public TrackScheduler addScheduler(AudioChannel AudioChannel, boolean start) {
-        Guild guild = AudioChannel.getGuild();
-        JdaLink link = client.getLavalink().getLink(guild);
-        link.connect(AudioChannel);
-        LavalinkPlayer player = link.getPlayer();
-        TrackScheduler scheduler = new TrackScheduler(player, playerManager, start);
-        player.addListener(scheduler);
-        schedulers.put(guild.getIdLong(), scheduler);
-        return scheduler;
+    public synchronized GuildMusicManager getGuildMusicManager(Guild guild) {
+        long guildId = guild.getIdLong();
+        GuildMusicManager musicManager = musicManagers.get(guildId);
+
+        if (musicManager == null) {
+            musicManager = new GuildMusicManager(playerManager);
+            musicManagers.put(guildId, musicManager);
+        }
+
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+
+        return musicManager;
     }
+
 }

@@ -5,11 +5,15 @@ package dev.gigafyde.apollo.commands.music;
   https://github.com/GigaFyde
  */
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
-import lavalink.client.player.LavalinkPlayer;
+
+import java.util.Objects;
+
 
 public class Restart extends Command {
     private CommandEvent event;
@@ -36,13 +40,13 @@ public class Restart extends Command {
     }
 
     protected void restart() {
-        LavalinkPlayer player = event.getClient().getLavalink().getLink(event.getGuild()).getPlayer();
+        AudioPlayer player = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).player;
         if (player.getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
-        player.seekTo(0L);
+        player.getPlayingTrack().setPosition(0L);
         event.send("Replaying song " + player.getPlayingTrack().getInfo().title + ".");
     }
 }

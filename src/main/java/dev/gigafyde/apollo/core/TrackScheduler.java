@@ -5,101 +5,116 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
-import com.sedmelluq.discord.lavaplayer.player.*;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+
 import dev.gigafyde.apollo.utils.*;
 import java.util.*;
 import java.util.concurrent.*;
-import lavalink.client.player.*;
-import lavalink.client.player.event.*;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.unions.*;
-import org.slf4j.*;
 
-public class TrackScheduler extends PlayerEventListenerAdapter {
-    private static final Logger log = LoggerFactory.getLogger("TrackScheduler");
-    private final LavalinkPlayer player;
-    private final AudioPlayerManager audioPlayerManager;
-    private boolean looped;
-    private boolean announceTrack = true;
-    private boolean announceLoop = true;
+public class TrackScheduler extends AudioEventAdapter {
+    private final AudioPlayer player;
+    private BlockingQueue<AudioTrack> queue;
+
     private MessageChannelUnion boundChannel;
     private Message nowPlaying;
-    private AudioTrack loopedTrack;
     private AudioTrack previousTrack;
-    private Queue<AudioTrack> queue = new LinkedBlockingDeque<>();
-
-    TrackScheduler(LavalinkPlayer player, AudioPlayerManager manager, boolean start) {
+    private boolean repeat = false;
+    private boolean sendPlaying = true;
+    private AudioPlayerManager audioPlayerManager;
+    /**
+     * @param player The audio player this scheduler uses
+     */
+    public TrackScheduler(AudioPlayer player, AudioPlayerManager manager) {
         this.player = player;
         this.audioPlayerManager = manager;
-        if (start) nextSong();
+        this.queue = new LinkedBlockingQueue<>();
     }
-
     public AudioPlayerManager getManager() {
         return audioPlayerManager;
     }
 
-    public LavalinkPlayer getPlayer() {
+    public AudioPlayer getPlayer() {
         return player;
     }
 
-    public MessageChannelUnion getBoundChannel() {
-        return boundChannel;
-    }
-
-    public void setBoundChannel(MessageChannelUnion channel) {
-        boundChannel = channel;
-    }
-
-
-    public void nextSong() {
-        AudioTrack track = queue.poll();
-        if (looped) {
-            track = loopedTrack;
+    /**
+     * Add the next track to queue or play right away if nothing is in the
+     * queue.
+     *
+     * @param track The track to play or add to queue.
+     */
+    public void queue(AudioTrack track) {
+        // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
+        // something is playing, it returns false and does nothing. In that case the player was already playing so this
+        // track goes to the queue instead.
+        if (!player.startTrack(track, true)) {
+            queue.offer(track);
         }
-        if (track == null)
+    }
+
+    public BlockingQueue<AudioTrack> getQueue() {
+        return queue;
+    }
+
+    public void clear() {
+        player.stopTrack();
+        queue.clear();
+    }
+
+    public void skip() {
+        skip(1);
+    }
+
+    public void skip(int amount) {
+        if (queue.isEmpty()) {
+            player.stopTrack();
+        }
+        if (amount == 1) {
+            nextTrack();
             return;
-
-        player.playTrack(track);
-
-        if (boundChannel != null) {
-            try {
-                // if announcements are disabled stop code execution
-                if (!announceTrack || !announceLoop && looped) return;
-                // Try to delete the previous now-playing message
-                nowPlaying.delete().complete();
-            } catch (Exception ignored) {
-                // If it fails. it'll most likely be because of something on discord's end. so it's not our problem.
+        }
+        if (queue.size() > amount) {
+            for (int i = 0; i < amount; i++) {
+                queue.remove();
             }
-            if (player.getPlayingTrack() == track)
-
-				/*
-				If this is null, it should mean we only just created a new scheduler
-		        Sending a now-playing image in this case is overkill as we already sent a added to queue image
-				 */
-	            if (previousTrack == null) return;
-
-
-                try {
-                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "nowplaying.png").queue(msg -> nowPlaying = msg);
-                } catch (Exception e) {
-                    boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
-                    boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player.getLink().getPlayer())).queue(msg -> nowPlaying = msg);
-                }
+        } else {
+            queue.clear();
+            player.stopTrack();
         }
     }
 
-    public AudioTrack getPreviousTrack() {
-        return previousTrack;
+
+    public void shuffleQueue() {
+        final List<AudioTrack> tempList = new ArrayList<>(this.queue);
+        Collections.shuffle(tempList);
+        this.queue.clear();
+        this.queue.addAll(tempList);
+
     }
 
-    public void setPreviousTrack(AudioTrack track) {
-        previousTrack = track;
+    public boolean isRepeating() {
+        return repeat;
     }
 
-    public void setLoopedTrack(AudioTrack track) {
-        loopedTrack = track;
+    public void setRepeat(boolean value) {
+        repeat = value;
     }
+
+    public boolean isSending() {
+        return sendPlaying;
+    }
+
+    public void setSendPlaying(boolean active) {
+        sendPlaying = active;
+    }
+
+
 
     public boolean addTrack(AudioTrack track, String author) {
         track.setUserData(author);
@@ -107,7 +122,7 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
             return false;
         queue.add(track);
         if (player.getPlayingTrack() == null)
-            nextSong();
+            nextTrack();
         return true;
     }
 
@@ -117,34 +132,6 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         queue = new LinkedBlockingDeque<>(tracks);
         return true;
     }
-
-    public boolean isLooped() {
-        return looped;
-    }
-
-    public void setLooped(boolean active) {
-        looped = active;
-    }
-
-    public boolean isAnnounceTrack() {
-        return announceTrack;
-    }
-
-    public void setAnnounceTrack(boolean active) {
-        announceTrack = active;
-    }
-
-    public boolean isAnnounceLoop() {
-        return announceLoop;
-    }
-
-    public void setAnnounceLoop(boolean active) {
-        announceLoop = active;
-    }
-
-//    public int addTracks(String author, AudioTrack... tracks) {
-//        return addTracks(author, Arrays.asList(tracks));
-//    }
 
     public int addTracks(String author, List<AudioTrack> tracks) {
         int added = 0;
@@ -165,69 +152,61 @@ public class TrackScheduler extends PlayerEventListenerAdapter {
         return tracks.get(position).getInfo().title;
     }
 
-    public void shuffleQueue() {
-        List<AudioTrack> tracks = new ArrayList<>(queue);
-        Collections.shuffle(tracks);
-        queue.clear();
-        queue.addAll(tracks);
-        queue = new LinkedBlockingDeque<>(tracks);
-    }
-
     public void moveTrack(int oldPosition, int newPosition) {
-        List<AudioTrack> tracks = new ArrayList<>(queue);
+        List<AudioTrack> tracks = new ArrayList<>(this.queue);
         AudioTrack oldPos = tracks.remove(oldPosition);
         tracks.add(newPosition, oldPos);
         queue = new LinkedBlockingDeque<>(tracks);
     }
 
-
-    public void skip() {
-        skip(1);
-    }
-
-    public void skip(int amount) {
-        if (queue.isEmpty()) {
-            player.stopTrack();
-        }
-        if (amount == 1) {
-            nextSong();
+    public void nextTrack() {
+        AudioTrack track = queue.poll();
+        if (track == null)
             return;
-        }
-        if (queue.size() > amount) {
-            for (int i = 0; i < amount; i++) {
-                queue.remove();
+        player.playTrack(track);
+        if (!sendPlaying) return;
+        if (boundChannel != null) {
+            try {
+                // Try to delete the previous now-playing message
+                nowPlaying.delete().complete();
+            } catch (Exception ignored) {
+                // If it fails. it'll most likely be because of something on discord's end. so it's not our problem.
             }
-        } else {
-            queue.clear();
-            player.stopTrack();
+            if (player.getPlayingTrack() == track)
+                try {
+                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "playing.png").queue(msg -> nowPlaying = msg);
+                } catch (Exception e) {
+                    boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
+                    boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player)).queue(msg -> nowPlaying = msg);
+                }
         }
-
     }
 
-    public void clear() {
-        queue.clear();
+    public AudioTrack getPreviousTrack() {
+        return previousTrack;
     }
 
-    public Queue<AudioTrack> getQueue() {
-        return queue;
+    public MessageChannelUnion getBoundChannel() {
+        return boundChannel;
+    }
+
+    public void setBoundChannel(MessageChannelUnion channel) {
+        boundChannel = channel;
     }
 
 
+    // player events
     @Override
-    public void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
+        previousTrack = track;
         if (endReason.mayStartNext) {
-            nextSong();
+            if (repeat) {
+                player.startTrack(track.makeClone(), false);
+            } else {
+                nextTrack();
+            }
         }
-    }
-
-    @Override
-    public void onTrackException(IPlayer player, AudioTrack track, Exception exception) {
-        nextSong();
-    }
-
-
-    @Override
-    public void onTrackStuck(IPlayer player, AudioTrack track, long thresholdMs) {
-        nextSong();
     }
 }
+

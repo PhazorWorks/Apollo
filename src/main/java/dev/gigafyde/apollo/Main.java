@@ -8,11 +8,13 @@ package dev.gigafyde.apollo;
 
 import dev.gigafyde.apollo.commands.CommandList;
 import dev.gigafyde.apollo.core.Client;
-import dev.gigafyde.apollo.core.LavalinkManager;
+import dev.gigafyde.apollo.core.GuildMusicManager;
 import dev.gigafyde.apollo.core.SlashRegister;
 import dev.gigafyde.apollo.utils.SongUtils;
 import io.sentry.Sentry;
+
 import javax.security.auth.login.LoginException;
+
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -26,8 +28,6 @@ public class Main {
     public static final String BOT_PREFIX = System.getenv("BOT_PREFIX");
     public static final String OWNER_ID = System.getenv("BOT_OWNER_ID");
     public static final String BOT_TOKEN = System.getenv("BOT_TOKEN");
-    public static final String LAVALINK_URL = System.getenv("LAVALINK_URL");
-    public static final String LAVALINK_PASS = System.getenv("LAVALINK_PASS");
     public static final String LYRICS_API_KEY = System.getenv("LYRICS_API_KEY");
     public static final String IMAGE_API_SERVER = System.getenv("IMAGE_API_SERVER");
     public static final String PLAYLISTS_API_KEY = System.getenv("PLAYLISTS_API_KEY");
@@ -37,10 +37,12 @@ public class Main {
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
     private static final Logger log = LoggerFactory.getLogger("Apollo");
     public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
+    public static String SPOTIFY_CLIENT_ID = System.getenv("SPOTIFY_CLIENT_ID");
+    public static String SPOTIFY_CLIENT_SECRET = System.getenv("SPOTIFY_CLIENT_SECRET");
+    public static String DEEZER_KEY = System.getenv("DEEZER_KEY");
     public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
     public static String PLAYLISTS_WEB_SERVER = System.getenv("PLAYLISTS_WEB_SERVER");
     public static ShardManager SHARD_MANAGER;
-    public static LavalinkManager LAVALINK;
 
     public static void main(String[] args) throws LoginException {
         if (!SongUtils.isValidURL(SPOTIFY_WEB_SERVER) || SPOTIFY_WEB_SERVER == null) {
@@ -56,16 +58,14 @@ public class Main {
             PLAYLISTS_WEB_SERVER = null;
         }
         if (SENTRY_DSN != null) Sentry.init(SENTRY_DSN);
-        LAVALINK = new LavalinkManager();
-        Client client = new Client(LAVALINK.getLavalink());
+        Client client = new Client();
         new CommandList(client);
         SHARD_MANAGER = DefaultShardManagerBuilder.createDefault(BOT_TOKEN)
                 .enableIntents(GatewayIntent.GUILD_VOICE_STATES,
-                               GatewayIntent.MESSAGE_CONTENT,
-                               GatewayIntent.GUILD_MEMBERS,
-                               GatewayIntent.GUILD_PRESENCES)
-                .setVoiceDispatchInterceptor(LAVALINK.getLavalink().getVoiceInterceptor())
-                .addEventListeners(client, LAVALINK.getLavalink(), new SlashRegister())
+                        GatewayIntent.MESSAGE_CONTENT,
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_PRESENCES)
+                .addEventListeners(client, new SlashRegister())
                 .setShardsTotal(SHARDS_TOTAL)
                 .setShards(SHARDS_TOTAL - 1)
                 .build();

@@ -10,6 +10,7 @@ import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
+
 import java.util.Objects;
 
 public class Resume extends Command {
@@ -37,13 +38,13 @@ public class Resume extends Command {
     }
 
     protected void resume() {
-        TrackScheduler scheduler = event.getClient().getMusicManager().getScheduler(Objects.requireNonNull(event.getGuild()));
+        TrackScheduler scheduler = event.getClient().getMusicManager().getGuildMusicManager(Objects.requireNonNull(event.getGuild())).scheduler;
         if (scheduler == null || scheduler.getPlayer().getPlayingTrack() == null) {
             event.sendError(Constants.requireActivePlayerCommand);
             return;
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
         scheduler.getPlayer().setPaused(false);
-        event.send("Resumed from: `" + SongUtils.getSongProgress(event.getClient().getLavalink().getLink(event.getGuild()).getPlayer()) + "`");
+        event.send("Resumed from: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
     }
 }

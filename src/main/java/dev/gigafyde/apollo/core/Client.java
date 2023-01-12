@@ -5,10 +5,11 @@ package dev.gigafyde.apollo.core;
  https://github.com/GigaFyde
  */
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.command.CommandHandler;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
-import lavalink.client.io.jda.JdaLavalink;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,11 +20,9 @@ import org.jetbrains.annotations.NotNull;
 public class Client extends ListenerAdapter {
     private final CommandRegistry registry = new CommandRegistry();
     private final CommandHandler handler;
-    private final MusicManager musicManager = new MusicManager(this);
-    private final JdaLavalink lavalink;
+    private final MusicManager musicManager = new MusicManager();
 
-    public Client(JdaLavalink lavalink) {
-        this.lavalink = lavalink;
+    public Client() {
         handler = new CommandHandler(this);
     }
 
@@ -50,9 +49,8 @@ public class Client extends ListenerAdapter {
     public MusicManager getMusicManager() {
         return musicManager;
     }
-
-    public JdaLavalink getLavalink() {
-        return lavalink;
+    public GuildMusicManager getGuildMusicManager(Guild guild) {
+        return musicManager.getGuildMusicManager(guild);
     }
 
     public String getPrefix() {
