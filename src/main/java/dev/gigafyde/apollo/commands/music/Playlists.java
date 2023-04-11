@@ -14,8 +14,8 @@ import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.LavaUtil;
 import dev.gigafyde.apollo.utils.SongUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -14,8 +14,10 @@ import dev.gigafyde.apollo.core.handlers.*;
 import dev.gigafyde.apollo.utils.*;
 import java.util.*;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.*;
 import net.dv8tion.jda.api.interactions.*;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.slf4j.*;
 import static dev.gigafyde.apollo.core.handlers.SpotifyHandler.*;
 
@@ -122,7 +124,7 @@ public class Play extends Command implements SongCallBack {
             case MESSAGE -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        message.reply(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png").mentionRepliedUser(false).queue();
+                        message.replyFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png")).mentionRepliedUser(false).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
@@ -134,7 +136,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        hook.editOriginal(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png").queue();
+                        hook.editOriginalAttachments(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png")).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         hook.editOriginal("Queued " + track.getInfo().title).queue();
@@ -146,7 +148,7 @@ public class Play extends Command implements SongCallBack {
             case USER -> {
                 event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
                 if (boundChannel != null)
-                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag())), "thumbnail.png").queue();
+                    boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag())), "thumbnail.png")).queue();
             }
         }
         SongCallBackListener.removeListener(this);
