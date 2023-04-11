@@ -14,7 +14,8 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import net.dv8tion.jda.api.entities.MessageChannel;
+
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

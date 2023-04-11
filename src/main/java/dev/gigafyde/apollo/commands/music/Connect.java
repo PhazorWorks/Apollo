@@ -11,8 +11,9 @@ import dev.gigafyde.apollo.core.command.CommandEvent;
 import dev.gigafyde.apollo.utils.Constants;
 import dev.gigafyde.apollo.utils.SongUtils;
 import java.util.Objects;
-import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class Connect extends Command {
