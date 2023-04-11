@@ -20,7 +20,10 @@ public class Ping extends Command {
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 long currentTime = System.currentTimeMillis();
-                event.getMessage().reply("Pinging...").mentionRepliedUser(false).queue(message -> message.editMessageEmbeds(new EmbedBuilder().setDescription(Emoji.HEARTBEAT + " " + event.getJDA().getGatewayPing() + " ms\n\n" + Emoji.PINGPONG + " " + (System.currentTimeMillis() - currentTime) + " ms").build()).override(true).queue());
+                event.getMessage().reply("Pinging...").mentionRepliedUser(false)
+                        .queue(message -> message.editMessageEmbeds(
+                                new EmbedBuilder().setDescription(Emoji.HEARTBEAT + " " + event.getJDA().getGatewayPing() + " ms\n\n" + Emoji.PINGPONG + " " + (System.currentTimeMillis() - currentTime) + " ms")
+                                .build()).queue());
             }
             case SLASH -> {
                 long currentTime = System.currentTimeMillis();

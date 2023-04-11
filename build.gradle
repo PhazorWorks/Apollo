@@ -22,14 +22,14 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.17'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.8'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.codehaus.groovy:groovy-all:3.0.14'
     implementation 'io.sentry:sentry-logback:6.11.0'
     implementation 'com.github.Walkyst.lavaplayer-fork:lavaplayer:custom-SNAPSHOT'
-    implementation'com.github.TopiSenpai.LavaSrc:lavasrc:feature~custom-json-fields-SNAPSHOT'
+    implementation 'com.github.TopiSenpai:LavaSrc:feature~custom-json-fields-SNAPSHOT'
     implementation 'org.json:json:20220924'
 }
 

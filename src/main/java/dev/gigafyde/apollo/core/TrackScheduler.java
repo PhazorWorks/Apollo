@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.unions.*;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
@@ -174,7 +175,8 @@ public class TrackScheduler extends AudioEventAdapter {
             }
             if (player.getPlayingTrack() == track)
                 try {
-                    boundChannel.sendFile(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "playing.png").queue(msg -> nowPlaying = msg);
+                    boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "playing.png"))
+                            .queue(msg -> nowPlaying = msg);
                 } catch (Exception e) {
                     boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
                     boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player)).queue(msg -> nowPlaying = msg);

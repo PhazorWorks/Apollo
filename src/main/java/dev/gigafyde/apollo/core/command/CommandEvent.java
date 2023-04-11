@@ -13,13 +13,18 @@ import java.util.function.*;
 import javax.annotation.*;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.*;
 import net.dv8tion.jda.api.interactions.*;
 import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.context.*;
 import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.*;
 import net.dv8tion.jda.api.utils.*;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 
@@ -190,10 +195,10 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     public @NotNull ReplyCallbackAction reply(@NotNull Message content) {
         switch (type) {
             case SLASH -> {
-                return slashCommandEvent.reply(content);
+                return slashCommandEvent.reply(MessageCreateData.fromMessage(content));
             }
             case USER -> {
-                return messageContextCommandEvent.reply(content);
+                return messageContextCommandEvent.reply(MessageCreateData.fromMessage(content));
             }
         }
         return null;
@@ -220,6 +225,18 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
                 return messageContextCommandEvent.getChannel();
             }
         }
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public GuildMessageChannelUnion getGuildChannel() {
+        return SlashCommandInteraction.super.getGuildChannel();
+    }
+
+    @NotNull
+    @Override
+    public DiscordLocale getUserLocale() {
         return null;
     }
 
@@ -260,6 +277,11 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @Override
     public long getCommandIdLong() {
         return 0;
+    }
+
+    @Override
+    public boolean isGuildCommand() {
+        return false;
     }
 
     @NotNull
@@ -352,6 +374,12 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
         return null;
     }
 
+    @NotNull
+    @Override
+    public String getFullCommandName() {
+        return SlashCommandInteraction.super.getFullCommandName();
+    }
+
     @Override
     public @NotNull List<OptionMapping> getOptions() {
         return slashCommandEvent.getOptions();
@@ -394,8 +422,8 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
 
     public void sendFile(InputStream inputStream, String name) {
         switch (type) {
-            case MESSAGE -> trigger.reply(inputStream, name).mentionRepliedUser(false).queue();
-            case SLASH -> slashCommandEvent.getHook().editOriginal(inputStream, name).queue();
+            case MESSAGE -> trigger.replyFiles(FileUpload.fromData(inputStream, name)).mentionRepliedUser(false).queue();
+            case SLASH -> slashCommandEvent.getHook().editOriginal(MessageEditData.fromFiles(FileUpload.fromData(inputStream, name))).queue();
         }
     }
 
@@ -408,167 +436,7 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
 
     @NotNull
     @Override
-    public GuildMessageChannelUnion getGuildChannel() {
-        return SlashCommandInteraction.super.getGuildChannel();
-    }
-
-    @NotNull
-    @Override
-    public ContextTarget getTargetType() {
-        return MessageContextInteraction.super.getTargetType();
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction deferReply(boolean ephemeral) {
-        return SlashCommandInteraction.super.deferReply(ephemeral);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction reply(@NotNull String content) {
-        return SlashCommandInteraction.super.reply(content);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyEmbeds(@NotNull Collection<? extends MessageEmbed> embeds) {
-        return SlashCommandInteraction.super.replyEmbeds(embeds);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyEmbeds(@NotNull MessageEmbed embed, @NotNull MessageEmbed... embeds) {
-        return SlashCommandInteraction.super.replyEmbeds(embed, embeds);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyFormat(@NotNull String format, @NotNull Object... args) {
-        return SlashCommandInteraction.super.replyFormat(format, args);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options) {
-        return SlashCommandInteraction.super.replyFile(data, name, options);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyFile(@NotNull File file, @NotNull AttachmentOption... options) {
-        return SlashCommandInteraction.super.replyFile(file, options);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyFile(@NotNull File file, @NotNull String name, @NotNull AttachmentOption... options) {
-        return SlashCommandInteraction.super.replyFile(file, name, options);
-    }
-
-    @NotNull
-    @Override
-    public ReplyCallbackAction replyFile(@NotNull byte[] data, @NotNull String name, @NotNull AttachmentOption... options) {
-        return SlashCommandInteraction.super.replyFile(data, name, options);
-    }
-
-    @NotNull
-    @Override
-    public String getCommandPath() {
-        return SlashCommandInteraction.super.getCommandPath();
-    }
-
-    @NotNull
-    @Override
-    public String getCommandString() {
-        return SlashCommandInteraction.super.getCommandString();
-    }
-
-    @NotNull
-    @Override
-    public String getCommandId() {
-        return SlashCommandInteraction.super.getCommandId();
-    }
-
-    @Override
-    public boolean isGuildCommand() {
-        return false;
-    }
-
-    @Override
-    public boolean isGlobalCommand() {
-        return SlashCommandInteraction.super.isGlobalCommand();
-    }
-
-    @NotNull
-    @Override
-    public List<OptionMapping> getOptionsByName(@NotNull String name) {
-        return SlashCommandInteraction.super.getOptionsByName(name);
-    }
-
-    @NotNull
-    @Override
-    public List<OptionMapping> getOptionsByType(@NotNull OptionType type) {
-        return SlashCommandInteraction.super.getOptionsByType(type);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getOption(@NotNull String name, @NotNull Function<? super OptionMapping, ? extends T> resolver) {
-        return SlashCommandInteraction.super.getOption(name, resolver);
-    }
-
-    @Override
-    public <T> T getOption(@NotNull String name, @Nullable T fallback, @NotNull Function<? super OptionMapping, ? extends T> resolver) {
-        return SlashCommandInteraction.super.getOption(name, fallback, resolver);
-    }
-
-    @Override
-    public <T> T getOption(@NotNull String name, @Nullable Supplier<? extends T> fallback, @NotNull Function<? super OptionMapping, ? extends T> resolver) {
-        return SlashCommandInteraction.super.getOption(name, fallback, resolver);
-    }
-
-    @NotNull
-    @Override
-    public InteractionType getType() {
-        return SlashCommandInteraction.super.getType();
-    }
-
-    @NotNull
-    @Override
-    public MessageChannel getMessageChannel() {
-        return SlashCommandInteraction.super.getMessageChannel();
-    }
-
-    @NotNull
-    @Override
-    public DiscordLocale getUserLocale() {
-        return slashCommandEvent.getUserLocale();
-    }
-
-    @NotNull
-    @Override
-    public DiscordLocale getGuildLocale() {
-        return slashCommandEvent.getGuildLocale();
-    }
-
-    @NotNull
-    @Override
-    public String getId() {
-        return SlashCommandInteraction.super.getId();
-    }
-
-    @NotNull
-    @Override
-    public OffsetDateTime getTimeCreated() {
-        return SlashCommandInteraction.super.getTimeCreated();
-    }
-
-    @NotNull
-    @Override
     public ModalCallbackAction replyModal(@NotNull Modal modal) {
         return null;
     }
-
-
 }
