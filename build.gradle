@@ -29,7 +29,6 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:3.0.14'
     implementation 'io.sentry:sentry-logback:6.11.0'
     implementation 'com.github.Walkyst.lavaplayer-fork:lavaplayer:custom-SNAPSHOT'
-    implementation 'com.github.TopiSenpai:LavaSrc:feature~custom-json-fields-SNAPSHOT'
     implementation 'org.json:json:20220924'
 }
 
