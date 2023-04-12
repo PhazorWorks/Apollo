@@ -12,7 +12,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import java.util.HashMap;
 import java.util.Map;
 
-import dev.gigafyde.apollo.Main;
 import net.dv8tion.jda.api.entities.Guild;
 
 public final class MusicManager {
