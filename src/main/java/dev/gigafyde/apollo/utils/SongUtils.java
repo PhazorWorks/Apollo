@@ -162,7 +162,7 @@ public class SongUtils {
                             .build()).execute();
             return Objects.requireNonNull(response.body()).byteStream();
         } catch (Exception error) {
-            log.error(error.getMessage());
+            log.error("Generating now playing: " + error.getMessage());
         }
         return null;
     }
