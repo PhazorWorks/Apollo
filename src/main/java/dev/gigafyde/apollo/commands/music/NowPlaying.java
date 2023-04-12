@@ -7,6 +7,7 @@ package dev.gigafyde.apollo.commands.music;
 
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.TrackScheduler;
 import dev.gigafyde.apollo.core.command.Command;
 import dev.gigafyde.apollo.core.command.CommandEvent;
@@ -44,8 +45,13 @@ public class NowPlaying extends Command {
             return;
         }
         try {
-            InputStream inputStream = SongUtils.generateNowPlaying(track, track.getPosition());
-            event.sendFile(inputStream, "song.png");
+            if (Main.USE_IMAGE_API) {
+                InputStream inputStream = SongUtils.generateNowPlaying(track, track.getPosition());
+                event.sendFile(inputStream, "song.png");
+            } else {
+                event.send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
+            }
+
         } catch (Exception e) {
             event.sendError("**Something went wrong trying to generate the image. " + e + "**");
             event.send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
