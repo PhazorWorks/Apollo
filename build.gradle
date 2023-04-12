@@ -3,7 +3,7 @@ import java.time.Clock
 plugins {
     id 'java'
     id 'application'
-    id 'com.google.cloud.tools.jib' version '3.2.0'
+    id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
 group 'dev.gigafyde'
@@ -36,10 +36,17 @@ jib {
     from {
         image = 'gcr.io/distroless/java17-debian11'
     }
+    to {
+        image = 'ghcr.io/phazorworks/apollo:latest'
+        auth {
+            username = "gigafyde"
+            password = "placeholder" // Obviously you replace this
+        }
+    }
 
     container {
         mainClass = 'dev.gigafyde.apollo.Main'
-        creationTime = Clock.systemUTC().instant()
+        creationTime = Clock.systemUTC().instant().toString()
     }
 }
 
