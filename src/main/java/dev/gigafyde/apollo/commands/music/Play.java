@@ -99,11 +99,10 @@ public class Play extends Command implements SongCallBack {
     private void processArgument(String arguments) {
         SongCallBackListener.addListener(this); //setup callback
         arguments = SongUtils.extractUrl(arguments);
-        // this is disabled as web server is not needed
-       // if (arguments.contains("spotify")) {
-       //     handleSpotify(scheduler, arguments, author);
-       //     return;
-       // }
+        if (arguments.contains("spotify")) {
+            handleSpotify(scheduler, arguments, author);
+            return;
+        }
         if (SongUtils.isValidURL(arguments)) {
             if (Main.PLAYLISTS_WEB_SERVER != null) {
                 if (arguments.contains(Main.PLAYLISTS_WEB_SERVER)) {
