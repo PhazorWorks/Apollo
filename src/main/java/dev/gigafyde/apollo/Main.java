@@ -37,9 +37,6 @@ public class Main {
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
     private static final Logger log = LoggerFactory.getLogger("Apollo");
     public static String SPOTIFY_WEB_SERVER = System.getenv("SPOTIFY_WEB_SERVER");
-    public static String SPOTIFY_CLIENT_ID = System.getenv("SPOTIFY_CLIENT_ID");
-    public static String SPOTIFY_CLIENT_SECRET = System.getenv("SPOTIFY_CLIENT_SECRET");
-    public static String DEEZER_KEY = System.getenv("DEEZER_KEY");
     public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
     public static String PLAYLISTS_WEB_SERVER = System.getenv("PLAYLISTS_WEB_SERVER");
     public static ShardManager SHARD_MANAGER;
