@@ -26,12 +26,8 @@ public final class MusicManager {
     public MusicManager() {
 
         this.musicManagers = new HashMap<>();
-        if (Main.SPOTIFY_CLIENT_ID != null) {
-            playerManager.registerSourceManager(new SpotifySourceManager(null, Main.SPOTIFY_CLIENT_ID, Main.SPOTIFY_CLIENT_SECRET, "US", playerManager));
-        }
-        if (Main.DEEZER_KEY != null) {
-        playerManager.registerSourceManager(new DeezerAudioSourceManager(Main.DEEZER_KEY));
-        }
+        if (Main.SPOTIFY_CLIENT_ID != null) playerManager.registerSourceManager(new SpotifySourceManager(null, Main.SPOTIFY_CLIENT_ID, Main.SPOTIFY_CLIENT_SECRET, "US", playerManager));
+        if (Main.DEEZER_KEY != null) playerManager.registerSourceManager(new DeezerAudioSourceManager(Main.DEEZER_KEY));
         playerManager.registerSourceManager(new AppleMusicSourceManager(null, null, "US", playerManager));
 
         AudioSourceManagers.registerRemoteSources(playerManager);
