@@ -31,7 +31,6 @@ public class CommandList extends CommandRegistry {
         registry.addCommand(new Disconnect());
         registry.addCommand(new Volume());
         registry.addCommand(new Grab());
-        registry.addCommand(new Link());
         registry.addCommand(new NowPlaying());
         registry.addCommand(new Seek());
         registry.addCommand(new Rewind());

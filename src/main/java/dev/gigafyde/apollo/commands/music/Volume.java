@@ -20,7 +20,7 @@ public class Volume extends Command {
 
     public Volume() {
         this.name = "volume";
-        this.triggers = new String[]{"volume", "vol"};
+        this.triggers = new String[]{"volume", "vol", "v"};
         this.guildOnly = true;
     }
 
