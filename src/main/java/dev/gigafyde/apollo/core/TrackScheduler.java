@@ -10,13 +10,19 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-
-import dev.gigafyde.apollo.utils.*;
-import java.util.*;
-import java.util.concurrent.*;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.unions.*;
+import dev.gigafyde.apollo.Main;
+import dev.gigafyde.apollo.utils.SongUtils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
@@ -28,6 +34,7 @@ public class TrackScheduler extends AudioEventAdapter {
     private boolean repeat = false;
     private boolean sendPlaying = true;
     private AudioPlayerManager audioPlayerManager;
+
     /**
      * @param player The audio player this scheduler uses
      */
@@ -36,6 +43,7 @@ public class TrackScheduler extends AudioEventAdapter {
         this.audioPlayerManager = manager;
         this.queue = new LinkedBlockingQueue<>();
     }
+
     public AudioPlayerManager getManager() {
         return audioPlayerManager;
     }
@@ -116,7 +124,6 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
 
-
     public boolean addTrack(AudioTrack track, String author) {
         track.setUserData(author);
         if (queue.contains(track))
@@ -175,8 +182,12 @@ public class TrackScheduler extends AudioEventAdapter {
             }
             if (player.getPlayingTrack() == track)
                 try {
-                    boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "playing.png"))
-                            .queue(msg -> nowPlaying = msg);
+                    if (Main.USE_IMAGE_API) {
+                        boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateNowPlaying(track, 1)), "playing.png"))
+                                .queue(msg -> nowPlaying = msg);
+                    } else {
+                        boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player)).queue(msg -> nowPlaying = msg);
+                    }
                 } catch (Exception e) {
                     boundChannel.sendMessage("**Something went wrong trying to generate the image. " + e + "**").queue();
                     boundChannel.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(player)).queue(msg -> nowPlaying = msg);
