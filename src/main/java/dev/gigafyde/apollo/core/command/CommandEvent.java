@@ -48,8 +48,6 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
         this.trigger = trigger;
         if (commandInteraction != null) {
             this.commandInteraction = commandInteraction;
-            commandInteraction.deferReply().queue();
-
         }
     }
 

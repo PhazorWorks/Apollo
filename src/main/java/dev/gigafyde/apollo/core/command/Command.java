@@ -23,20 +23,8 @@ public abstract class Command {
     public final void run(CommandEvent event) {
         try {
             if (guildOnly && !event.isFromGuild()) {
-                switch (event.getCommandType()) {
-                    case MESSAGE -> {
-                        event.getMessage().reply(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-                        return;
-                    }
-                    case SLASH -> {
-                        event.getHook().editOriginal(Emoji.ERROR + " **This command cannot be used in Direct Messages.**").queue();
-                        return;
-                    }
-                    case USER -> {
-                        event.deferReply().complete().editOriginal("I have no idea how you managed to trigger this in a DM, but that ain't going to work.").queue();
-                        return;
-                    }
-                }
+                event.sendMessage(Emoji.ERROR + " **This command cannot be used in Direct Messages.**");
+                return;
             }
             if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             execute(event);

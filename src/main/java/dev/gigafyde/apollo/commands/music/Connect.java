@@ -28,13 +28,7 @@ public class Connect extends Command {
 
     protected void execute(CommandEvent event) {
         this.event = event;
-        switch (event.getCommandType()) {
-            case MESSAGE -> connect();
-            case SLASH -> {
-                event.deferReply().queue();
-                connect();
-            }
-        }
+        connect();
     }
 
     protected void connect() {

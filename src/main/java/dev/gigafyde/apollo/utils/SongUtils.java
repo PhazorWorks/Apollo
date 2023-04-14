@@ -45,9 +45,8 @@ public class SongUtils {
     }
 
     public static boolean passedVoiceChannelChecks(CommandEvent event) {
+        if (event.getCommandInteraction() == null) {
 
-        switch (event.getCommandType()) {
-            case MESSAGE -> {
                 AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.getMessage().reply("**You have to join a voice channel before you can use this command!**").mentionRepliedUser(true).queue();
@@ -64,25 +63,25 @@ public class SongUtils {
                 }
                 return true;
             }
-            case SLASH -> {
-                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
-                InteractionHook hook = event.getHook();
-                if (vc == null) {
-                    hook.editOriginal("**You have to join a voice channel before you can use this command!**").queue();
-                    return false;
-                }
-                EnumSet<Permission> voicePermissions = Objects.requireNonNull(event.getGuild()).getSelfMember().getPermissions(vc);
-                if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
-                    hook.editOriginal("**I do not have permission to `view` or `connect` to your voice channel!**").queue();
-                    return false;
-                }
-                if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
-                    hook.editOriginal("**I do not have permission to `speak` in your voice channel!**").queue();
-                    return false;
-                }
-                return true;
-            }
-            case USER -> {
+//            case SLASH -> {
+//                AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+//                InteractionHook hook = event.getHook();
+//                if (vc == null) {
+//                    hook.editOriginal("**You have to join a voice channel before you can use this command!**").queue();
+//                    return false;
+//                }
+//                EnumSet<Permission> voicePermissions = Objects.requireNonNull(event.getGuild()).getSelfMember().getPermissions(vc);
+//                if (!voicePermissions.contains(Permission.VIEW_CHANNEL)) {
+//                    hook.editOriginal("**I do not have permission to `view` or `connect` to your voice channel!**").queue();
+//                    return false;
+//                }
+//                if (!voicePermissions.contains(Permission.VOICE_SPEAK)) {
+//                    hook.editOriginal("**I do not have permission to `speak` in your voice channel!**").queue();
+//                    return false;
+//                }
+//                return true;
+//            }
+            else {
                 AudioChannel vc = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
                 if (vc == null) {
                     event.reply("**You have to join a voice channel before you can use this command!**").setEphemeral(true).queue();
@@ -99,8 +98,7 @@ public class SongUtils {
                 }
                 return true;
             }
-        }
-        return true;
+
     }
 
     public static String getStrippedSongUrl(String url) {
