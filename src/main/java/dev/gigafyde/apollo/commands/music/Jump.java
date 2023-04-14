@@ -61,10 +61,10 @@ public class Jump extends Command {
         scheduler.skip();
         if (scheduler.isRepeating()) {
             scheduler.setRepeat(false);
-            event.send("Loop was turned off due to manual jump.");
+            event.sendMessage("Loop was turned off due to manual jump.");
         }
         switch (event.getCommandType()) {
-            case MESSAGE, SLASH -> event.send(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title));
+            case MESSAGE, SLASH -> event.sendMessage(String.format("Jumped to song `%s`.", scheduler.getPlayer().getPlayingTrack().getInfo().title));
         }
     }
 

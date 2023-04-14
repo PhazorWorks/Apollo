@@ -41,9 +41,9 @@ public class Announce extends Command {
             }
                 if (scheduler.isSending()) {
                     scheduler.setSendPlaying(false);
-                    event.send("Announcing of **tracks** is now **disabled**");
+                    event.sendMessage("Announcing of **tracks** is now **disabled**");
                 } else {
-                    event.send("Announcing of **tracks** is now **enabled**");
+                    event.sendMessage("Announcing of **tracks** is now **enabled**");
                     scheduler.setSendPlaying(true);
                 }
         } catch (Exception e) {

@@ -47,7 +47,7 @@ public class PlayBack extends Command {
         AudioTrack previousSong = scheduler.getPreviousTrack();
         if (previousSong != null) {
             scheduler.addTopSong(previousSong);
-            event.send(String.format("Added previous song `%s` to the queue!", previousSong.getInfo().title));
+            event.sendMessage(String.format("Added previous song `%s` to the queue!", previousSong.getInfo().title));
         } else {
             event.sendError("**There is no previous song to play!**");
         }

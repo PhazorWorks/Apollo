@@ -44,6 +44,6 @@ public class Pause extends Command {
             return;
         }
         scheduler.getPlayer().setPaused(true);
-        event.send("Paused at: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
+        event.sendMessage("Paused at: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
     }
 }

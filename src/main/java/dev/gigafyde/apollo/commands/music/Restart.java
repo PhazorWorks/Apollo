@@ -47,6 +47,6 @@ public class Restart extends Command {
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
         player.getPlayingTrack().setPosition(0L);
-        event.send("Replaying song " + player.getPlayingTrack().getInfo().title + ".");
+        event.sendMessage("Replaying song " + player.getPlayingTrack().getInfo().title + ".");
     }
 }

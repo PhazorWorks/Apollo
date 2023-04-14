@@ -45,6 +45,6 @@ public class Resume extends Command {
         }
         if (!SongUtils.userConnectedToBotVC(event)) return;
         scheduler.getPlayer().setPaused(false);
-        event.send("Resumed from: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
+        event.sendMessage("Resumed from: `" + SongUtils.getSongProgress(scheduler.getPlayer()) + "`");
     }
 }

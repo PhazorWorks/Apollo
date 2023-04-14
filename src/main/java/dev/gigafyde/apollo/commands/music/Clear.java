@@ -47,7 +47,7 @@ public class Clear extends Command {
         if (SongUtils.userConnectedToBotVC(event)) {
             scheduler.clear();
             scheduler.skip();
-            event.send("The queue has been cleared.");
+            event.sendMessage("The queue has been cleared.");
         }
     }
 }

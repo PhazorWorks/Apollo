@@ -36,7 +36,7 @@ public class Queue extends Command {
                     return;
                 }
                 if (scheduler.getQueue().isEmpty()) {
-                    event.send("**Queue is currently empty**");
+                    event.sendMessage("**Queue is currently empty**");
                     return;
                 }
                 queue();

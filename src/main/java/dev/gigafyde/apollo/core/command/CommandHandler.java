@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import org.slf4j.Logger;
@@ -58,7 +59,8 @@ public class CommandHandler {
         Command command = client.getCommandRegistry().getCommand(parts[0].toLowerCase());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE, trigger, parts.length == 1 ? "" : parts[1], null, null);
+                CommandEvent cmd =
+                        new CommandEvent(command, client, trigger, parts.length == 1 ? "" : parts[1], null);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -68,11 +70,11 @@ public class CommandHandler {
         }
     }
 
-    public void handleSlashCommand(SlashCommandInteraction slashCommandEvent) {
-        Command command = client.getCommandRegistry().getCommand(slashCommandEvent.getName());
+    public void handleCommandInteraction(CommandInteraction commandInteraction) {
+        Command command = client.getCommandRegistry().getCommand(commandInteraction.getName());
         if (command != null) {
             POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.SLASH, null, null, slashCommandEvent, null);
+                CommandEvent cmd = new CommandEvent(command, client, null, null, commandInteraction);
                 try {
                     command.run(cmd);
                 } catch (Throwable t) {
@@ -83,18 +85,4 @@ public class CommandHandler {
         }
     }
 
-    public void handleMessageContextCommand(MessageContextInteraction event) {
-        Command command = client.getCommandRegistry().getCommand(event.getName());
-        if (command != null) {
-            POOL.execute(() -> {
-                CommandEvent cmd = new CommandEvent(command, client, net.dv8tion.jda.api.interactions.commands.Command.Type.USER, null, null, null, event);
-                try {
-                    command.run(cmd);
-                } catch (Throwable t) {
-                    log.error("MESSAGE USER COMMAND FAILED", t);
-                }
-
-            });
-        }
-    }
 }

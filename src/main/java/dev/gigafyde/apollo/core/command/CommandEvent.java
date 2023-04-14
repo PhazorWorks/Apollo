@@ -5,58 +5,56 @@ package dev.gigafyde.apollo.core.command;
  https://github.com/GigaFyde
  */
 
-import dev.gigafyde.apollo.core.*;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.function.*;
-import javax.annotation.*;
-import net.dv8tion.jda.api.*;
+import dev.gigafyde.apollo.core.Client;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.channel.unions.*;
-import net.dv8tion.jda.api.interactions.*;
-import net.dv8tion.jda.api.interactions.commands.*;
-import net.dv8tion.jda.api.interactions.commands.context.*;
-import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.InteractionType;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import net.dv8tion.jda.api.requests.restaction.interactions.*;
-import net.dv8tion.jda.api.utils.*;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.*;
+
+import javax.annotation.Nonnull;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
 
 
 public class CommandEvent implements SlashCommandInteraction, MessageContextInteraction {
     private final Command command;
     private final Client client;
-    private final net.dv8tion.jda.api.interactions.commands.Command.Type type;
     private Message trigger = null;
     private String argument = "";
-    private SlashCommandInteraction slashCommandEvent;
-    private MessageContextInteraction messageContextCommandEvent;
+    private CommandInteraction commandInteraction = null;
 
-    public CommandEvent(Command command, Client client, net.dv8tion.jda.api.interactions.commands.Command.Type type, Message trigger, String argument, SlashCommandInteraction slashCommandEvent, MessageContextInteraction messageCommandEvent) {
-        this.type = type;
+    public CommandEvent(Command command, Client client, Message trigger, String argument, CommandInteraction commandInteraction) {
         this.command = command;
         this.client = client;
-        switch (type) {
-            case MESSAGE -> {
-                this.argument = argument;
-                this.trigger = trigger;
-            }
-            case SLASH -> {
-                this.slashCommandEvent = slashCommandEvent;
-                slashCommandEvent.deferReply().queue();
-            }
-            case USER -> this.messageContextCommandEvent = messageCommandEvent;
+        this.argument = argument;
+        this.trigger = trigger;
+        if (commandInteraction != null) {
+            this.commandInteraction = commandInteraction;
+            commandInteraction.deferReply().queue();
+
         }
     }
 
-    public net.dv8tion.jda.api.interactions.commands.Command.Type getCommandType() {
-        return type;
+    public CommandInteraction getCommandInteraction() {
+        return commandInteraction;
     }
 
     public Client getClient() {
@@ -64,80 +62,38 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     }
 
     public Message getMessage() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE) return trigger;
-        return null;
+        return trigger;
     }
 
     public User getAuthor() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getAuthor();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getUser();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getUser();
-            }
-        }
-        return null;
+        if (commandInteraction != null) return commandInteraction.getUser();
+        return trigger.getAuthor();
     }
 
     public Member getMember() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getMember();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getMember();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getMember();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return commandInteraction.getMember();
+        return trigger.getMember();
     }
 
     public SelfUser getSelfUser() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getJDA().getSelfUser();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getJDA().getSelfUser();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getJDA().getSelfUser();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return commandInteraction.getJDA().getSelfUser();
+        return trigger.getJDA().getSelfUser();
     }
 
     public Member getSelfMember() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getGuild().getSelfMember();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getGuild().getSelfMember();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getGuild().getSelfMember();
-            }
-        }
-        return null;
+        if (commandInteraction != null) commandInteraction.getGuild().getSelfMember();
+        return trigger.getGuild().getSelfMember();
     }
 
     public String getArgument() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE) {
-            return argument;
-        }
-        return "";
+        return argument;
     }
 
     @Override
     public int getTypeRaw() {
-        return 0;
+        return commandInteraction.getTypeRaw();
     }
 
     @NotNull
@@ -147,63 +103,30 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     }
 
     public Guild getGuild() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getGuild();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getGuild();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getGuild();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return commandInteraction.getGuild();
+        return trigger.getGuild();
     }
 
 
-    public @NotNull JDA getJDA() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getJDA();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getJDA();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getJDA();
-            }
-        }
-        return null;
+    @NotNull
+    public JDA getJDA() {
+        if (commandInteraction != null)
+            return commandInteraction.getJDA();
+        return trigger.getJDA();
     }
-
-//    public @NotNull TextChannel getTextChannel() {
-//        switch (type) {
-//            case MESSAGE -> {
-//                return trigger.getChannel();
-//            }
-//            case SLASH -> {
-//                return slashCommandEvent.getTextChannel();
-//            }
-//            case USER -> {
-//                return messageContextCommandEvent.getTextChannel();
-//            }
-//        }
-//        return null;
-//    }
 
     public @NotNull ReplyCallbackAction reply(@NotNull Message content) {
-        switch (type) {
-            case SLASH -> {
-                return slashCommandEvent.reply(MessageCreateData.fromMessage(content));
-            }
-            case USER -> {
-                return messageContextCommandEvent.reply(MessageCreateData.fromMessage(content));
-            }
-        }
+        if (commandInteraction != null)
+            return commandInteraction.reply(MessageCreateData.fromMessage(content));
         return null;
     }
 
+    @Override
+    public net.dv8tion.jda.api.interactions.commands.Command.Type getCommandType() {
+        if (commandInteraction == null) return net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE;
+        return commandInteraction.getCommandType();
+    }
 
     @NotNull
     @Override
@@ -214,18 +137,9 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @NotNull
     @Override
     public MessageChannelUnion getChannel() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getChannel();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getChannel();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getChannel();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return (MessageChannelUnion) commandInteraction.getChannel();
+        return trigger.getChannel();
     }
 
     @NotNull
@@ -243,14 +157,8 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @NotNull
     @Override
     public InteractionHook getHook() {
-        switch (type) {
-            case SLASH -> {
-                return slashCommandEvent.getHook();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getHook();
-            }
-        }
+        if (commandInteraction != null)
+            return commandInteraction.getHook();
         return null;
     }
 
@@ -262,175 +170,110 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @NotNull
     @Override
     public ReplyCallbackAction deferReply() {
-        switch (type) {
-            case SLASH -> {
-                return slashCommandEvent.deferReply();
-            }
-            case USER -> {
-                return messageContextCommandEvent.deferReply();
-            }
-        }
+        if (commandInteraction != null)
+                return commandInteraction.deferReply();
         return null;
     }
 
 
     @Override
     public long getCommandIdLong() {
-        return 0;
+        return commandInteraction.getCommandIdLong();
     }
 
     @Override
     public boolean isGuildCommand() {
-        return false;
+        return commandInteraction.isGuildCommand();
     }
 
     @NotNull
     public ChannelType getChannelType() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getChannelType();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getChannelType();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getChannelType();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return commandInteraction.getChannelType();
+
+        return trigger.getChannelType();
     }
 
     @NotNull
     @Override
     public User getUser() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getAuthor();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getUser();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getUser();
-            }
-        }
-        return null;
+        if (commandInteraction != null)
+            return commandInteraction.getUser();
+        return trigger.getAuthor();
     }
 
     public List<Message.Attachment> getAttachments() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE) {
-            return trigger.getAttachments();
-        }
-        return null;
+        return trigger.getAttachments();
     }
 
     public boolean isFromGuild() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.isFromGuild();
-            }
-            case SLASH -> {
-                return slashCommandEvent.isFromGuild();
-            }
-            case USER -> {
-                return messageContextCommandEvent.isFromGuild();
-            }
-        }
-        return false;
-    }
-
-    @NotNull
-    @Override
-    public Message getTarget() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.USER) {
-            return messageContextCommandEvent.getTarget();
-        }
-        return null;
-    }
-
-    //@Override
-    public long getTargetIdLong() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.USER) {
-            return messageContextCommandEvent.getTarget().getIdLong();
-        }
-        return 0;
+        if (commandInteraction != null)
+            return commandInteraction.isFromGuild();
+        return trigger.isFromGuild();
     }
 
     @Nullable
     @Override
     public String getSubcommandName() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.SLASH) {
-            return slashCommandEvent.getSubcommandName();
-        }
-        return null;
+        return commandInteraction.getSubcommandName();
     }
 
     @Nullable
     @Override
     public String getSubcommandGroup() {
-        if (type == net.dv8tion.jda.api.interactions.commands.Command.Type.SLASH) {
-            return slashCommandEvent.getSubcommandGroup();
-        }
-        return null;
+        return commandInteraction.getSubcommandGroup();
     }
 
     @NotNull
     @Override
     public String getFullCommandName() {
-        return SlashCommandInteraction.super.getFullCommandName();
+        return commandInteraction.getFullCommandName();
     }
 
     @Override
     public @NotNull List<OptionMapping> getOptions() {
-        return slashCommandEvent.getOptions();
+        return commandInteraction.getOptions();
     }
 
     public OptionMapping getOption(@Nonnull String name) {
-        return slashCommandEvent.getOption(name);
+        return commandInteraction.getOption(name);
     }
 
 
     @Override
     public long getIdLong() {
-        switch (type) {
-            case MESSAGE -> {
-                return trigger.getIdLong();
-            }
-            case SLASH -> {
-                return slashCommandEvent.getIdLong();
-            }
-            case USER -> {
-                return messageContextCommandEvent.getIdLong();
-            }
-        }
-        return 0;
+        return commandInteraction.getIdLong();
     }
 
     public void sendError(String error) {
-        switch (type) {
-            case MESSAGE -> trigger.reply(error).mentionRepliedUser(true).queue();
-            case SLASH -> slashCommandEvent.getHook().editOriginal(error).queue();
+        if (commandInteraction != null)
+            commandInteraction.reply(error).queue();
+        else {
+            trigger.reply(error).mentionRepliedUser(true).queue();
         }
     }
 
-    public void send(String content) {
-        switch (type) {
-            case MESSAGE -> trigger.reply(content).mentionRepliedUser(false).queue();
-            case SLASH -> slashCommandEvent.getHook().editOriginal(content).queue();
+    public void sendMessage(String content) {
+        if (commandInteraction != null)
+            commandInteraction.getHook().editOriginal(content).queue();
+        else {
+            trigger.reply(content).mentionRepliedUser(false).queue();
         }
     }
 
     public void sendFile(InputStream inputStream, String name) {
-        switch (type) {
-            case MESSAGE -> trigger.replyFiles(FileUpload.fromData(inputStream, name)).mentionRepliedUser(false).queue();
-            case SLASH -> slashCommandEvent.getHook().editOriginal(MessageEditData.fromFiles(FileUpload.fromData(inputStream, name))).queue();
+        if (commandInteraction != null)
+            commandInteraction.getHook().editOriginal(MessageEditData.fromFiles(FileUpload.fromData(inputStream, name))).queue();
+        else {
+            trigger.replyFiles(FileUpload.fromData(inputStream, name)).mentionRepliedUser(false).queue();
         }
     }
 
     public void sendEmbed(EmbedBuilder embed) {
-        switch (type) {
-            case MESSAGE -> trigger.replyEmbeds(embed.build()).mentionRepliedUser(false).queue();
-            case SLASH -> slashCommandEvent.getHook().editOriginalEmbeds(embed.build()).queue();
+        if (commandInteraction != null)
+            commandInteraction.getHook().editOriginalEmbeds(embed.build()).queue();
+        else {
+            trigger.replyEmbeds(embed.build()).mentionRepliedUser(false).queue();
         }
     }
 
@@ -438,5 +281,11 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @Override
     public ModalCallbackAction replyModal(@NotNull Modal modal) {
         return null;
+    }
+
+    @NotNull
+    @Override
+    public Message getTarget() {
+        return commandInteraction.getHook().retrieveOriginal().complete();
     }
 }

@@ -54,7 +54,7 @@ public class Playlists extends Command {
                 JSONArray tracks = playlist.getJSONArray("tracks");
                 String name = playlist.getString("name");
                 scheduler.addTracks("Playlist", decodeTracks(tracks));
-                event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
+                event.sendMessage(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
@@ -226,7 +226,7 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "create" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
-                event.send(String.format("Created playlist `%s` with `%s` tracks.", name, convertedTracks.length()));
+                event.sendMessage(String.format("Created playlist `%s` with `%s` tracks.", name, convertedTracks.length()));
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
@@ -254,7 +254,7 @@ public class Playlists extends Command {
                 JSONObject playlist = new JSONObject(Objects.requireNonNull(response.body()).string());
                 JSONArray tracks = playlist.getJSONArray("tracks");
                 scheduler.addTracks("Playlist", decodeTracks(tracks));
-                event.send(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
+                event.sendMessage(String.format("Loaded playlist `%s` with `%s` tracks.", name, tracks.length()));
                 // if no playlists exist / an error happened
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
@@ -276,7 +276,7 @@ public class Playlists extends Command {
             if (response.isSuccessful()) {
                 JSONObject playlist = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String url = playlist.getString("_id");
-                event.send(Main.PLAYLISTS_WEB_SERVER + "share/" + url);
+                event.sendMessage(Main.PLAYLISTS_WEB_SERVER + "share/" + url);
                 // if no playlists exist / an error happened
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
@@ -317,7 +317,7 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "update" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
-                event.send(String.format("Updated playlist `%s` now containing `%s` tracks.", name, convertedTracks.length()));
+                event.sendMessage(String.format("Updated playlist `%s` now containing `%s` tracks.", name, convertedTracks.length()));
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
@@ -354,7 +354,7 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "add" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
-                event.send(String.format("Added song to playlist `%s`.", name));
+                event.sendMessage(String.format("Added song to playlist `%s`.", name));
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");
@@ -380,7 +380,7 @@ public class Playlists extends Command {
                     .url(Main.PLAYLISTS_WEB_SERVER + "delete" + "?key=" + Main.PLAYLISTS_API_KEY)
                     .post(body).build()).execute();
             if (response.isSuccessful()) {
-                event.send(String.format("Deleted playlist `%s`", name));
+                event.sendMessage(String.format("Deleted playlist `%s`", name));
             } else {
                 JSONObject error = new JSONObject(Objects.requireNonNull(response.body()).string());
                 String message = error.getString("message");

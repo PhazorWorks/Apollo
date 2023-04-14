@@ -60,7 +60,7 @@ public class Remove extends Command {
                 event.sendError(Constants.numberBelowZero);
                 return;
             }
-            event.send(Emoji.SUCCESS + " Removed `" + scheduler.getTrackTitleByPosition(numberToRemove - 1) + "` from the queue.");
+            event.sendMessage(Emoji.SUCCESS + " Removed `" + scheduler.getTrackTitleByPosition(numberToRemove - 1) + "` from the queue.");
             scheduler.removeTrack(numberToRemove - 1);
         } catch (NumberFormatException exception) {
             event.sendError(Constants.invalidInt);

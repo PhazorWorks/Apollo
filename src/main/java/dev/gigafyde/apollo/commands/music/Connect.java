@@ -50,7 +50,7 @@ public class Connect extends Command {
         }
         try {
             event.getGuild().getAudioManager().openAudioConnection(vc);
-            event.send("Connected to`" + vc.getName() + "`.");
+            event.sendMessage("Connected to`" + vc.getName() + "`.");
         } catch (InsufficientPermissionException ignored) {
             event.sendError(Constants.unableToJoinVC);
         }

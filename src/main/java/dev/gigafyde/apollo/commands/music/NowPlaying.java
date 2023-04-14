@@ -49,12 +49,12 @@ public class NowPlaying extends Command {
                 InputStream inputStream = SongUtils.generateNowPlaying(track, track.getPosition());
                 event.sendFile(inputStream, "song.png");
             } else {
-                event.send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
+                event.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
             }
 
         } catch (Exception e) {
             event.sendError("**Something went wrong trying to generate the image. " + e + "**");
-            event.send(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
+            event.sendMessage(track.getInfo().author + " - " + track.getInfo().title + " - " + SongUtils.getSongProgress(scheduler.getPlayer()));
         }
     }
 }

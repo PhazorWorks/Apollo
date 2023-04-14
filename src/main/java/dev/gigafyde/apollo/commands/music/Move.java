@@ -68,7 +68,7 @@ public class Move extends Command {
         }
         scheduler.moveTrack(pos1 - 1, pos2 - 1);
         switch (event.getCommandType()) {
-            case MESSAGE, SLASH -> event.send(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getTrackTitleByPosition(pos2 - 1), pos1, pos2));
+            case MESSAGE, SLASH -> event.sendMessage(String.format("Moved **%s** from position `%d` to `%d`.", scheduler.getTrackTitleByPosition(pos2 - 1), pos1, pos2));
         }
     }
 

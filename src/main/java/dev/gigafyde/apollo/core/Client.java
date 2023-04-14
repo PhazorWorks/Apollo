@@ -11,10 +11,12 @@ import dev.gigafyde.apollo.core.command.CommandHandler;
 import dev.gigafyde.apollo.core.command.CommandRegistry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import org.jetbrains.annotations.NotNull;
 
 public class Client extends ListenerAdapter {
@@ -31,15 +33,9 @@ public class Client extends ListenerAdapter {
         handler.handle(event);
     }
 
-
     @Override
-    public void onSlashCommandInteraction (@NotNull SlashCommandInteractionEvent event) {
-        handler.handleSlashCommand(event);
-    }
-
-    @Override
-    public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-        handler.handleMessageContextCommand(event);
+    public void onGenericCommandInteraction(@NotNull GenericCommandInteractionEvent event) {
+        handler.handleCommandInteraction(event);
     }
 
     public boolean isOwner(User user) {

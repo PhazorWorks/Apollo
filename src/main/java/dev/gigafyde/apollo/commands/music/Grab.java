@@ -59,7 +59,7 @@ public class Grab extends Command {
                             author.openPrivateChannel().complete().sendMessage("Here is a copy of the currently playing track\n" + uri).complete();
                             event.getMessage().addReaction(Emoji.fromUnicode(String.valueOf(dev.gigafyde.apollo.utils.Emoji.SUCCESS))).queue();
                         }
-                        case SLASH -> event.send("Here is a copy of the currently playing track\n" + uri);
+                        case SLASH -> event.sendMessage("Here is a copy of the currently playing track\n" + uri);
                     }
                 } catch (Exception e) {
                     event.sendError("Hi there, I tried to send the link to you privately, but it seems that failed, so I'm sending it here instead.\n" + uri + "\n" + e);

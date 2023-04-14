@@ -67,14 +67,14 @@ public class Seek extends Command {
             if (event.getArgument().startsWith("-")) {
                 long amountRewound = -amountToSeek;
                 if (amountToSeek < 61000)
-                    event.send(String.format("Rewound %d seconds", TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound))));
+                    event.sendMessage(String.format("Rewound %d seconds", TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound))));
                 else
-                    event.send(String.format("Rewound %d min, %d seconds", TimeUnit.MILLISECONDS.toMinutes(amountRewound), TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound))));
+                    event.sendMessage(String.format("Rewound %d min, %d seconds", TimeUnit.MILLISECONDS.toMinutes(amountRewound), TimeUnit.MILLISECONDS.toSeconds(amountRewound) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountRewound))));
             } else {
                 if (amountToSeek < 61000)
-                    event.send(String.format("%d seconds skipped", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
+                    event.sendMessage(String.format("%d seconds skipped", TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
                 else
-                    event.send(String.format("%d min, %d seconds skipped", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
+                    event.sendMessage(String.format("%d min, %d seconds skipped", TimeUnit.MILLISECONDS.toMinutes(amountToSeek), TimeUnit.MILLISECONDS.toSeconds(amountToSeek) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(amountToSeek))));
             }
         } catch (NumberFormatException exception) {
             event.sendError(Constants.invalidInt);

@@ -41,9 +41,11 @@ public abstract class Command {
             if (ownerOnly && !event.getClient().isOwner(event.getAuthor())) return;
             execute(event);
         } catch (Exception e) {
-            switch (event.getCommandType()) {
-                case MESSAGE -> event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
-                case SLASH, USER -> event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+            if (event.getCommandType() != null) {
+                event.getHook().editOriginal("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+            } else {
+                event.getChannel().sendMessage("**Apologies, something went wrong internally**\n Error encountered was: " + e.getMessage()).queue();
+
             }
             log.warn("Unexpected exception!", e);
         }

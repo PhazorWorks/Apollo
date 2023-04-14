@@ -36,10 +36,10 @@ public class Loop extends Command {
 
             if (!SongUtils.userConnectedToBotVC(event)) return;
             if (!scheduler.isRepeating()) {
-                event.send("Loop is now enabled for the current track.");
+                event.sendMessage("Loop is now enabled for the current track.");
                 scheduler.setRepeat(true);
             } else {
-                event.send("Loop is now disabled.");
+                event.sendMessage("Loop is now disabled.");
                 scheduler.setRepeat(false);
             }
         } catch (Exception e) {
