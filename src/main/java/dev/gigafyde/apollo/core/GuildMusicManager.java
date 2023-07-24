@@ -2,6 +2,7 @@ package dev.gigafyde.apollo.core;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import dev.gigafyde.apollo.Main;
 import dev.gigafyde.apollo.core.handlers.AudioPlayerSendHandler;
 
 public class GuildMusicManager {

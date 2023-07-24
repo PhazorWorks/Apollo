@@ -40,9 +40,11 @@ public class Main {
     public static String LYRICS_WEB_SERVER = System.getenv("LYRICS_WEB_SERVER");
     public static String PLAYLISTS_WEB_SERVER = System.getenv("PLAYLISTS_WEB_SERVER");
     public static ShardManager SHARD_MANAGER;
+    public static int DEFAULT_VOLUME = 100;
 
     public static void main(String[] args) throws LoginException {
         SHARDS_TOTAL = System.getenv("SHARDS_TOTAL") != null ?  Integer.parseInt(System.getenv("SHARDS_TOTAL")) : 1;
+        DEFAULT_VOLUME = System.getenv("DEFAULT_VOLUME") != null ?  Integer.parseInt(System.getenv("DEFAULT_VOLUME")) : 100;
         if (!SongUtils.isValidURL(SPOTIFY_WEB_SERVER) || SPOTIFY_WEB_SERVER == null) {
             log.warn("SPOTIFY_WEB_SERVER was not set, Spotify support will not be available!");
             SPOTIFY_WEB_SERVER = null;

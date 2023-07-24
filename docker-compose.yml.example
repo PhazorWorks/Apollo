@@ -8,7 +8,7 @@ services:
       - BOT_PREFIX=
       - BOT_OWNER_ID=
       - BOT_TOKEN=-
-      - SHARDS_TOTAL=1
+      - DEFAULT_VOLUME=100
       - USE_IMAGE_API=TRUE
       - IMAGE_API_SERVER=
       - SPOTIFY_WEB_SERVER=
