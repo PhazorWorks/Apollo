@@ -8,16 +8,10 @@ services:
       - BOT_PREFIX=
       - BOT_OWNER_ID=
       - BOT_TOKEN=-
-      - LAVALINK_URL=
-      - LAVALINK_PASS=
       - SHARDS_TOTAL=1
       - USE_IMAGE_API=TRUE
       - IMAGE_API_SERVER=
       - SPOTIFY_WEB_SERVER=
-      - LYRICS_WEB_SERVER=
-      - LYRICS_API_KEY=
-      - PLAYLISTS_WEB_SERVER=
-      - PLAYLISTS_API_KEY=
     restart: always
   imagegen:
     image: ghcr.io/phazorworks/image-gen:dev
@@ -34,9 +28,4 @@ services:
       - spotify_dev_private=
       - port=8080
       - rotating_keys=true
-    restart: always
-  lyricsapi:
-    image: gigafyde/apollo-lyrics
-    ports:
-      - 2336:8080
     restart: always

@@ -3,7 +3,7 @@ import java.time.Clock
 plugins {
     id 'java'
     id 'application'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'dev.gigafyde'
@@ -29,25 +29,7 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:3.0.14'
     implementation 'io.sentry:sentry-logback:6.11.0'
     implementation 'com.github.Walkyst.lavaplayer-fork:lavaplayer:custom-SNAPSHOT'
-    implementation 'org.json:json:20220924'
-}
-
-jib {
-    from {
-        image = 'gcr.io/distroless/java17-debian11'
-    }
-    to {
-        image = 'ghcr.io/phazorworks/apollo:latest'
-        auth {
-            username = "gigafyde"
-            password = "placeholder" // Obviously you replace this
-        }
-    }
-
-    container {
-        mainClass = 'dev.gigafyde.apollo.Main'
-        creationTime = Clock.systemUTC().instant().toString()
-    }
+    implementation 'org.json:json:20230227'
 }
 
 compileJava {
@@ -59,4 +41,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-Xlint:unchecked'
     options.deprecation = true
+}
+shadowJar {
+    archiveBaseName.set('apollo')
 }
