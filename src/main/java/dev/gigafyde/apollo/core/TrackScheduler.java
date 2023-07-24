@@ -40,6 +40,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     public TrackScheduler(AudioPlayer player, AudioPlayerManager manager) {
         this.player = player;
+        this.player.setVolume(Main.DEFAULT_VOLUME);
         this.audioPlayerManager = manager;
         this.queue = new LinkedBlockingQueue<>();
     }

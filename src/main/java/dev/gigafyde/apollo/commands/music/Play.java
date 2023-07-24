@@ -118,8 +118,6 @@ public class Play extends Command implements SongCallBack {
     }
 
     public void trackHasLoaded(AudioTrack track) {
-        event.getClient().getMusicManager().getGuildMusicManager(event.getGuild()).player.setVolume(Main.DEFAULT_VOLUME);
-
         track.setUserData(author.getAsTag());
         switch (event.getCommandType()) {
             case MESSAGE -> {
