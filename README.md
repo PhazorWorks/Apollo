@@ -1,11 +1,6 @@
 <h1 align="center">
   Apollo
 </h1>
-<p align="center">
-  <a href="https://ci.gigafyde.dev/PhazorWorks/Apollo">
-    <img src="https://ci.gigafyde.dev/api/badges/PhazorWorks/Apollo/status.svg?ref=refs/heads/development"  >
-  </a>
-</p>
 
 <p align="center">
   <a href="#overview">Overview</a>
@@ -26,7 +21,7 @@ making it completely customizable.
 1) Clone the repo
 
 ```
-git clone https://github.com/GigaFyde/Apollo/
+git clone https://github.com/PhazorWorks/Apollo/
 ```
 
 2) Rename docker config file
@@ -46,8 +41,7 @@ docker-compose up -d
 ```
 
 # Requirements
-* [LavaLink](https://github.com/freyacodes/Lavalink)
-* [Sentry (Optional)](https://sentry.io/)
+* [LavaLink](https://github.com/freyacodes/Lavalink)* [Sentry (Optional)](https://sentry.io/)
 * [Image Generation API (Optional)](https://hub.docker.com/r/gigafyde/image-gen)
 * [Spotify Web API (Optional)](https://hub.docker.com/r/gigafyde/spotify-web)
 * [Lyrics Web API (Optional)](https://hub.docker.com/r/gigafyde/apollo-lyrics)
