@@ -41,6 +41,7 @@ public class Disconnect extends Command {
         if (!SongUtils.userConnectedToBotVC(event)) return;
         if (!SongUtils.botAloneInVC(event)) return;
         Objects.requireNonNull(event.getGuild()).getAudioManager().closeAudioConnection();
+        event.getClient().getMusicManager().destroyMusicManager(event.getGuild());
         event.send("I have disconnected from this voice channel.");
     }
 }

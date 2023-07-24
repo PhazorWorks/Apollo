@@ -32,7 +32,7 @@ public class Main {
     public static final String IMAGE_API_SERVER = System.getenv("IMAGE_API_SERVER");
     public static final String PLAYLISTS_API_KEY = System.getenv("PLAYLISTS_API_KEY");
     public static final Boolean USE_IMAGE_API = Boolean.valueOf(System.getenv("USE_IMAGE_API"));
-    public static final int SHARDS_TOTAL = Integer.parseInt(System.getenv("SHARDS_TOTAL"));
+    public static int SHARDS_TOTAL = 1 ;
     public static final OkHttpClient httpClient = new OkHttpClient();
     private static final String SENTRY_DSN = System.getenv("SENTRY_DSN");
     private static final Logger log = LoggerFactory.getLogger("Apollo");
@@ -42,6 +42,7 @@ public class Main {
     public static ShardManager SHARD_MANAGER;
 
     public static void main(String[] args) throws LoginException {
+        SHARDS_TOTAL = System.getenv("SHARDS_TOTAL") != null ?  Integer.parseInt(System.getenv("SHARDS_TOTAL")) : 1;
         if (!SongUtils.isValidURL(SPOTIFY_WEB_SERVER) || SPOTIFY_WEB_SERVER == null) {
             log.warn("SPOTIFY_WEB_SERVER was not set, Spotify support will not be available!");
             SPOTIFY_WEB_SERVER = null;

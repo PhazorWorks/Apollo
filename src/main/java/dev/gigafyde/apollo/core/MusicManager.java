@@ -48,4 +48,12 @@ public final class MusicManager {
         return musicManager;
     }
 
+    public synchronized void destroyMusicManager(Guild guild) {
+        long guildId = guild.getIdLong();
+        GuildMusicManager musicManager = musicManagers.get(guildId);
+        if (musicManager != null) {
+            musicManagers.remove(guildId, musicManager);
+        }
+    }
+
 }
