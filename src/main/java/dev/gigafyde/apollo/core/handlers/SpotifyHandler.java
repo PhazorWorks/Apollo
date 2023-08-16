@@ -54,7 +54,7 @@ public class SpotifyHandler {
             String artist = artistObject.get("name").toString();
             String title = jsonObject.get("name").toString();
             String explicit = Boolean.parseBoolean(jsonObject.get("explicit").toString()) ? "explicit" : "";
-            SongHandler.loadHandler(scheduler, artist + " " + title + " " + explicit, true, true, user.getAsTag());
+            SongHandler.loadHandler(scheduler, artist + " " + title + " " + explicit, true, true, user.getName());
         } catch (Exception e) {
             SongCallBackListener.notifySpotifyAbort(e);
             log.error("Spotify Lookup failed! Aborting");
@@ -78,7 +78,7 @@ public class SpotifyHandler {
                 String artist = track.getJSONArray("artists").getJSONObject(0).getString("name");
                 String title = track.get("name").toString();
                 String name = jsonObject.getString("name");
-                SongHandler.loadPlaylistHandler(tracks, name, tracks.length(), scheduler, artist + " " + title, true, true, user.getAsTag());
+                SongHandler.loadPlaylistHandler(tracks, name, tracks.length(), scheduler, artist + " " + title, true, true, user.getName());
             }
 
 //            event.getMessage().reply(String.format("**Added %s tracks from the playlist!**", tracks.length())).mentionRepliedUser(false).queue();

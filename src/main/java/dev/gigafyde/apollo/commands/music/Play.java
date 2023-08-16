@@ -111,19 +111,19 @@ public class Play extends Command implements SongCallBack {
                 }
             }
             String[] split = arguments.split("&list="); // Prevent accidentally queueing an entire playlist
-            SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true, event.getAuthor().getAsTag());
+            SongHandler.loadHandler(scheduler, SongUtils.getStrippedSongUrl(split[0]), false, true, event.getAuthor().getName());
         } else {
-            SongHandler.loadHandler(scheduler, arguments, true, true, event.getAuthor().getAsTag());
+            SongHandler.loadHandler(scheduler, arguments, true, true, event.getAuthor().getName());
         }
     }
 
     public void trackHasLoaded(AudioTrack track) {
-        track.setUserData(author.getAsTag());
+        track.setUserData(author.getName());
         switch (event.getCommandType()) {
             case MESSAGE -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        message.replyFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png")).mentionRepliedUser(false).queue();
+                        message.replyFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getName())), "thumbnail.png")).mentionRepliedUser(false).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         message.reply("Queued " + track.getInfo().title).mentionRepliedUser(false).queue();
@@ -135,7 +135,7 @@ public class Play extends Command implements SongCallBack {
             case SLASH -> {
                 if (Main.USE_IMAGE_API) {
                     try {
-                        hook.editOriginalAttachments(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getAsTag())), "thumbnail.png")).queue();
+                        hook.editOriginalAttachments(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, author.getName())), "thumbnail.png")).queue();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         hook.editOriginal("Queued " + track.getInfo().title).queue();
@@ -147,7 +147,7 @@ public class Play extends Command implements SongCallBack {
             case USER -> {
                 event.getHook().editOriginal("Queued " + track.getInfo().title).queue();
                 if (boundChannel != null)
-                    boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getAsTag())), "thumbnail.png")).queue();
+                    boundChannel.sendFiles(FileUpload.fromData(Objects.requireNonNull(SongUtils.generateAndSendImage(track, event.getAuthor().getName())), "thumbnail.png")).queue();
             }
         }
         SongCallBackListener.removeListener(this);
@@ -160,7 +160,7 @@ public class Play extends Command implements SongCallBack {
             case USER -> {
                 event.getHook().editOriginal(String.format("**Added `%s` of `%s` songs from playlist `%s`**", added, amount, playlist.getName())).queue();
                 if (boundChannel != null)
-                    boundChannel.sendMessage(String.format("**Added `%s` of `%s` songs from playlist `%s` (Requested by %s)**", added, amount, playlist.getName(), event.getAuthor().getAsTag())).queue();
+                    boundChannel.sendMessage(String.format("**Added `%s` of `%s` songs from playlist `%s` (Requested by %s)**", added, amount, playlist.getName(), event.getAuthor().getName())).queue();
             }
         }
         SongCallBackListener.removeListener(this);
