@@ -26,7 +26,7 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.codehaus.groovy:groovy-all:3.0.14'
     implementation 'io.sentry:sentry-logback:6.28.0'
-    implementation 'dev.arbjerg:lavaplayer:2.0.1'
+    implementation 'dev.arbjerg:lavaplayer:2.1.1'
     implementation 'org.json:json:20230227'
 }
 
