@@ -228,6 +228,11 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
         return null;
     }
 
+    @Override
+    public long getChannelIdLong() {
+        return 0;
+    }
+
     @NotNull
     @Override
     public GuildMessageChannelUnion getGuildChannel() {
@@ -237,6 +242,12 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @NotNull
     @Override
     public DiscordLocale getUserLocale() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public List<Entitlement> getEntitlements() {
         return null;
     }
 
@@ -437,6 +448,12 @@ public class CommandEvent implements SlashCommandInteraction, MessageContextInte
     @NotNull
     @Override
     public ModalCallbackAction replyModal(@NotNull Modal modal) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public PremiumRequiredCallbackAction replyWithPremiumRequired() {
         return null;
     }
 }
